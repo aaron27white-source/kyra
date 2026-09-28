@@ -2,7 +2,8 @@ import { sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { buildPhoneSessionConfig } from "@lobbystack/agent-core/live/session";
-import { finishLiveCall, getCachedBusinessSnapshot, startLivePhoneCall } from "@lobbystack/domain";
+import { finishLiveCall, getCachedBusinessSnapshot, loadCallbackContext, resolveMissedCallCallback, startLivePhoneCall } from "@lobbystack/domain";
+import { ASSISTANT_NAME } from "@lobbystack/shared";
 import type { BusinessContextSnapshot } from "@lobbystack/shared";
 import { getAppDatabase } from "@/lib/api-helpers";
 import { createWorkerDomainContext } from "@/lib/domain-context";
@@ -35,6 +36,30 @@ export async function POST(request: Request) {
 
   const sessionId = event.data.session_id;
   const header = (name: string) => event.data.sip_headers.find((item) => item.name.toLowerCase() === name)?.value;
+  // Kyra AI callback: our own outbound call, bridged to OpenAI with an opaque
+  // token header. The token (not any number) decides the business.
+  const callbackToken = header("x-key20-callback");
+  if (callbackToken) {
+    const domain = createWorkerDomainContext();
+    const callback = await resolveMissedCallCallback(domain, callbackToken).catch(() => null);
+    if (!callback) {
+      await client.live.sessions.reject(sessionId, { status_code: 404 }).catch(() => undefined);
+      return new NextResponse(null, { status: 200 });
+    }
+    try {
+      const [snapshot, context] = await Promise.all([getCachedBusinessSnapshot(domain, { businessId: callback.businessId }), loadCallbackContext(domain, callback)]);
+      if (!snapshot || !context) {
+        await client.live.sessions.reject(sessionId, { status_code: 503 });
+        return new NextResponse(null, { status: 200 });
+      }
+      const greetingOverride = `Hi, this is ${ASSISTANT_NAME}, the virtual receptionist for ${snapshot.displayName}, returning your call. This call may be recorded. How can I help?`;
+      return await answerCall(client, { sessionId, businessId: callback.businessId, snapshot, from: context.callerPhone, to: phoneFromSipHeader(header("from")) ?? "callback", greetingOverride });
+    } catch (error) {
+      console.error("[kyra] callback answer failed", error instanceof Error ? error.message : error);
+      await client.live.sessions.reject(sessionId, { status_code: 503 }).catch(() => undefined);
+      return new NextResponse(null, { status: 200 });
+    }
+  }
   // Twilio trunks rewrite "To" to our OpenAI SIP URI and keep the dialled
   // number in "Diversion".
   const to = phoneFromSipHeader(header("diversion")) ?? phoneFromSipHeader(header("to"));
@@ -85,7 +110,7 @@ type LiveClient = ReturnType<typeof getLiveClient>;
 
 // Reserves minutes and records the call before accepting it, the same way the
 // Twilio media path does, so billing and limits behave identically.
-async function answerCall(client: LiveClient, input: { sessionId: string; businessId: string; snapshot: BusinessContextSnapshot; from: string | undefined; to: string }) {
+async function answerCall(client: LiveClient, input: { sessionId: string; businessId: string; snapshot: BusinessContextSnapshot; from: string | undefined; to: string; greetingOverride?: string }) {
   const domain = createWorkerDomainContext();
   let call: Awaited<ReturnType<typeof startLivePhoneCall>>;
   try {
@@ -104,7 +129,7 @@ async function answerCall(client: LiveClient, input: { sessionId: string; busine
   // accepting an accepted session just fails, and attaching is idempotent.
   if (call.duplicate) {
     await client.live.sessions.accept(input.sessionId, { session: buildPhoneSessionConfig(input.snapshot) }).catch(() => undefined);
-    await attachWorkerToLiveSession({ sessionId: input.sessionId, businessId: input.businessId, callId: call.callId, conversationId: call.conversationId, channel: "voice", ...(input.from ? { callerPhone: input.from } : {}) }).catch(() => undefined);
+    await attachWorkerToLiveSession({ sessionId: input.sessionId, businessId: input.businessId, callId: call.callId, conversationId: call.conversationId, channel: "voice", ...(input.from ? { callerPhone: input.from } : {}), ...(input.greetingOverride ? { greetingOverride: input.greetingOverride } : {}) }).catch(() => undefined);
     return new NextResponse(null, { status: 200 });
   }
   if (call.blocked) {
@@ -120,7 +145,7 @@ async function answerCall(client: LiveClient, input: { sessionId: string; busine
     throw error;
   }
   try {
-    await attachWorkerToLiveSession({ sessionId: input.sessionId, businessId: input.businessId, callId: call.callId, conversationId: call.conversationId, channel: "voice", ...(input.from ? { callerPhone: input.from } : {}) });
+    await attachWorkerToLiveSession({ sessionId: input.sessionId, businessId: input.businessId, callId: call.callId, conversationId: call.conversationId, channel: "voice", ...(input.from ? { callerPhone: input.from } : {}), ...(input.greetingOverride ? { greetingOverride: input.greetingOverride } : {}) });
   } catch (error) {
     // Without the worker nobody answers delegations, so end the call cleanly.
     await client.live.sessions.hangup(input.sessionId).catch(() => undefined);

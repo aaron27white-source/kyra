@@ -19,7 +19,9 @@
     "notifications": "Notifications",
     "widget": "Website widget",
     "apiKeys": "API keys",
-    "connectedApps": "Connected apps"
+    "connectedApps": "Connected apps",
+    "kyra": "Kyra",
+    "backOffice": "Back Office"
   },
   "widget": {
     "title": "Website widget",
@@ -801,6 +803,18 @@
       "webhookDisabled": {
         "title": "Webhook endpoint turned off",
         "description": "When LobbyStack stops sending events to a webhook endpoint because every delivery failed for about a day."
+      },
+      "missedCall": {
+        "title": "Missed call",
+        "description": "When Kyra follows up on a call nobody answered."
+      },
+      "emergency": {
+        "title": "Emergency reported",
+        "description": "When a customer mentions gas, sparks, smoke or sewage. Text alerts are on by default for this one, if you've agreed to SMS alerts."
+      },
+      "ownerBrief": {
+        "title": "Daily owner brief",
+        "description": "Kyra's 6 PM summary, when the Tier 3 automation is on."
       }
     },
     "systemIssues": {
@@ -1005,6 +1019,195 @@
       "appointments_write": "Book, cancel and reschedule appointments",
       "messages_read": "Read messages the receptionist took",
       "knowledge_write": "Add knowledge entries and FAQs"
+    }
+  },
+  "kyra": {
+    "saved": "Saved",
+    "save": "Save",
+    "saving": "Saving…",
+    "loadFailed": "Kyra settings couldn't load",
+    "readOnly": "Only owners and admins can change these settings.",
+    "plan": {
+      "title": "Your plan",
+      "description": "What Kyra does for this business.",
+      "backOffice": "Back Office add-on",
+      "change": "To change your plan or add Back Office, contact Key 20.",
+      "tiers": {
+        "missed_call": "Tier 1 · Missed-Call Recovery",
+        "receptionist": "Tier 2 · AI Receptionist",
+        "assistant": "Tier 3 · Full Virtual Assistant"
+      }
+    },
+    "missedCalls": {
+      "title": "Missed calls",
+      "description": "What Kyra does when a call goes unanswered."
+    },
+    "fields": {
+      "missedCallTextEnabled": {
+        "label": "Text missed callers back",
+        "hint": "Kyra texts within about 30 seconds. Every text includes the opt-out line."
+      },
+      "smsAiEnabled": {
+        "label": "Let Kyra reply to texts",
+        "hint": "Kyra collects the problem, the address and a good time, and books or passes it to you. Turn off to answer every text yourself."
+      },
+      "photoRequestsEnabled": {
+        "label": "Ask for photos",
+        "hint": "Customers can text photos of the problem. They're stored privately with location data removed."
+      },
+      "afterHoursMode": {
+        "label": "After hours",
+        "hint": "When a call is missed outside your business hours.",
+        "sendNow": "Text right away",
+        "hold": "Wait until we open"
+      },
+      "voiceCallbackEnabled": {
+        "label": "Kyra calls missed callers back",
+        "hint": "The voice switch. Kyra says she's a virtual receptionist and that the call may be recorded. If she can't reach them, they get a text instead."
+      },
+      "callbackMode": {
+        "label": "When Kyra calls",
+        "hint": "Ask first waits for the customer to reply YES. Automatic calls within a minute and the greeting tells them so.",
+        "askFirst": "Ask first (reply YES)",
+        "automatic": "Automatically"
+      },
+      "callbackDelaySeconds": {
+        "label": "Wait before calling (seconds)",
+        "hint": "Gives your team a chance to call back first. 0 to 900."
+      },
+      "contactWindow": {
+        "start": "Contact customers from",
+        "end": "Until",
+        "hint": "Kyra never calls, and automations never text, outside these hours (your time zone)."
+      },
+      "emergencyPhone": {
+        "label": "On-call phone for emergencies",
+        "hint": "Gas, sparks, smoke or sewage: the customer gets fixed safety instructions and this number gets a text right away."
+      },
+      "textBackMessage": {
+        "label": "First text (English)",
+        "hint": "Leave empty for Kyra's default. {business} becomes your business name.",
+        "placeholder": "Hi, this is Kyra, the virtual receptionist for {business}. Sorry we missed your call. How can we help?"
+      },
+      "textBackMessageEs": {
+        "label": "First text (Spanish)"
+      },
+      "missedCallGreeting": {
+        "label": "What callers hear",
+        "hint": "Played before the call hangs up. Leave empty for the default."
+      },
+      "reviewUrl": {
+        "label": "Review link",
+        "hint": "Your Google review link, used by review requests. Must start with https://."
+      }
+    },
+    "recent": {
+      "title": "Recent missed calls",
+      "description": "The last 100 missed calls and what Kyra did.",
+      "empty": "No missed calls yet.",
+      "afterHours": "after hours",
+      "columns": {
+        "caller": "Caller",
+        "when": "When",
+        "status": "Status"
+      },
+      "status": {
+        "new": "New",
+        "held": "Waiting for opening",
+        "texted": "Texted",
+        "awaiting_consent": "Waiting for YES",
+        "callback_queued": "Call queued",
+        "calling": "Calling",
+        "reached": "Reached by Kyra",
+        "not_reached": "Not reached, texted",
+        "handled": "Handled",
+        "opted_out": "Opted out",
+        "skipped": "Skipped"
+      }
+    },
+    "automations": {
+      "title": "Automations",
+      "description": "Kyra reaching out on her own. Never outside the contact window, never to anyone who opted out, and at most one automated text per customer per day.",
+      "message": "Message",
+      "needsTier3": "Needs Tier 3",
+      "needsBackOffice": "Needs Back Office",
+      "kinds": {
+        "quote_followup": {
+          "label": "Quote follow-ups",
+          "hint": "Texts on day 2 and day 5 after you send a quote, unless the customer already replied."
+        },
+        "review_request": {
+          "label": "Review requests",
+          "hint": "After you mark a job done, asks for a Google review. Needs your review link."
+        },
+        "win_back": {
+          "label": "Win-backs",
+          "hint": "Customers you haven't served in 6 to 18 months, at most once every 6 months."
+        },
+        "lead_nudge": {
+          "label": "Lead nudges",
+          "hint": "When a customer went quiet without booking: after 1 day, then 3 days."
+        },
+        "owner_brief": {
+          "label": "Daily owner brief",
+          "hint": "At 6 PM, a summary of missed calls, texts, bookings, open quotes and overdue invoices, sent to you."
+        },
+        "payment_reminder": {
+          "label": "Payment reminders",
+          "hint": "Unpaid invoices at 3, 7 and 14 days past due, with your payment link."
+        }
+      }
+    },
+    "backOffice": {
+      "deferred": "QuickBooks and Jobber sync and inbox triage are coming later. Card payments use your own payment link for now.",
+      "unavailable": "Back Office isn't on this plan",
+      "empty": "Nothing here yet.",
+      "quotes": {
+        "title": "Estimates",
+        "description": "Price a job and text it to the customer. Tier 3 follows up for you.",
+        "create": "New estimate"
+      },
+      "invoices": {
+        "title": "Invoices",
+        "description": "Bill a customer and text them a payment link. Overdue reminders run automatically if turned on.",
+        "create": "New invoice"
+      },
+      "columns": {
+        "name": "Estimate or invoice",
+        "amount": "Amount",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "status": {
+        "draft": "Draft",
+        "sent": "Sent",
+        "accepted": "Accepted",
+        "declined": "Declined",
+        "expired": "Expired",
+        "paid": "Paid",
+        "void": "Void"
+      },
+      "actions": {
+        "sent": "Send by text",
+        "accepted": "Mark accepted",
+        "declined": "Mark declined",
+        "paid": "Mark paid",
+        "void": "Void"
+      },
+      "fields": {
+        "customer": "Customer",
+        "search": "Search by name or phone",
+        "choose": "Choose a customer",
+        "title": "What's the job?",
+        "dueAt": "Due date",
+        "paymentUrl": "Payment link",
+        "lineItems": "Line items",
+        "description": "Description",
+        "quantity": "Qty",
+        "price": "Price",
+        "remove": "Remove line",
+        "addLine": "Add line"
+      }
     }
   }
 }

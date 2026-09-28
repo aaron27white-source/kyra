@@ -38,6 +38,8 @@ type AttachRequest = {
   maxDurationMs?: number;
   /** Prospect demos only answer questions and take messages. */
   intakeOnly?: boolean;
+  /** Kyra callbacks open with "returning your call" instead of the inbound greeting. */
+  greetingOverride?: string;
 };
 
 const SILENCE_TIMEOUT_MS = 75_000;
@@ -107,6 +109,7 @@ export function parseAttachRequest(raw: string): AttachRequest | undefined {
     ...(typeof body.callerPhone === "string" ? { callerPhone: body.callerPhone } : {}),
     ...(typeof body.maxDurationMs === "number" && body.maxDurationMs > 0 ? { maxDurationMs: body.maxDurationMs } : {}),
     ...(body.intakeOnly === true ? { intakeOnly: true } : {}),
+    ...(typeof body.greetingOverride === "string" && body.greetingOverride.trim() ? { greetingOverride: body.greetingOverride.trim().slice(0, 400) } : {}),
   };
 }
 
@@ -254,7 +257,7 @@ export function createLiveCallHandler(input: { domain: DomainContext }) {
       client,
       sessionId: request.sessionId,
       agent,
-      greeting: snapshot.greeting,
+      greeting: request.greetingOverride ?? snapshot.greeting,
       silenceTimeoutMs: SILENCE_TIMEOUT_MS,
       maxDurationMs: phone ? MAX_PHONE_CALL_MS : request.maxDurationMs ?? MAX_PHONE_CALL_MS,
       onStarted: () => void markLiveCallMediaStarted(input.domain, call).catch(logError(request.sessionId, "media start not recorded")),

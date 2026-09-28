@@ -9,12 +9,27 @@ import { queueOperatorAlertInTransaction } from "./notifications";
 import { emitWebhookEventInTransaction } from "./publicApi/webhooks";
 import { recordUnitEconomicsEventInTransaction } from "./unitEconomics";
 import { requireBusinessAdmin, requireBusinessMembership } from "../authz";
+import { recordImpliedConsent } from "./assistant/missedCalls";
+import { loadAssistantSettings } from "./assistant/settings";
+
+export type InboundSmsMedia = { url: string; contentType: string };
+export const MAX_INBOUND_MEDIA = 10;
+
+/** Only Twilio's own media host is fetched later, with Twilio credentials. */
+export function isTwilioMediaUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" && url.hostname === "api.twilio.com" && url.pathname.startsWith("/2010-04-01/Accounts/");
+  } catch {
+    return false;
+  }
+}
 
 const SMS_STOP_KEYWORDS = new Set(["STOP", "STOPALL", "UNSUBSCRIBE", "END", "QUIT", "CANCEL"]);
 const SMS_START_KEYWORDS = new Set(["START", "UNSTOP", "SUBSCRIBE"]);
 const SMS_HELP_KEYWORDS = new Set(["HELP"]);
-const SMS_HELP_REPLY = "LobbyStack: For help, contact hello@lobbystack.com or visit https://lobbystack.com. Reply STOP to opt out.";
-const SMS_START_REPLY = "LobbyStack: You are subscribed again. Reply HELP for help or STOP to opt out.";
+const SMS_HELP_REPLY = process.env.SMS_HELP_REPLY?.trim() || "Kyra the Receptionist: For help, reply with your question or call the business directly. Reply STOP to opt out.";
+const SMS_START_REPLY = "You are subscribed again. Reply HELP for help or STOP to opt out.";
 
 export type SmsConsentUpdate = { status: "subscribed" | "opted_out"; source: string };
 export type SmsKeywordReply = { body: string; kind: "help" | "start" };
@@ -46,7 +61,7 @@ export function classifySmsKeywordReply(input: { body: string; optOutType?: stri
 
 export async function receiveInboundSms(
   context: DomainContext,
-  input: { businessId: string; providerMessageId: string; from: string; to: string; body: string; payload: Record<string, unknown> },
+  input: { businessId: string; providerMessageId: string; from: string; to: string; body: string; payload: Record<string, unknown>; media?: InboundSmsMedia[] },
 ): Promise<{ messageId?: string; duplicate: boolean }> {
   return await withBusinessTransaction(context.db, { businessId: input.businessId, actorType: "worker" }, async (tx) => {
     const [providerEvent] = await tx.insert(providerEvents).values({
@@ -68,7 +83,8 @@ export async function receiveInboundSms(
     if (!session) throw new Error("Inbound SMS session could not be created.");
     const retentionPlan = isContentRetentionEnabled() ? await resolveBusinessBillingPlan(tx, input.businessId) : null;
     const contentExpiresAt = retentionPlan ? contentExpiryForPlan(retentionPlan, "messages") : null;
-    const [message] = await tx.insert(messages).values({ businessId: input.businessId, conversationId: conversation.id, conversationSessionId: session.id, direction: "inbound", channel: "sms", body: input.body, contentExpiresAt, providerMessageId: input.providerMessageId, status: "received" }).onConflictDoNothing({ target: messages.providerMessageId }).returning({ id: messages.id });
+    const media = (input.media ?? []).filter((item) => isTwilioMediaUrl(item.url)).slice(0, MAX_INBOUND_MEDIA).map((item) => ({ providerUrl: item.url, contentType: item.contentType, status: "pending" }));
+    const [message] = await tx.insert(messages).values({ businessId: input.businessId, conversationId: conversation.id, conversationSessionId: session.id, direction: "inbound", channel: "sms", body: input.body, contentExpiresAt, providerMessageId: input.providerMessageId, status: "received", ...(media.length ? { media } : {}) }).onConflictDoNothing({ target: messages.providerMessageId }).returning({ id: messages.id });
     if (!message) {
       const existing = (await tx.select({ id: messages.id }).from(messages).where(and(eq(messages.businessId, input.businessId), eq(messages.providerMessageId, input.providerMessageId))).limit(1))[0];
       if (!existing) throw new Error("Inbound SMS message could not be persisted.");
@@ -93,7 +109,18 @@ export async function receiveInboundSms(
         await enqueueOutbox(tx, { topic: "sms.send", businessId: input.businessId, aggregateType: "message", aggregateId: replyMessage.id, dedupeKey: `message:${replyMessage.id}:send`, payload: { messageId: replyMessage.id } });
       }
     }
-    if (!optedOut && keywordReply === null) await queueOperatorAlertInTransaction(tx, { businessId: input.businessId, eventKind: "pausedSms", eventKey: `pausedSms:${message.id}`, subject: "New message needs a reply", body: "A customer sent a message. Open the inbox to respond." });
+    if (media.length) await enqueueOutbox(tx, { topic: "sms.ingestMedia", businessId: input.businessId, aggregateType: "message", aggregateId: message.id, dedupeKey: `message:${message.id}:media`, payload: { messageId: message.id } });
+    if (!optedOut && keywordReply === null && !consentUpdate) {
+      const settings = await loadAssistantSettings(tx, input.businessId);
+      const assistantAnswers = settings.smsAiEnabled && conversation.automationState === "ai_active";
+      if (assistantAnswers) {
+        // They texted first, so replying is a conversation they started. STOP still wins.
+        await recordImpliedConsent(tx, { businessId: input.businessId, contactId: contact.id, phone: input.from, source: "inbound_sms" });
+        await enqueueOutbox(tx, { topic: "sms.assistantReply", businessId: input.businessId, aggregateType: "message", aggregateId: message.id, dedupeKey: `message:${message.id}:assistant-reply`, payload: { messageId: message.id } });
+      } else {
+        await queueOperatorAlertInTransaction(tx, { businessId: input.businessId, eventKind: "pausedSms", eventKey: `pausedSms:${message.id}`, subject: "New message needs a reply", body: "A customer sent a message. Open the inbox to respond." });
+      }
+    }
     await tx.update(providerEvents).set({ status: "processed", updatedAt: new Date() }).where(eq(providerEvents.id, providerEvent.id));
     return { messageId: message.id, duplicate: false };
   });

@@ -3,6 +3,7 @@ import { z } from "zod";
 export { resolveOpenAiPricing } from "./aiPricing";
 export type { AiPricingRatesUsdPerMillionTokens, VersionedAiPricing } from "./aiPricing";
 export { isMaintenanceMode } from "./maintenance";
+export * from "./assistant";
 export { isCertificationMode, assertCertificationRecipient, assertCertificationOperationAllowed, assertCertificationCalendar, assertCertificationBillingSandbox } from "./certification";
 
 export type DeploymentMode = "cloud" | "self_hosted_standard" | "development";

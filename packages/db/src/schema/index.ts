@@ -1534,6 +1534,146 @@ export const oauthClientAssertions = pgTable("oauth_client_assertions", {
   expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
 });
 
+// Key 20 Virtual Assistant (migration 0070): tiers, missed-call recovery,
+// outbound automations and the Back Office add-on.
+export const assistantSettings = pgTable("assistant_settings", {
+  businessId: uuid("business_id").primaryKey().references(() => businesses.id, { onDelete: "cascade" }),
+  serviceTier: varchar("service_tier", { length: 32 }).default("missed_call").notNull(),
+  backOfficeEnabled: boolean("back_office_enabled").default(false).notNull(),
+  missedCallTextEnabled: boolean("missed_call_text_enabled").default(true).notNull(),
+  missedCallGreeting: text("missed_call_greeting"),
+  textBackMessage: text("text_back_message"),
+  textBackMessageEs: text("text_back_message_es"),
+  smsAiEnabled: boolean("sms_ai_enabled").default(true).notNull(),
+  photoRequestsEnabled: boolean("photo_requests_enabled").default(true).notNull(),
+  voiceCallbackEnabled: boolean("voice_callback_enabled").default(false).notNull(),
+  callbackMode: varchar("callback_mode", { length: 16 }).default("ask_first").notNull(),
+  callbackDelaySeconds: integer("callback_delay_seconds").default(60).notNull(),
+  afterHoursMode: varchar("after_hours_mode", { length: 16 }).default("send_now").notNull(),
+  contactWindowStartMinutes: integer("contact_window_start_minutes").default(480).notNull(),
+  contactWindowEndMinutes: integer("contact_window_end_minutes").default(1200).notNull(),
+  emergencyPhone: varchar("emergency_phone", { length: 32 }),
+  reviewUrl: text("review_url"),
+  ...timestamps,
+});
+
+export const missedCalls = pgTable(
+  "missed_calls",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: "cascade" }),
+    contactId: uuid("contact_id").references(() => contacts.id, { onDelete: "set null" }),
+    conversationId: uuid("conversation_id").references(() => conversations.id, { onDelete: "set null" }),
+    providerCallId: varchar("provider_call_id", { length: 255 }).notNull(),
+    callerPhone: varchar("caller_phone", { length: 32 }).notNull(),
+    dialledPhone: varchar("dialled_phone", { length: 32 }).notNull(),
+    receivedAt: timestamp("received_at", { withTimezone: true }).defaultNow().notNull(),
+    afterHours: boolean("after_hours").default(false).notNull(),
+    repeatOfId: uuid("repeat_of_id"),
+    status: varchar("status", { length: 32 }).default("new").notNull(),
+    textBackMessageId: uuid("text_back_message_id").references(() => messages.id, { onDelete: "set null" }),
+    textBackDueAt: timestamp("text_back_due_at", { withTimezone: true }),
+    consentRequestedAt: timestamp("consent_requested_at", { withTimezone: true }),
+    consentMessageId: uuid("consent_message_id").references(() => messages.id, { onDelete: "set null" }),
+    consentGrantedAt: timestamp("consent_granted_at", { withTimezone: true }),
+    callbackToken: varchar("callback_token", { length: 64 }),
+    callbackDueAt: timestamp("callback_due_at", { withTimezone: true }),
+    callbackAttemptedAt: timestamp("callback_attempted_at", { withTimezone: true }),
+    callbackProviderCallId: varchar("callback_provider_call_id", { length: 255 }),
+    callbackOutcome: varchar("callback_outcome", { length: 32 }),
+    handledAt: timestamp("handled_at", { withTimezone: true }),
+    ...timestamps,
+  },
+  (table) => [
+    uniqueIndex("missed_calls_provider_call_unique").on(table.businessId, table.providerCallId),
+    uniqueIndex("missed_calls_callback_token_unique").on(table.callbackToken).where(sql`${table.callbackToken} is not null`),
+    index("missed_calls_business_caller_idx").on(table.businessId, table.callerPhone, table.receivedAt),
+    index("missed_calls_business_received_idx").on(table.businessId, table.receivedAt),
+  ],
+);
+
+export const outreachAutomations = pgTable(
+  "outreach_automations",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: "cascade" }),
+    kind: varchar("kind", { length: 32 }).notNull(),
+    enabled: boolean("enabled").default(false).notNull(),
+    messageTemplate: text("message_template"),
+    settings: jsonb("settings").$type<Record<string, unknown>>().default({}).notNull(),
+    ...timestamps,
+  },
+  (table) => [uniqueIndex("outreach_automations_business_kind_unique").on(table.businessId, table.kind)],
+);
+
+export const outreachSends = pgTable(
+  "outreach_sends",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: "cascade" }),
+    kind: varchar("kind", { length: 32 }).notNull(),
+    subjectId: uuid("subject_id").notNull(),
+    step: integer("step").default(1).notNull(),
+    contactId: uuid("contact_id").references(() => contacts.id, { onDelete: "set null" }),
+    messageId: uuid("message_id").references(() => messages.id, { onDelete: "set null" }),
+    sentAt: timestamp("sent_at", { withTimezone: true }).defaultNow().notNull(),
+    ...timestamps,
+  },
+  (table) => [
+    uniqueIndex("outreach_sends_subject_step_unique").on(table.businessId, table.kind, table.subjectId, table.step),
+    index("outreach_sends_contact_sent_idx").on(table.businessId, table.contactId, table.sentAt),
+  ],
+);
+
+export type LineItem = { description: string; quantity: number; unitCents: number };
+
+export const quotes = pgTable(
+  "quotes",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: "cascade" }),
+    contactId: uuid("contact_id").notNull().references(() => contacts.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    amountCents: integer("amount_cents").notNull(),
+    currency: varchar("currency", { length: 3 }).default("USD").notNull(),
+    status: varchar("status", { length: 16 }).default("draft").notNull(),
+    notes: text("notes"),
+    lineItems: jsonb("line_items").$type<LineItem[]>().default([]).notNull(),
+    sentAt: timestamp("sent_at", { withTimezone: true }),
+    decidedAt: timestamp("decided_at", { withTimezone: true }),
+    createdByUserId: uuid("created_by_user_id").references(() => users.id, { onDelete: "set null" }),
+    ...timestamps,
+  },
+  (table) => [index("quotes_business_status_idx").on(table.businessId, table.status, table.sentAt)],
+);
+
+export const invoices = pgTable(
+  "invoices",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    businessId: uuid("business_id").notNull().references(() => businesses.id, { onDelete: "cascade" }),
+    contactId: uuid("contact_id").notNull().references(() => contacts.id, { onDelete: "cascade" }),
+    appointmentId: uuid("appointment_id").references(() => appointments.id, { onDelete: "set null" }),
+    quoteId: uuid("quote_id").references(() => quotes.id, { onDelete: "set null" }),
+    number: varchar("number", { length: 32 }).notNull(),
+    status: varchar("status", { length: 16 }).default("draft").notNull(),
+    currency: varchar("currency", { length: 3 }).default("USD").notNull(),
+    totalCents: integer("total_cents").notNull(),
+    lineItems: jsonb("line_items").$type<LineItem[]>().default([]).notNull(),
+    paymentUrl: text("payment_url"),
+    notes: text("notes"),
+    dueAt: timestamp("due_at", { withTimezone: true }),
+    sentAt: timestamp("sent_at", { withTimezone: true }),
+    paidAt: timestamp("paid_at", { withTimezone: true }),
+    createdByUserId: uuid("created_by_user_id").references(() => users.id, { onDelete: "set null" }),
+    ...timestamps,
+  },
+  (table) => [
+    uniqueIndex("invoices_business_number_unique").on(table.businessId, table.number),
+    index("invoices_business_status_idx").on(table.businessId, table.status, table.dueAt),
+  ],
+);
+
 export const allTenantTables = [
   businesses,
   businessMemberships,
@@ -1593,6 +1733,12 @@ export const allTenantTables = [
   webhookEvents,
   webhookDeliveries,
   webhookDeliveryAttempts,
+  assistantSettings,
+  missedCalls,
+  outreachAutomations,
+  outreachSends,
+  quotes,
+  invoices,
 ] as const;
 
 export const schema = {
@@ -1670,6 +1816,12 @@ export const schema = {
   oauthAccessTokens,
   oauthConsents,
   oauthClientAssertions,
+  assistantSettings,
+  missedCalls,
+  outreachAutomations,
+  outreachSends,
+  quotes,
+  invoices,
 };
 
 export type Schema = typeof schema;

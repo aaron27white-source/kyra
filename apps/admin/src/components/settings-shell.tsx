@@ -12,6 +12,8 @@ export function SettingsShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { t } = useTranslation("settings");
   const items = [
+    { label: t("sections.kyra"), href: "/settings/kyra" },
+    { label: t("sections.backOffice"), href: "/settings/kyra/back-office" },
     { label: t("sections.usage"), href: "/settings/usage" },
     { label: t("sections.billing"), href: "/settings/plan" },
     { label: t("sections.business"), href: "/settings/team" },
@@ -27,7 +29,7 @@ export function SettingsShell({ children }: { children: React.ReactNode }) {
       <PageHeader title={t("header.title")} />
       <nav aria-label={t("header.title")} className="overflow-x-auto pb-1">
         <div className="flex min-w-max items-center gap-2">
-          {items.map((item) => <Link className={cn("inline-flex h-9 items-center rounded-full px-4 text-sm font-medium whitespace-nowrap transition-colors", pathname === item.href || pathname.startsWith(`${item.href}/`) ? "bg-muted text-foreground" : "text-muted-foreground hover:bg-muted/70 hover:text-foreground")} href={item.href} key={item.href}>{item.label}</Link>)}
+          {items.map((item) => <Link className={cn("inline-flex h-9 items-center rounded-full px-4 text-sm font-medium whitespace-nowrap transition-colors", pathname === item.href || (pathname.startsWith(`${item.href}/`) && !items.some((other) => other.href !== item.href && other.href.startsWith(`${item.href}/`) && pathname.startsWith(other.href))) ? "bg-muted text-foreground" : "text-muted-foreground hover:bg-muted/70 hover:text-foreground")} href={item.href} key={item.href}>{item.label}</Link>)}
         </div>
       </nav>
       <div className="w-full"><NestedPageSurfaceProvider>{children}</NestedPageSurfaceProvider></div>

@@ -18,7 +18,7 @@ import { DateTime } from "luxon";
 import { z } from "zod";
 
 /** Where the conversation happens. Phone calls know the caller's number. */
-export type AgentChannel = "voice" | "web_voice" | "web_chat";
+export type AgentChannel = "voice" | "web_voice" | "web_chat" | "sms";
 
 /** Live-call controls the agent can use. Only phone calls provide them. */
 export type CallControl = {
@@ -31,7 +31,7 @@ export type AgentToolContext = {
   domain: DomainContext;
   snapshot: BusinessContextSnapshot;
   channel: AgentChannel;
-  /** Verified caller ID on phone calls. Never set from what a visitor types. */
+  /** Verified caller ID on phone calls and the sender's number on SMS. Never set from what a visitor types. */
   callerPhone?: string;
   callId?: string;
   conversationId?: string;

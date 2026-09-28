@@ -309,12 +309,15 @@ export async function setNotificationPreferences(
   });
 }
 
-export const operatorNotificationEventKeys = ["voiceMessage", "pausedSms", "smsFailed", "calendarSync", "transferFailed", "aiReplyFailed", "widgetChat", "webhookDisabled"] as const;
+export const operatorNotificationEventKeys = ["voiceMessage", "pausedSms", "smsFailed", "calendarSync", "transferFailed", "aiReplyFailed", "widgetChat", "webhookDisabled", "missedCall", "emergency", "ownerBrief"] as const;
 export type OperatorNotificationEventKey = (typeof operatorNotificationEventKeys)[number];
 export type OperatorNotificationEventPreferences = Record<OperatorNotificationEventKey, { email: boolean; sms: boolean }>;
 
 export function defaultOperatorNotificationEventPreferences(): OperatorNotificationEventPreferences {
-  return Object.fromEntries(operatorNotificationEventKeys.map((key) => [key, { email: true, sms: false }])) as OperatorNotificationEventPreferences;
+  const defaults = Object.fromEntries(operatorNotificationEventKeys.map((key) => [key, { email: true, sms: false }])) as OperatorNotificationEventPreferences;
+  // An emergency should reach a phone, not only an inbox. Still needs the operator's SMS consent.
+  defaults.emergency = { email: true, sms: true };
+  return defaults;
 }
 
 const dailySummaryTimePattern = /^(?:[01]\d|2[0-3]):[0-5]\d$/;
@@ -327,6 +330,9 @@ const dailySummaryLabels: Record<OperatorNotificationEventKey, string> = {
   aiReplyFailed: "AI reply failures",
   widgetChat: "Website chat messages",
   webhookDisabled: "Webhook endpoints turned off",
+  missedCall: "Missed calls",
+  emergency: "Emergencies",
+  ownerBrief: "Daily owner brief",
 };
 
 function assertDailySummaryTime(value: string | null | undefined): void {

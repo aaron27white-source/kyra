@@ -258,6 +258,13 @@ export const jobTypes = [
   "realtime.publish",
   "webhook.deliver",
   "api.retention",
+  "missedCall.process",
+  "missedCall.callback",
+  "sms.assistantReply",
+  "sms.ingestMedia",
+  "assistant.emergencyPage",
+  "assistant.sweep",
+  "phoneNumber.applyRouting",
 ] as const;
 export type JobType = (typeof jobTypes)[number];
 

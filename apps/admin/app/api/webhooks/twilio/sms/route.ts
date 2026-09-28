@@ -14,6 +14,13 @@ function twiml(): NextResponse {
   return new NextResponse("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response></Response>", { status: 200, headers: { "content-type": "text/xml" } });
 }
 
+// MMS attachments arrive as MediaUrl0..N / MediaContentType0..N. The domain
+// keeps only Twilio-hosted URLs and caps the count.
+function inboundMedia(params: Record<string, string>): Array<{ url: string; contentType: string }> {
+  const count = Math.min(Number(params.NumMedia ?? "0") || 0, 10);
+  return Array.from({ length: count }, (_, index) => ({ url: params[`MediaUrl${index}`] ?? "", contentType: params[`MediaContentType${index}`] ?? "" })).filter((item) => item.url);
+}
+
 export async function POST(request: Request) {
   try {
     const rawBody = await request.text();
@@ -33,6 +40,7 @@ export async function POST(request: Request) {
       to: body.To,
       body: body.Body,
       payload: { From: body.From, To: body.To, Body: body.Body, MessageSid: providerMessageId, ...(body.NumMedia !== undefined ? { NumMedia: body.NumMedia } : {}), ...(body.OptOutType ? { OptOutType: body.OptOutType } : {}) },
+      media: inboundMedia(params),
     });
     return twiml();
   } catch {

@@ -1,7 +1,7 @@
 import { assertDatabaseRole, businesses, createDatabaseClient, databaseHealthCheck, enqueueOutbox, withBusinessTransaction, withDispatcherTransaction } from "@lobbystack/db";
 import { createCallSummarizer } from "@lobbystack/agent-core";
 import { assertProductionSecrets } from "@lobbystack/config";
-import type { OnboardingFollowupSender } from "@lobbystack/domain";
+import { loadCallRouting, type OnboardingFollowupSender } from "@lobbystack/domain";
 import { createQueue, createRedisConnection, createWorkerOptions, enqueueJob, isKnownJobType, jobQueues, type JobEnvelope, type JobQueue } from "@lobbystack/jobs";
 import { createEmbeddingProvider } from "@lobbystack/providers/ai/embeddingProvider";
 import { FirecrawlProvider } from "@lobbystack/providers/crawling/firecrawl";
@@ -15,6 +15,7 @@ import { redactJobError } from "./redactJobError";
 import { Worker } from "bullmq";
 
 import { handleJob, type WorkerDependencies } from "./handlers";
+import { createAssistantResponder, createOpenAiSipCallbackDialer, createTwilioMediaClient } from "./assistantAdapters";
 import { startHealthServer } from "./health";
 import { createLiveCallHandler } from "./liveCalls";
 import { OutboxDispatcher } from "./outboxDispatcher";
@@ -157,9 +158,18 @@ async function main(): Promise<void> {
   }
   await storage.ensureReady();
   liveCalls.setStorage(storage);
+  const assistantDomain = { db: database.db, snapshotCache: getWorkerSnapshotCache(), ...(embeddings ? { embeddings } : {}) };
+  const assistantResponder = createAssistantResponder(assistantDomain);
+  const callbackDialer = createOpenAiSipCallbackDialer();
+  const twilioMedia = createTwilioMediaClient();
+  if (!callbackDialer) console.info("Kyra AI callbacks are off (set CALLBACK_VOICE_PROVIDER=openai_sip). Missed callers get texts instead.");
   const dependencies: WorkerDependencies = {
-    domain: { db: database.db, snapshotCache: getWorkerSnapshotCache(), ...(embeddings ? { embeddings } : {}) },
+    domain: assistantDomain,
     realtime,
+    ...(assistantResponder ? { assistantResponder } : {}),
+    ...(callbackDialer ? { callbackDialer } : {}),
+    ...(twilioMedia ? { twilioMedia } : {}),
+    resolveCallRouting: async (businessId: string) => (await loadCallRouting(assistantDomain, { businessId })).routing,
     ...(calendar ? { calendar } : {}),
     ...(crawler ? { crawler } : {}),
     ...(productAnalytics ? { productAnalytics } : {}),

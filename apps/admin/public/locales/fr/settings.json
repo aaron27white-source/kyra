@@ -19,7 +19,9 @@
     "notifications": "Notifications",
     "widget": "Widget de site web",
     "apiKeys": "Clés API",
-    "connectedApps": "Applications connectées"
+    "connectedApps": "Applications connectées",
+    "kyra": "Kyra",
+    "backOffice": "Back Office"
   },
   "widget": {
     "title": "Widget de site web",
@@ -801,6 +803,18 @@
       "webhookDisabled": {
         "title": "Point de terminaison webhook désactivé",
         "description": "Quand LobbyStack cesse d'envoyer des événements à un point de terminaison webhook parce que toutes les livraisons ont échoué pendant environ une journée."
+      },
+      "missedCall": {
+        "title": "Appel manqué",
+        "description": "Quand Kyra fait le suivi d'un appel resté sans réponse."
+      },
+      "emergency": {
+        "title": "Urgence signalée",
+        "description": "Quand un client mentionne du gaz, des étincelles, de la fumée ou un égout. Les alertes par texto sont activées par défaut pour celle-ci, si vous avez accepté les alertes SMS."
+      },
+      "ownerBrief": {
+        "title": "Résumé quotidien",
+        "description": "Le résumé de 18 h de Kyra, quand l'automatisation du niveau 3 est activée."
       }
     },
     "systemIssues": {
@@ -1005,6 +1019,195 @@
       "appointments_write": "Réserver, annuler et déplacer des rendez-vous",
       "messages_read": "Lire les messages pris par la réceptionniste",
       "knowledge_write": "Ajouter des entrées de connaissances et des FAQ"
+    }
+  },
+  "kyra": {
+    "saved": "Enregistré",
+    "save": "Enregistrer",
+    "saving": "Enregistrement…",
+    "loadFailed": "Impossible de charger les réglages de Kyra",
+    "readOnly": "Seuls les propriétaires et les administrateurs peuvent modifier ces réglages.",
+    "plan": {
+      "title": "Votre forfait",
+      "description": "Ce que Kyra fait pour cette entreprise.",
+      "backOffice": "Module Back Office",
+      "change": "Pour changer de forfait ou ajouter le Back Office, contactez Key 20.",
+      "tiers": {
+        "missed_call": "Niveau 1 · Récupération des appels manqués",
+        "receptionist": "Niveau 2 · Réceptionniste IA",
+        "assistant": "Niveau 3 · Assistante virtuelle complète"
+      }
+    },
+    "missedCalls": {
+      "title": "Appels manqués",
+      "description": "Ce que fait Kyra quand un appel reste sans réponse."
+    },
+    "fields": {
+      "missedCallTextEnabled": {
+        "label": "Répondre par texto aux appels manqués",
+        "hint": "Kyra envoie un texto en 30 secondes environ. Chaque texto contient la ligne de désabonnement."
+      },
+      "smsAiEnabled": {
+        "label": "Laisser Kyra répondre aux textos",
+        "hint": "Kyra recueille le problème, l'adresse et un bon moment, puis réserve ou vous transmet la demande. Désactivez pour répondre vous-même."
+      },
+      "photoRequestsEnabled": {
+        "label": "Demander des photos",
+        "hint": "Les clients peuvent envoyer des photos du problème. Elles sont stockées en privé, sans données de localisation."
+      },
+      "afterHoursMode": {
+        "label": "Hors des heures d'ouverture",
+        "hint": "Quand un appel est manqué en dehors de vos heures.",
+        "sendNow": "Texter tout de suite",
+        "hold": "Attendre l'ouverture"
+      },
+      "voiceCallbackEnabled": {
+        "label": "Kyra rappelle les appels manqués",
+        "hint": "L'interrupteur vocal. Kyra précise qu'elle est une réceptionniste virtuelle et que l'appel peut être enregistré. Si elle ne joint pas le client, il reçoit un texto."
+      },
+      "callbackMode": {
+        "label": "Quand Kyra rappelle",
+        "hint": "Demander d'abord attend que le client réponde OUI. Automatique rappelle en une minute et le message d'accueil l'annonce.",
+        "askFirst": "Demander d'abord (réponse OUI)",
+        "automatic": "Automatiquement"
+      },
+      "callbackDelaySeconds": {
+        "label": "Délai avant l'appel (secondes)",
+        "hint": "Laisse à votre équipe le temps de rappeler d'abord. De 0 à 900."
+      },
+      "contactWindow": {
+        "start": "Contacter les clients à partir de",
+        "end": "Jusqu'à",
+        "hint": "Kyra n'appelle jamais, et les automatisations n'envoient jamais de texto, en dehors de ces heures (votre fuseau horaire)."
+      },
+      "emergencyPhone": {
+        "label": "Téléphone de garde pour les urgences",
+        "hint": "Gaz, étincelles, fumée ou égout : le client reçoit des consignes de sécurité fixes et ce numéro reçoit un texto immédiatement."
+      },
+      "textBackMessage": {
+        "label": "Premier texto (anglais)",
+        "hint": "Laissez vide pour le texte par défaut de Kyra. {business} devient le nom de votre entreprise.",
+        "placeholder": "Hi, this is Kyra, the virtual receptionist for {business}. Sorry we missed your call. How can we help?"
+      },
+      "textBackMessageEs": {
+        "label": "Premier texto (espagnol)"
+      },
+      "missedCallGreeting": {
+        "label": "Ce qu'entendent les appelants",
+        "hint": "Diffusé avant de raccrocher. Laissez vide pour le message par défaut."
+      },
+      "reviewUrl": {
+        "label": "Lien d'avis",
+        "hint": "Votre lien d'avis Google, utilisé pour les demandes d'avis. Doit commencer par https://."
+      }
+    },
+    "recent": {
+      "title": "Appels manqués récents",
+      "description": "Les 100 derniers appels manqués et ce que Kyra a fait.",
+      "empty": "Aucun appel manqué pour l'instant.",
+      "afterHours": "hors des heures",
+      "columns": {
+        "caller": "Appelant",
+        "when": "Quand",
+        "status": "Statut"
+      },
+      "status": {
+        "new": "Nouveau",
+        "held": "En attente de l'ouverture",
+        "texted": "Texto envoyé",
+        "awaiting_consent": "En attente du OUI",
+        "callback_queued": "Appel prévu",
+        "calling": "Appel en cours",
+        "reached": "Joint par Kyra",
+        "not_reached": "Non joint, texto envoyé",
+        "handled": "Traité",
+        "opted_out": "Désabonné",
+        "skipped": "Ignoré"
+      }
+    },
+    "automations": {
+      "title": "Automatisations",
+      "description": "Kyra prend contact d'elle-même. Jamais en dehors de la plage de contact, jamais auprès de quelqu'un qui s'est désabonné, et au plus un texto automatique par client et par jour.",
+      "message": "Message",
+      "needsTier3": "Niveau 3 requis",
+      "needsBackOffice": "Back Office requis",
+      "kinds": {
+        "quote_followup": {
+          "label": "Relances de devis",
+          "hint": "Textos au 2e et au 5e jour après l'envoi d'un devis, sauf si le client a déjà répondu."
+        },
+        "review_request": {
+          "label": "Demandes d'avis",
+          "hint": "Après qu'un travail est marqué terminé, demande un avis Google. Nécessite votre lien d'avis."
+        },
+        "win_back": {
+          "label": "Relances d'anciens clients",
+          "hint": "Clients non servis depuis 6 à 18 mois, au plus une fois tous les 6 mois."
+        },
+        "lead_nudge": {
+          "label": "Relances de prospects",
+          "hint": "Quand un client ne répond plus sans avoir réservé : après 1 jour, puis 3 jours."
+        },
+        "owner_brief": {
+          "label": "Résumé quotidien",
+          "hint": "À 18 h, un résumé des appels manqués, textos, réservations, devis ouverts et factures en retard, envoyé à vous."
+        },
+        "payment_reminder": {
+          "label": "Rappels de paiement",
+          "hint": "Factures impayées à 3, 7 et 14 jours de retard, avec votre lien de paiement."
+        }
+      }
+    },
+    "backOffice": {
+      "deferred": "La synchronisation QuickBooks et Jobber et le tri de la boîte courriel arrivent plus tard. Les paiements par carte passent par votre propre lien de paiement pour l'instant.",
+      "unavailable": "Le Back Office n'est pas inclus dans ce forfait",
+      "empty": "Rien pour l'instant.",
+      "quotes": {
+        "title": "Devis",
+        "description": "Chiffrez un travail et envoyez-le par texto au client. Le niveau 3 relance pour vous.",
+        "create": "Nouveau devis"
+      },
+      "invoices": {
+        "title": "Factures",
+        "description": "Facturez un client et envoyez-lui un lien de paiement par texto. Les rappels de retard sont automatiques s'ils sont activés.",
+        "create": "Nouvelle facture"
+      },
+      "columns": {
+        "name": "Devis ou facture",
+        "amount": "Montant",
+        "status": "Statut",
+        "actions": "Actions"
+      },
+      "status": {
+        "draft": "Brouillon",
+        "sent": "Envoyé",
+        "accepted": "Accepté",
+        "declined": "Refusé",
+        "expired": "Expiré",
+        "paid": "Payée",
+        "void": "Annulée"
+      },
+      "actions": {
+        "sent": "Envoyer par texto",
+        "accepted": "Marquer accepté",
+        "declined": "Marquer refusé",
+        "paid": "Marquer payée",
+        "void": "Annuler"
+      },
+      "fields": {
+        "customer": "Client",
+        "search": "Rechercher par nom ou téléphone",
+        "choose": "Choisir un client",
+        "title": "Quel est le travail?",
+        "dueAt": "Date d'échéance",
+        "paymentUrl": "Lien de paiement",
+        "lineItems": "Lignes",
+        "description": "Description",
+        "quantity": "Qté",
+        "price": "Prix",
+        "remove": "Supprimer la ligne",
+        "addLine": "Ajouter une ligne"
+      }
     }
   }
 }

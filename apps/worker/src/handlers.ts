@@ -10,11 +10,13 @@ import { claimAppointmentChangeOtp, claimBillingCheckoutRequest, claimNotificati
 import { claimOperatorNotificationDelivery, correctAlertSmsUsage, estimateSmsSegments, loadOperatorNotificationDelivery, markFeedbackEmailFailed, markFeedbackEmailSent, markOperatorNotificationSent, markOperatorNotificationSkipped, queueDailyOperatorSummaries, refreshUnitEconomicsMonth, releaseOperatorNotificationDelivery, reserveAlertSmsUsage } from "@lobbystack/domain";
 import { claimNumberProvisioning, completeNumberProvisioning, failNumberProvisioning } from "@lobbystack/domain";
 import { createWebhookSender, processWebhookDelivery, pruneApiHistory, type WebhookSender } from "@lobbystack/domain";
+import type { CallRouting } from "@lobbystack/domain";
 import type { DomainContext } from "@lobbystack/domain";
 import type { SmtpEmailProvider } from "@lobbystack/providers/email/smtp";
 import type { RuntimeStorageProvider } from "@lobbystack/providers/storage/provider";
 import type { TwilioProvider } from "@lobbystack/providers/twilio/twilioProvider";
 import { extractDocumentText } from "./documentExtraction";
+import { handleAssistantJob, isAssistantJob, type AssistantSmsResponder, type CallbackDialer, type TwilioMediaClient } from "./assistantJobs";
 import { reconcileBusinessCalendar, syncAppointmentCalendar, type CalendarOperations } from "./calendarJobs";
 import { getMeter } from "@lobbystack/telemetry/node";
 import { bucketOutboxBacklog, getPostHogDistinctIdForBusinessSystem, redactTelemetryProperties, type TelemetryProperties } from "@lobbystack/telemetry";
@@ -46,7 +48,7 @@ export type WorkerDependencies = {
   domain: DomainContext;
   storage?: RuntimeStorageProvider;
   email?: Pick<SmtpEmailProvider, "sendTemplate">;
-  twilio?: Pick<TwilioProvider, "sendSms"> & Partial<Pick<TwilioProvider, "getMessagePricing" | "getCallPricing" | "findTrunkCall" | "releasePhoneNumber" | "verifyPhone" | "findOwnedPhoneNumber" | "purchasePhoneNumber" | "addNumberToSipTrunk">>;
+  twilio?: Pick<TwilioProvider, "sendSms"> & Partial<Pick<TwilioProvider, "getMessagePricing" | "getCallPricing" | "findTrunkCall" | "releasePhoneNumber" | "verifyPhone" | "findOwnedPhoneNumber" | "purchasePhoneNumber" | "addNumberToSipTrunk" | "removeNumberFromSipTrunk" | "configureIncomingPhoneNumber">>;
   twilioAlerts?: Pick<TwilioProvider, "sendSms"> & { from: string };
   polar?: { recordUsage(input: { eventName: string; externalCustomerId: string; quantity: number; timestamp: string; idempotencyKey: string; businessId: string; usageKind: string }): Promise<void>; createCheckout?(input: { productId: string; customerEmail: string; externalCustomerId: string; successUrl: string; idempotencyKey?: string }): Promise<{ checkoutUrl: string; checkoutId: string }> };
   embeddings?: { fingerprint?: string; embed(values: string[], onUsage?: (usage: DurableAiUsage) => Promise<void> | void): Promise<number[][]> };
@@ -60,6 +62,14 @@ export type WorkerDependencies = {
   webhookSender?: WebhookSender;
   /** Founder check-in sender. Without it, onboarding follow-up jobs are skipped. */
   onboardingFollowupSender?: OnboardingFollowupSender;
+  /** Kyra: writes SMS replies (agent-core). Without it, texts wait for a person. */
+  assistantResponder?: AssistantSmsResponder;
+  /** Kyra: places AI callbacks. Without it, missed callers get the texts instead. */
+  callbackDialer?: CallbackDialer;
+  /** Kyra: fetches customer MMS photos from Twilio. */
+  twilioMedia?: TwilioMediaClient;
+  /** Kyra: who answers a business's calls (tier-based). Without it, numbers join the SIP trunk as upstream does. */
+  resolveCallRouting?: (businessId: string) => Promise<CallRouting>;
   enqueueProductEventRetentionContinuation?: (input: {
     businessId: string;
     before: Date;
@@ -221,6 +231,17 @@ export async function handleJob(job: JobEnvelope, dependencies: WorkerDependenci
 
 async function dispatchJob(job: JobEnvelope, dependencies: WorkerDependencies, execution: JobExecution = {}): Promise<JobResult> {
   const businessId = job.businessId;
+  if (isAssistantJob(job.type)) {
+    return await handleAssistantJob(job, {
+      domain: dependencies.domain,
+      ...(dependencies.storage ? { storage: dependencies.storage } : {}),
+      ...(dependencies.twilio ? { twilio: dependencies.twilio } : {}),
+      ...(dependencies.twilioAlerts ? { twilioAlertsFrom: dependencies.twilioAlerts.from } : {}),
+      ...(dependencies.assistantResponder ? { assistantResponder: dependencies.assistantResponder } : {}),
+      ...(dependencies.callbackDialer ? { callbackDialer: dependencies.callbackDialer } : {}),
+      ...(dependencies.twilioMedia ? { twilioMedia: dependencies.twilioMedia } : {}),
+    });
+  }
   switch (job.type) {
     case "phoneVerification.send": {
       // Retired onboarding step. Drain a queued send without contacting a
@@ -760,10 +781,12 @@ async function dispatchJob(job: JobEnvelope, dependencies: WorkerDependencies, e
       if (!claimId || !dependencies.twilio?.findOwnedPhoneNumber || !dependencies.twilio.purchasePhoneNumber) return { status: "skipped", entityId: claimId };
       // Calls reach GPT-Live only through the Twilio SIP trunk. A number off the
       // trunk has nothing to answer it, so refuse to buy one without a trunk.
+      // Kyra: Tier 1 numbers answer only missed calls, through our voice webhook; Tier 2+ go on the trunk.
+      const routing = dependencies.resolveCallRouting ? await dependencies.resolveCallRouting(businessId) : "sip_trunk";
       const sipTrunkSid = process.env.TWILIO_SIP_TRUNK_SID?.trim();
-      if (!sipTrunkSid) throw new Error("TWILIO_SIP_TRUNK_SID is required to provision a phone number. See docs/voice/runtime.md.");
-      if (!dependencies.twilio.addNumberToSipTrunk) throw new Error("The Twilio provider can't assign numbers to a SIP trunk.");
-      const addNumberToSipTrunk = dependencies.twilio.addNumberToSipTrunk.bind(dependencies.twilio);
+      if (routing === "sip_trunk" && !sipTrunkSid) throw new Error("TWILIO_SIP_TRUNK_SID is required to provision a phone number. See docs/voice/runtime.md.");
+      if (routing === "sip_trunk" && !dependencies.twilio.addNumberToSipTrunk) throw new Error("The Twilio provider can't assign numbers to a SIP trunk.");
+      if (routing === "missed_call_webhook" && !dependencies.twilio.configureIncomingPhoneNumber) throw new Error("The Twilio provider can't set a voice webhook.");
       const claim = await claimNumberProvisioning(dependencies.domain, { businessId, claimId }); if (!claim) return { status: "skipped", entityId: claimId };
       const baseUrl = (process.env.APP_BASE_URL ?? "http://localhost:3000").replace(/\/$/, "");
       const smsUrl = `${baseUrl}/api/webhooks/twilio/sms`; const statusCallbackUrl = `${baseUrl}/api/webhooks/twilio/status`;
@@ -772,8 +795,15 @@ async function dispatchJob(job: JobEnvelope, dependencies: WorkerDependencies, e
         const owned = await dependencies.twilio.findOwnedPhoneNumber({ e164: claim.e164 });
         if (owned) providerPhoneId = owned.providerPhoneId;
         else { const result = await dependencies.twilio.purchasePhoneNumber({ e164: claim.e164, friendlyName: `LobbyStack ${businessId}`, smsUrl, statusCallbackUrl }); providerPhoneId = result.providerPhoneId; purchased = true; }
-        await addNumberToSipTrunk({ trunkSid: sipTrunkSid, providerPhoneId });
-        const phoneNumberId = await completeNumberProvisioning(dependencies.domain, { businessId, claimId, e164: claim.e164, providerPhoneId, voiceUrl: `sip-trunk:${sipTrunkSid}`, smsUrl });
+        let voiceTarget: string;
+        if (routing === "sip_trunk") {
+          await dependencies.twilio.addNumberToSipTrunk!({ trunkSid: sipTrunkSid!, providerPhoneId });
+          voiceTarget = `sip-trunk:${sipTrunkSid}`;
+        } else {
+          voiceTarget = `${baseUrl}/api/webhooks/twilio/voice`;
+          await dependencies.twilio.configureIncomingPhoneNumber!({ providerPhoneId, voiceUrl: voiceTarget });
+        }
+        const phoneNumberId = await completeNumberProvisioning(dependencies.domain, { businessId, claimId, e164: claim.e164, providerPhoneId, voiceUrl: voiceTarget, smsUrl });
         return { status: "completed", entityId: phoneNumberId };
       } catch (error) {
         if (purchased && providerPhoneId && dependencies.twilio.releasePhoneNumber) await dependencies.twilio.releasePhoneNumber({ providerPhoneId }).catch(() => undefined);

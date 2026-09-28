@@ -44,6 +44,13 @@ export const queueForJobType: Record<JobType, JobQueue> = {
   "realtime.publish": "default",
   "webhook.deliver": "default",
   "api.retention": "maintenance",
+  "missedCall.process": "critical",
+  "missedCall.callback": "critical",
+  "sms.assistantReply": "critical",
+  "sms.ingestMedia": "default",
+  "assistant.emergencyPage": "critical",
+  "assistant.sweep": "default",
+  "phoneNumber.applyRouting": "critical",
 };
 
 export type JobPayload = Record<string, unknown>;

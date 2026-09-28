@@ -206,4 +206,12 @@ export class TwilioProvider {
     if (number.trunkSid === input.trunkSid) return;
     await this.client.trunking.v1.trunks(input.trunkSid).phoneNumbers.create({ phoneNumberSid: input.providerPhoneId });
   }
+
+  /** Kyra Tier 1: takes the number off the SIP trunk so its voice URL (the missed-call webhook) answers again. */
+  async removeNumberFromSipTrunk(input: { trunkSid: string; providerPhoneId: string }): Promise<void> {
+    assertCertificationOperationAllowed();
+    const number = await this.client.incomingPhoneNumbers(input.providerPhoneId).fetch();
+    if (number.trunkSid !== input.trunkSid) return;
+    await this.client.trunking.v1.trunks(input.trunkSid).phoneNumbers(input.providerPhoneId).remove();
+  }
 }

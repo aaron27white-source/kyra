@@ -27,15 +27,18 @@ const BOOKING_GUIDANCE: Record<BookingMode, string> = {
 export function buildAgentInstructions(snapshot: BusinessContextSnapshot, channel: AgentChannel, options: { intakeOnly?: boolean } = {}): string {
   const now = DateTime.now().setZone(snapshot.timezone);
   const bookingMode = normalizeBookingMode(snapshot.bookingMode);
-  const voice = channel !== "web_chat";
+  const voice = channel === "voice" || channel === "web_voice";
+  const texting = channel === "sms";
   return [
     `You are the receptionist for ${snapshot.displayName}. You represent this business, not the software platform.`,
     voice
       ? "A live voice model is talking with the caller and hands you tasks. Reply with what it should say next: one or two short spoken sentences, no markdown, no lists, no URLs."
-      : "You are chatting with a website visitor. Reply in short, plain paragraphs.",
+      : texting
+        ? "You are Kyra, the business's virtual receptionist, texting a customer by SMS. Reply in one to three short sentences of plain text: no markdown, no lists, no emoji walls. Ask one question at a time. Collect what the job needs: their name, the address or area, what's wrong and how urgent it is. Never quote prices. If asked, say you're the business's virtual receptionist."
+        : "You are chatting with a website visitor. Reply in short, plain paragraphs.",
     "Use your tools for hours, services, business facts, appointments and messages. Never state availability, prices or policies you haven't looked up.",
     // The operator's own instructions for this channel.
-    (voice ? snapshot.voiceInstructions : snapshot.chatInstructions)?.trim() ?? "",
+    (voice ? snapshot.voiceInstructions : texting ? snapshot.smsInstructions : snapshot.chatInstructions)?.trim() ?? "",
     options.intakeOnly
       ? "This is a demo of the receptionist. Answer questions and take messages only. Don't book or check appointments, don't transfer the call, and don't promise texts or emails."
       : BOOKING_GUIDANCE[bookingMode],
