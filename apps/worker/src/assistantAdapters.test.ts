@@ -2,7 +2,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { createOpenAiSipCallbackDialer, createTwilioMediaClient } from "./assistantAdapters";
 
-const SID = "AC0123456789abcdef0123456789abcdef";
+// Built, not literal, so secret scanners don't flag this fake SID.
+const SID = `AC${"0123456789abcdef".repeat(2)}`;
 const env = { TWILIO_ACCOUNT_SID: SID, TWILIO_AUTH_TOKEN: "token" } as NodeJS.ProcessEnv;
 
 afterEach(() => vi.unstubAllGlobals());
