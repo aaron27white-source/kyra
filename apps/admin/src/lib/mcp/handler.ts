@@ -22,7 +22,7 @@ import { createLobbyStackMcpServer, type McpPrincipal, type McpServerDependencie
 import { mcpTools } from "./tools";
 
 // HTTP entry for /api/mcp: Streamable HTTP, stateless. Callers authenticate
-// with a LobbyStack API key (`Bearer lsk_...`) or an OAuth access token issued
+// with a Kyra API key (`Bearer lsk_...`) or an OAuth access token issued
 // to an MCP client (`Bearer lsa_...`). Either way the credential picks one
 // business and its scopes pick the tools. Keys and tokens never reach logs:
 // logs and audit rows carry the key id or the grant id.
@@ -126,10 +126,10 @@ export function createLobbyStackMcpHttpHandler(dependencies: McpHandlerDependenc
     // outside the configured app URLs is refused, including one that matches the
     // request's Host, so a DNS-rebinding page cannot drive the endpoint.
     const origin = request.headers.get("origin");
-    if (origin !== null && !trustedMcpOrigins().has(origin.trim())) return jsonError(403, "forbidden", "This origin may not call the LobbyStack MCP server.");
+    if (origin !== null && !trustedMcpOrigins().has(origin.trim())) return jsonError(403, "forbidden", "This origin may not call the Kyra MCP server.");
 
     const token = bearerToken(request.headers.get("authorization"));
-    if (!token) return jsonError(401, "unauthorized", "Sign in with OAuth, or send a LobbyStack API key as Authorization: Bearer <key>.", { "WWW-Authenticate": mcpBearerChallenge() });
+    if (!token) return jsonError(401, "unauthorized", "Sign in with OAuth, or send a Kyra API key as Authorization: Bearer <key>.", { "WWW-Authenticate": mcpBearerChallenge() });
 
     let credential: VerifiedCredential | null = null;
     if (isOAuthAccessToken(token)) {

@@ -75,7 +75,7 @@ export async function createBusiness(
       businessId,
       greeting: `Thanks for calling ${input.name.trim()}.`,
       tone: "warm and direct",
-      summary: `${input.name.trim()} uses LobbyStack to answer calls.`,
+      summary: `${input.name.trim()} uses Kyra to answer calls.`,
       bookingPolicy: "Only confirm a booking after availability is checked.",
       voiceInstructions: "Sound calm, confident, and concise. Escalate urgent requests to a human when policy requires it.",
       smsInstructions: "Keep replies concise and friendly. Ask one follow-up question at a time.",

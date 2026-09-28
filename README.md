@@ -1,3 +1,6 @@
+> **Kyra the Receptionist** (Key 20 Consultations) — private build on top of LobbyStack (MIT). See `NOTICE`.
+> Kyra adds missed-call recovery, AI callbacks, Tier 3 automations and a back-office add-on. Everything below is the upstream LobbyStack README.
+
 <p align="center">
   <img src=".github/readme/lobbystack-hero.png" width="100%" alt="LobbyStack dashboard hero image">
 </p>

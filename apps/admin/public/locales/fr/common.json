@@ -1,5 +1,5 @@
 {
-  "appName": "LobbyStack",
+  "appName": "Kyra",
   "accessibility": { "close": "Fermer", "toggleSidebar": "Afficher ou masquer la barre latérale", "skipToContent": "Aller au contenu principal" },
   "errors": { "unexpected": "Une erreur est survenue. Veuillez réessayer." },
   "loading": {
@@ -41,7 +41,7 @@
     "title": "Envoyer un commentaire",
     "description": "Dites-nous ce qui améliorerait ce tableau de bord.",
     "label": "Message de feedback",
-    "placeholder": "Une idée pour améliorer LobbyStack ? Dites-le à l’équipe.",
+    "placeholder": "Une idée pour améliorer Kyra ? Dites-le à l’équipe.",
     "characterCount": "{{count}} / {{max}} caractères",
     "helpText": "Besoin d’aide ?",
     "helpCenter": "Centre d’aide",
@@ -83,7 +83,7 @@
       "microphoneNotFound": "Aucun microphone n’a été trouvé sur cet appareil.",
       "microphoneInUse": "Le microphone est déjà utilisé par une autre application.",
       "gatewayTimeout": "L’appel a mis trop de temps à se connecter.",
-      "gatewayUnreachable": "Cette page ne peut pas joindre LobbyStack pour lancer l’appel.",
+      "gatewayUnreachable": "Cette page ne peut pas joindre Kyra pour lancer l’appel.",
       "connectionDropped": "La connexion vocale a été interrompue.",
       "browserNoMicrophone": "Ce navigateur ne prend pas en charge les appels avec microphone.",
       "browserNoWebRtc": "Ce navigateur ne prend pas en charge les appels vocaux en direct.",

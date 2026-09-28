@@ -402,7 +402,7 @@
     },
     "telemetry": {
       "label": "Partager les données de télémétrie",
-      "description": "Aidez-nous à améliorer LobbyStack en partageant des données d'utilisation et d'erreurs anonymisées.",
+      "description": "Aidez-nous à améliorer Kyra en partageant des données d'utilisation et d'erreurs anonymisées.",
       "saveFailed": "Nous n’avons pas pu enregistrer votre préférence de télémétrie. Veuillez réessayer."
     }
   },
@@ -424,7 +424,7 @@
       "sheetDescription": "Connectez les calendriers de l'équipe et choisissez celui qui reçoit les réservations.",
       "connectionSectionTitle": "Connexion",
       "connectionSectionDescription": "Choisissez un membre réservable et connectez ou reconnectez Google Calendar.",
-      "privacyNoticeText": "La connexion à Google Calendar permet à LobbyStack de lire la disponibilité de votre calendrier et de créer, mettre à jour ou supprimer des rendez-vous sur le calendrier que vous sélectionnez.",
+      "privacyNoticeText": "La connexion à Google Calendar permet à Kyra de lire la disponibilité de votre calendrier et de créer, mettre à jour ou supprimer des rendez-vous sur le calendrier que vous sélectionnez.",
       "privacyPolicyLinkText": "Politique de confidentialité",
       "calendarSectionTitle": "Réglages du calendrier",
       "calendarSectionDescription": "Choisissez le calendrier à synchroniser et consultez l'état de synchronisation.",
@@ -802,7 +802,7 @@
       },
       "webhookDisabled": {
         "title": "Point de terminaison webhook désactivé",
-        "description": "Quand LobbyStack cesse d'envoyer des événements à un point de terminaison webhook parce que toutes les livraisons ont échoué pendant environ une journée."
+        "description": "Quand Kyra cesse d'envoyer des événements à un point de terminaison webhook parce que toutes les livraisons ont échoué pendant environ une journée."
       },
       "missedCall": {
         "title": "Appel manqué",
@@ -822,7 +822,7 @@
     },
     "smsConsent": {
       "title": "Activer les alertes SMS",
-      "description": "Confirmez que vous voulez que LobbyStack envoie des alertes de l'espace de travail à votre numéro de téléphone vérifié.",
+      "description": "Confirmez que vous voulez que Kyra envoie des alertes de l'espace de travail à votre numéro de téléphone vérifié.",
       "cancel": "Annuler",
       "accept": "J'accepte, activer les SMS"
     }
@@ -833,7 +833,7 @@
   },
   "apiKeys": {
     "title": "Clés API",
-    "description": "Connectez des outils comme Zapier ou vos propres scripts à LobbyStack. Chaque clé ne fonctionne que pour cette entreprise.",
+    "description": "Connectez des outils comme Zapier ou vos propres scripts à Kyra. Chaque clé ne fonctionne que pour cette entreprise.",
     "empty": "Aucune clé API pour l'instant.",
     "neverUsed": "Jamais",
     "createdBy": "{{date}} par {{name}}",
@@ -891,7 +891,7 @@
   },
   "webhooks": {
     "title": "Webhooks",
-    "description": "LobbyStack envoie une requête HTTPS POST à votre URL quand quelque chose se produit, par exemple un appel terminé ou une nouvelle réservation. Chaque requête est signée pour que vous puissiez vérifier qu'elle vient de nous.",
+    "description": "Kyra envoie une requête HTTPS POST à votre URL quand quelque chose se produit, par exemple un appel terminé ou une nouvelle réservation. Chaque requête est signée pour que vous puissiez vérifier qu'elle vient de nous.",
     "empty": "Aucun point de terminaison webhook pour l'instant.",
     "enabledLabel": "Envoyer les événements à ce point de terminaison",
     "restricted": {
@@ -925,19 +925,19 @@
     "create": {
       "action": "Ajouter un point de terminaison",
       "title": "Ajouter un point de terminaison webhook",
-      "description": "Choisissez où LobbyStack envoie les événements et lesquels envoyer.",
+      "description": "Choisissez où Kyra envoie les événements et lesquels envoyer.",
       "submit": "Ajouter"
     },
     "edit": {
       "action": "Modifier",
       "title": "Modifier le point de terminaison webhook",
-      "description": "Les changements s'appliquent au prochain événement envoyé par LobbyStack.",
+      "description": "Les changements s'appliquent au prochain événement envoyé par Kyra.",
       "submit": "Enregistrer"
     },
     "delete": {
       "action": "Supprimer",
       "title": "Supprimer ce point de terminaison?",
-      "description": "LobbyStack cesse d'envoyer des événements à {{url}} et supprime son journal des livraisons.",
+      "description": "Kyra cesse d'envoyer des événements à {{url}} et supprime son journal des livraisons.",
       "confirm": "Supprimer",
       "done": "Point de terminaison supprimé"
     },
@@ -984,8 +984,8 @@
   },
   "connectedApps": {
     "title": "Applications connectées",
-    "description": "Les assistants IA comme Claude ou ChatGPT connectés à LobbyStack. Chacun ne fonctionne que pour cette entreprise, avec l'accès approuvé lors de la connexion.",
-    "empty": "Aucune application connectée pour l'instant. Pour en connecter une, ajoutez LobbyStack dans les réglages de l'assistant et connectez-vous.",
+    "description": "Les assistants IA comme Claude ou ChatGPT connectés à Kyra. Chacun ne fonctionne que pour cette entreprise, avec l'accès approuvé lors de la connexion.",
+    "empty": "Aucune application connectée pour l'instant. Pour en connecter une, ajoutez Kyra dans les réglages de l'assistant et connectez-vous.",
     "neverUsed": "Jamais",
     "unnamed": "Application sans nom",
     "grantedBy": "{{date}} par {{name}}",

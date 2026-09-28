@@ -47,7 +47,7 @@
     "submitFailed": "Impossible d'enregistrer cette entreprise pour le moment. Réessayez."
   },
   "website": {
-    "title": "Entraînons LobbyStack avec votre site web",
+    "title": "Entraînons Kyra avec votre site web",
     "description": "",
     "label": "Site web",
     "placeholder": "votreentreprise.com",
@@ -135,7 +135,7 @@
     "continue": "Continuer"
   },
   "attribution": {
-    "title": "Comment avez-vous connu LobbyStack ?",
+    "title": "Comment avez-vous connu Kyra ?",
     "description": "Cela nous aide à savoir ce qui fonctionne.",
     "options": {
       "ai_assistant": "ChatGPT, Claude, etc.",
@@ -186,7 +186,7 @@
         "name": "Gratuit",
         "price": "0 $",
         "period": "",
-        "description": "Essayez LobbyStack avec assez d'utilisation pour le voir en action.",
+        "description": "Essayez Kyra avec assez d'utilisation pour le voir en action.",
         "cta": "Commencer gratuitement",
         "highlights": {
           "voiceMinutes": "30 minutes vocales dans le navigateur",

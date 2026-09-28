@@ -37,7 +37,7 @@ export function protectedResourceMetadata(environment?: Readonly<Record<string, 
     authorization_servers: [oauthIssuer(environment)],
     scopes_supported: [...MCP_OAUTH_SCOPES],
     bearer_methods_supported: ["header"],
-    resource_name: "LobbyStack",
+    resource_name: "Kyra",
     resource_documentation: "https://docs.lobbystack.com/ai/mcp",
   };
 }
@@ -51,7 +51,7 @@ export function tokenAudienceMatches(resources: readonly string[], environment?:
 
 /** The WWW-Authenticate value that points OAuth clients at the metadata. */
 export function mcpBearerChallenge(error?: "invalid_token" | "insufficient_scope", environment?: Readonly<Record<string, string | undefined>>): string {
-  const parts = [`realm="LobbyStack MCP"`, `resource_metadata="${protectedResourceMetadataUrl(environment)}"`, `scope="${MCP_OAUTH_SCOPES.join(" ")}"`];
+  const parts = [`realm="Kyra MCP"`, `resource_metadata="${protectedResourceMetadataUrl(environment)}"`, `scope="${MCP_OAUTH_SCOPES.join(" ")}"`];
   if (error) parts.push(`error="${error}"`);
   return `Bearer ${parts.join(", ")}`;
 }

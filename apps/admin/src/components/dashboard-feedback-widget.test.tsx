@@ -25,7 +25,7 @@ vi.mock("react-i18next", () => ({
         "feedback.title": "Send feedback",
         "feedback.description": "Tell us what would make this dashboard better.",
         "feedback.label": "Feedback message",
-        "feedback.placeholder": "Have an idea to improve LobbyStack? Tell the team.",
+        "feedback.placeholder": "Have an idea to improve Kyra? Tell the team.",
         "feedback.helpText": "Need help?",
         "feedback.helpCenter": "Help Center",
         "feedback.contactLink": "Contact us",

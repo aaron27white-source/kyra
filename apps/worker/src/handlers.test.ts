@@ -111,7 +111,7 @@ describe("worker handlers", () => {
   it("queues the onboarding follow-up through the domain with the configured sender", async () => {
     const businessId = randomUUID(); const domain = { db: undefined as never };
     const completedAt = "2026-09-24T10:00:00.000Z";
-    const sender = { from: "Raphael from LobbyStack <raphael@lobbystack.com>", name: "Raphael" };
+    const sender = { from: "Raphael from Kyra <raphael@lobbystack.com>", name: "Raphael" };
     vi.mocked(queueOnboardingFollowupEmail).mockResolvedValueOnce(true).mockResolvedValueOnce(false);
     const job = { jobId: randomUUID(), type: "onboarding.sendFollowup" as const, queue: "default" as const, businessId, payload: { completedAt }, trace: {}, idempotencyKey: `onboarding-followup:${businessId}`, scheduled: false };
     await expect(handleJob(job, { domain, email: { sendTemplate: vi.fn() }, onboardingFollowupSender: sender })).resolves.toEqual({ status: "completed", entityId: businessId });
@@ -121,7 +121,7 @@ describe("worker handlers", () => {
   });
   it("sends onboarding follow-up email from the founder sender", async () => {
     const sendTemplate = vi.fn().mockResolvedValue({ messageId: "provider-id" });
-    const payload = { template: "onboarding_followup", to: "owner@example.test", from: "Raphael <raphael@lobbystack.com>", subject: "How'd you like LobbyStack?", variables: { businessName: "Acme" } };
+    const payload = { template: "onboarding_followup", to: "owner@example.test", from: "Raphael <raphael@lobbystack.com>", subject: "How'd you like Kyra?", variables: { businessName: "Acme" } };
     await handleJob({ jobId: randomUUID(), businessId: randomUUID(), type: "email.send", queue: "default", payload, trace: {}, idempotencyKey: "onboarding-followup:x:email", scheduled: false }, { domain: { db: undefined as never }, email: { sendTemplate } });
     expect(sendTemplate).toHaveBeenCalledWith(expect.objectContaining({ template: "onboarding_followup", to: "owner@example.test", from: "Raphael <raphael@lobbystack.com>" }));
   });
@@ -163,7 +163,7 @@ describe("worker handlers", () => {
 
     expect(purchasePhoneNumber).toHaveBeenCalledWith({
       e164: "+14165550199",
-      friendlyName: `LobbyStack ${businessId}`,
+      friendlyName: `Kyra ${businessId}`,
       smsUrl: "https://app.example.test/api/webhooks/twilio/sms",
       statusCallbackUrl: "https://app.example.test/api/webhooks/twilio/status",
     });
@@ -435,7 +435,7 @@ describe("worker handlers", () => {
     }, { domain, twilio: { sendSms } });
 
     expect(result).toEqual({ status: "completed", entityId: verificationId });
-    expect(sendSms).toHaveBeenCalledWith({ to: "+15555550123", from: "+15555550124", body: "LobbyStack verification code: 123456. It expires in 10 minutes." });
+    expect(sendSms).toHaveBeenCalledWith({ to: "+15555550123", from: "+15555550124", body: "Kyra verification code: 123456. It expires in 10 minutes." });
     expect(markAppointmentChangeOtpSent).toHaveBeenCalledWith(domain, { businessId, verificationId });
   });
 

@@ -18,16 +18,16 @@ describe("SMTP delivery", () => {
   it("sends the onboarding follow-up as plain text from the founder, with replies going to the founder", async () => {
     const sendMail = vi.fn().mockResolvedValue({ messageId: "provider-id" });
     const provider = new SmtpEmailProvider({ host: "localhost", port: 1025, secure: false, username: "", password: "", from: "no-reply@example.test", replyTo: "support@example.test" }, { sendMail } as never);
-    await provider.sendTemplate({ template: "onboarding_followup", to: "owner@example.test", from: "Raphael <raphael@example.test>", subject: "How'd you like LobbyStack?", variables: { locale: "en", firstName: "Sam", businessName: "Acme Dental", senderName: "Raphael" } });
+    await provider.sendTemplate({ template: "onboarding_followup", to: "owner@example.test", from: "Raphael <raphael@example.test>", subject: "How'd you like Kyra?", variables: { locale: "en", firstName: "Sam", businessName: "Acme Dental", senderName: "Raphael" } });
     const sent = sendMail.mock.calls[0]?.[0];
     expect(sent.from).toBe("Raphael <raphael@example.test>");
     expect(sent.replyTo).toBeUndefined();
     expect(sent.html).toBeUndefined();
     expect(sent.text).toMatch(/^Hi Sam,\n/);
-    expect(sent.text).toContain("I'm Raphael, the founder of LobbyStack. You set up a receptionist for Acme Dental yesterday.");
+    expect(sent.text).toContain("I'm Raphael, the founder of Kyra. You set up a receptionist for Acme Dental yesterday.");
     expect(sent.text).toContain("3. Do you plan to use it for real, with your own phone number?");
-    expect(sent.text).toContain("You can reply to this email, and two lines would be plenty!\n\nThanks again,\nRaphael\nFounder, LobbyStack");
-    await provider.sendTemplate({ template: "onboarding_followup", to: "owner@example.test", subject: "Qu'avez-vous pensé de LobbyStack ?", variables: { locale: "fr", firstName: "", businessName: "Clinique", senderName: "Raphael" } });
+    expect(sent.text).toContain("You can reply to this email, and two lines would be plenty!\n\nThanks again,\nRaphael\nFounder, Kyra");
+    await provider.sendTemplate({ template: "onboarding_followup", to: "owner@example.test", subject: "Qu'avez-vous pensé de Kyra ?", variables: { locale: "fr", firstName: "", businessName: "Clinique", senderName: "Raphael" } });
     const french = sendMail.mock.calls[1]?.[0];
     expect(french.from).toBe("no-reply@example.test");
     expect(french.replyTo).toBe("support@example.test");
@@ -38,7 +38,7 @@ describe("SMTP delivery", () => {
     const sendMail = vi.fn().mockResolvedValue({ messageId: "provider-id" });
     const provider = new SmtpEmailProvider({ host: "localhost", port: 1025, secure: false, username: "", password: "", from: "no-reply@example.test" }, { sendMail } as never);
     await provider.sendTemplate({ template: "password_reset", to: "recipient@example.test", subject: "Reset", variables: { code: "123456" } });
-    expect(sendMail.mock.calls[0]?.[0].text).toBe("Your LobbyStack password reset code is: 123456. It expires in 10 minutes.");
+    expect(sendMail.mock.calls[0]?.[0].text).toBe("Your Kyra password reset code is: 123456. It expires in 10 minutes.");
     await provider.sendTemplate({ template: "password_reset", to: "recipient@example.test", subject: "Reset", variables: { url: "https://example.test/reset" } });
     expect(sendMail.mock.calls[1]?.[0].text).toContain("using this link: https://example.test/reset");
   });
@@ -46,7 +46,7 @@ describe("SMTP delivery", () => {
     const sendMail = vi.fn().mockResolvedValue({ messageId: "provider-id" });
     const provider = new SmtpEmailProvider({ host: "localhost", port: 1025, secure: false, username: "", password: "", from: "no-reply@example.test" }, { sendMail } as never);
     await provider.sendTemplate({ template: "verify_email", to: "recipient@example.test", subject: "Verify", variables: { code: "123456" } });
-    expect(sendMail.mock.calls[0]?.[0].text).toBe("Your LobbyStack email verification code is: 123456. It expires in 10 minutes.");
+    expect(sendMail.mock.calls[0]?.[0].text).toBe("Your Kyra email verification code is: 123456. It expires in 10 minutes.");
     expect(sendMail.mock.calls[0]?.[0].html).toContain('<svg xmlns="http://www.w3.org/2000/svg"');
     expect(sendMail.mock.calls[0]?.[0].html).toContain("Verify your email address");
     expect(sendMail.mock.calls[0]?.[0].html).toContain(">123456</p>");

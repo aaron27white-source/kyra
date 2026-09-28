@@ -16,7 +16,7 @@ if (testUrl) {
 const client = testUrl ? createDatabaseClient("lobbystack_migrator", { DATABASE_URL: testUrl }) : undefined;
 afterAll(async () => { await client?.pool.end(); });
 
-const sender = { from: "Raphael from LobbyStack <raphael@lobbystack.test>", name: "Raphael" };
+const sender = { from: "Raphael from Kyra <raphael@lobbystack.test>", name: "Raphael" };
 
 async function rollbackTest(run: (tx: DatabaseTransaction) => Promise<void>) {
   const rollback = new Error("rollback test fixture");
@@ -84,7 +84,7 @@ describe.skipIf(!testUrl)("onboarding follow-up email against dedicated PostgreS
         template: "onboarding_followup",
         to: email,
         from: sender.from,
-        subject: "Qu'avez-vous pensé de LobbyStack ?",
+        subject: "Qu'avez-vous pensé de Kyra ?",
         variables: { locale: "fr", firstName: "Sam", senderName: "Raphael" },
       });
     });
@@ -129,7 +129,7 @@ describe.skipIf(!testUrl)("onboarding follow-up email against dedicated PostgreS
 
   it("skips owners on the sender's own email domain", async () => {
     await rollbackTest(async tx => {
-      const { businessId } = await completedWorkspace(tx, `${randomUUID()}@LobbyStack.test`);
+      const { businessId } = await completedWorkspace(tx, `${randomUUID()}@Kyra.test`);
       expect(await queueAsWorker(tx, businessId, new Date(Date.now() - ONBOARDING_FOLLOWUP_DELAY_MS))).toBe(false);
       expect(await followupEmails(tx, businessId)).toHaveLength(0);
     });

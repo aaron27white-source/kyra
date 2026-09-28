@@ -190,7 +190,7 @@ export function buildOpenApiDocument(input: { serverUrl: string }): Record<strin
   return {
     openapi: "3.1.0",
     info: {
-      title: "LobbyStack API",
+      title: "Kyra API",
       version: PUBLIC_API_VERSION,
       description: `Read calls, contacts, appointments and messages, book appointments, and subscribe to webhooks. Authenticate with an API key in the Authorization header. Each key allows ${PUBLIC_API_DEFAULT_RATE_LIMIT_PER_MINUTE} requests per minute by default.`,
     },

@@ -29,7 +29,7 @@ export function signWebhookPayload(input: { secret: string; id: string; timestam
 export function webhookHeaders(input: { secret: string; id: string; timestamp: number; body: string }): Record<string, string> {
   return {
     "content-type": "application/json",
-    "user-agent": "LobbyStack-Webhooks/1.0",
+    "user-agent": "Kyra-Webhooks/1.0",
     "webhook-id": input.id,
     "webhook-timestamp": String(input.timestamp),
     "webhook-signature": signWebhookPayload(input),
@@ -46,14 +46,14 @@ function encryptionKey(environment: Readonly<Record<string, string | undefined>>
 
 export function encryptWebhookSecret(secret: string): string {
   const iv = randomBytes(12);
-  const cipher = createCipheriv("aes-256-gcm", encryptionKey(), iv);
+  const cipher = createCipheriv("aes-256-gcm", encryptionKey(), iv, { authTagLength: 16 });
   const ciphertext = Buffer.concat([cipher.update(secret, "utf8"), cipher.final()]);
   return Buffer.concat([iv, cipher.getAuthTag(), ciphertext]).toString("base64url");
 }
 
 export function decryptWebhookSecret(value: string): string {
   const encoded = Buffer.from(value, "base64url");
-  const decipher = createDecipheriv("aes-256-gcm", encryptionKey(), encoded.subarray(0, 12));
+  const decipher = createDecipheriv("aes-256-gcm", encryptionKey(), encoded.subarray(0, 12), { authTagLength: 16 });
   decipher.setAuthTag(encoded.subarray(12, 28));
   return Buffer.concat([decipher.update(encoded.subarray(28)), decipher.final()]).toString("utf8");
 }

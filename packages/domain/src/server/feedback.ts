@@ -64,7 +64,7 @@ export async function submitFeedback(
           template: "feedback_submission",
           feedbackSubmissionId: submission.id,
           to: recipientEmail,
-          subject: `LobbyStack feedback from ${safeSubjectText(businessName ?? user.name ?? user.email)}`,
+          subject: `Kyra feedback from ${safeSubjectText(businessName ?? user.name ?? user.email)}`,
           variables: { body: message },
         },
       });

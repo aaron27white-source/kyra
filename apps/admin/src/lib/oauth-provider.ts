@@ -51,7 +51,7 @@ export const oauthProviderSchema = {
 };
 
 /**
- * Plugin endpoints LobbyStack serves. Everything else the plugin adds under
+ * Plugin endpoints Kyra serves. Everything else the plugin adds under
  * /oauth2 and /admin/oauth2 (client and consent management, introspection,
  * userinfo, logout) is turned off: grants are managed in the dashboard.
  */
@@ -84,7 +84,7 @@ export async function ensureMcpResource(db: Database): Promise<void> {
   resourceReady ??= (async () => {
     const now = new Date();
     await db.insert(oauthResources)
-      .values({ identifier: mcpResourceUrl(), name: "LobbyStack MCP server", allowedScopes: [...MCP_OAUTH_SCOPES], disabled: false, createdAt: now, updatedAt: now })
+      .values({ identifier: mcpResourceUrl(), name: "Kyra MCP server", allowedScopes: [...MCP_OAUTH_SCOPES], disabled: false, createdAt: now, updatedAt: now })
       .onConflictDoUpdate({ target: oauthResources.identifier, set: { allowedScopes: [...MCP_OAUTH_SCOPES], disabled: false, updatedAt: now } });
   })().catch((error: unknown) => {
     resourceReady = undefined;

@@ -428,7 +428,7 @@ async function dispatchJob(job: JobEnvelope, dependencies: WorkerDependencies, e
           const sent = await dependencies.email.sendTemplate({
             template,
             to: String(job.payload.to ?? job.payload.email ?? ""),
-            subject: String(job.payload.subject ?? "LobbyStack notification"),
+            subject: String(job.payload.subject ?? "Kyra notification"),
             variables,
             idempotencyKey: job.idempotencyKey,
             ...(typeof job.payload.from === "string" && job.payload.from ? { from: job.payload.from } : {}),
@@ -482,7 +482,7 @@ async function dispatchJob(job: JobEnvelope, dependencies: WorkerDependencies, e
         return { status: "skipped", entityId: verificationId };
       }
       try {
-        await dependencies.twilio.sendSms({ to: target.to, from: target.from, body: `LobbyStack verification code: ${target.code}. It expires in 10 minutes.` });
+        await dependencies.twilio.sendSms({ to: target.to, from: target.from, body: `Kyra verification code: ${target.code}. It expires in 10 minutes.` });
         await markAppointmentChangeOtpSent(dependencies.domain, { businessId, verificationId });
         return { status: "completed", entityId: verificationId };
       } catch (error) {
@@ -794,7 +794,7 @@ async function dispatchJob(job: JobEnvelope, dependencies: WorkerDependencies, e
       try {
         const owned = await dependencies.twilio.findOwnedPhoneNumber({ e164: claim.e164 });
         if (owned) providerPhoneId = owned.providerPhoneId;
-        else { const result = await dependencies.twilio.purchasePhoneNumber({ e164: claim.e164, friendlyName: `LobbyStack ${businessId}`, smsUrl, statusCallbackUrl }); providerPhoneId = result.providerPhoneId; purchased = true; }
+        else { const result = await dependencies.twilio.purchasePhoneNumber({ e164: claim.e164, friendlyName: `Kyra ${businessId}`, smsUrl, statusCallbackUrl }); providerPhoneId = result.providerPhoneId; purchased = true; }
         let voiceTarget: string;
         if (routing === "sip_trunk") {
           await dependencies.twilio.addNumberToSipTrunk!({ trunkSid: sipTrunkSid!, providerPhoneId });

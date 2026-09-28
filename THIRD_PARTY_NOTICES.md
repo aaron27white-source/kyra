@@ -1,5 +1,13 @@
 # Third-Party Notices
 
+## LobbyStack
+
+Kyra the Receptionist is built on LobbyStack. See NOTICE.
+
+- Source: https://github.com/lobbystack/lobbystack
+- License: MIT
+- Copyright: Copyright (c) 2026 LobbyStack contributors
+
 ## shadcn-admin
 
 Portions of `apps/admin` are adapted from `satnaing/shadcn-admin`.

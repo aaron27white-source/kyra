@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "LobbyStack API",
+    "title": "Kyra API",
     "version": "v1",
     "description": "Read calls, contacts, appointments and messages, book appointments, and subscribe to webhooks. Authenticate with an API key in the Authorization header. Each key allows 120 requests per minute by default."
   },
@@ -4298,7 +4298,7 @@
             "maxLength": 200
           },
           "staff_id": {
-            "description": "Book with this active staff member. Without it, LobbyStack picks one who is free.",
+            "description": "Book with this active staff member. Without it, Kyra picks one who is free.",
             "type": "string",
             "format": "uuid"
           },

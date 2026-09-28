@@ -63,10 +63,10 @@ describe("TwilioProvider phone provisioning", () => {
 
   it("purchases and can reconcile an already-owned number", async () => {
     mocks.incomingPhoneNumbers.create.mockResolvedValue({ sid: "PN123", phoneNumber: "+14165550100", smsUrl: "https://app.test/sms", voiceUrl: "https://app.test/voice" });
-    mocks.incomingPhoneNumbers.list.mockResolvedValue([{ sid: "PN123", phoneNumber: "+14165550100", friendlyName: "LobbyStack" }]);
+    mocks.incomingPhoneNumbers.list.mockResolvedValue([{ sid: "PN123", phoneNumber: "+14165550100", friendlyName: "Kyra" }]);
     const twilio = provider();
-    expect(await twilio.purchasePhoneNumber({ e164: "+14165550100", friendlyName: "LobbyStack", smsUrl: "https://app.test/sms", statusCallbackUrl: "https://app.test/status" })).toEqual({ providerPhoneId: "PN123", e164: "+14165550100", smsUrl: "https://app.test/sms" });
-    expect(await twilio.findOwnedPhoneNumber({ e164: "+14165550100" })).toEqual({ providerPhoneId: "PN123", e164: "+14165550100", friendlyName: "LobbyStack" });
+    expect(await twilio.purchasePhoneNumber({ e164: "+14165550100", friendlyName: "Kyra", smsUrl: "https://app.test/sms", statusCallbackUrl: "https://app.test/status" })).toEqual({ providerPhoneId: "PN123", e164: "+14165550100", smsUrl: "https://app.test/sms" });
+    expect(await twilio.findOwnedPhoneNumber({ e164: "+14165550100" })).toEqual({ providerPhoneId: "PN123", e164: "+14165550100", friendlyName: "Kyra" });
   });
 
   it("checks Verify using the durable verification SID", async () => {

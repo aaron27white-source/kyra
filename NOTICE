@@ -1,0 +1,13 @@
+Kyra the Receptionist
+Copyright (c) 2026 Key 20 Consultations
+
+This product is built on LobbyStack (https://github.com/lobbystack/lobbystack),
+used under the MIT License. The original copyright notice and license are kept
+in LICENSE ("Copyright (c) 2026 LobbyStack contributors") and apply to the
+LobbyStack portions of this code. Other third-party credits are listed in
+THIRD_PARTY_NOTICES.md.
+
+Kyra changes (missed-call recovery, AI callback, Tier 3 automations, back
+office, and the Kyra branding) are Key 20 Consultations' work on top of that
+base. "LobbyStack" is the upstream project's name; Kyra is not affiliated with
+or endorsed by it.

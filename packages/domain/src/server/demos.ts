@@ -251,7 +251,7 @@ export async function createProspectDemo(
       tone: "professional and friendly",
       summary: `${name} virtual receptionist`,
       bookingPolicy: "Do not book appointments during this prospect demo.",
-      voiceInstructions: "This is a LobbyStack prospect demo. Answer from public business knowledge. Collect sample contact details for a quote or service request. Do not book appointments, transfer calls, or promise outbound messages.",
+      voiceInstructions: "This is a Kyra prospect demo. Answer from public business knowledge. Collect sample contact details for a quote or service request. Do not book appointments, transfer calls, or promise outbound messages.",
       smsInstructions: "Do not send SMS during prospect demos.",
       transferMode: "on_request",
     });

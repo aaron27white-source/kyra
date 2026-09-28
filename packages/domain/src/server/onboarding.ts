@@ -209,7 +209,7 @@ export async function submitOnboardingAttribution(
 export const ONBOARDING_FOLLOWUP_DELAY_MS = 24 * 60 * 60_000;
 
 export type OnboardingFollowupSender = {
-  /** RFC 5322 sender, e.g. `Raphael from LobbyStack <raphael@lobbystack.com>`. Replies go here. */
+  /** RFC 5322 sender, e.g. `Raphael from Kyra <raphael@lobbystack.com>`. Replies go here. */
   from: string;
   /** First name used in the greeting and signature. */
   name: string;
@@ -244,7 +244,7 @@ export async function queueOnboardingFollowupEmail(
         template: "onboarding_followup",
         to: recipient.email,
         from: input.sender.from,
-        subject: locale === "fr" ? "Qu'avez-vous pensé de LobbyStack ?" : "How'd you like LobbyStack?",
+        subject: locale === "fr" ? "Qu'avez-vous pensé de Kyra ?" : "How'd you like Kyra?",
         variables: { locale, firstName, businessName: recipient.business_name, senderName: input.sender.name },
       },
     });

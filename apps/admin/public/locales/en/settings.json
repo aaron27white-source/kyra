@@ -402,7 +402,7 @@
     },
     "telemetry": {
       "label": "Share telemetry data",
-      "description": "Help us improve LobbyStack by sharing anonymized usage and error data.",
+      "description": "Help us improve Kyra by sharing anonymized usage and error data.",
       "saveFailed": "We couldn’t save your telemetry preference. Please try again."
     }
   },
@@ -424,7 +424,7 @@
       "sheetDescription": "Connect a Google Calendar and choose which calendar receives bookings.",
       "connectionSectionTitle": "Connection",
       "connectionSectionDescription": "Connect or reconnect the Google account that should receive bookings.",
-      "privacyNoticeText": "Connecting Google Calendar lets LobbyStack read your calendar availability and create, update, or delete appointment events on the calendar you select.",
+      "privacyNoticeText": "Connecting Google Calendar lets Kyra read your calendar availability and create, update, or delete appointment events on the calendar you select.",
       "privacyPolicyLinkText": "Privacy Policy",
       "calendarSectionTitle": "Calendar settings",
       "calendarSectionDescription": "Choose the calendar to sync and review the latest sync state.",
@@ -802,7 +802,7 @@
       },
       "webhookDisabled": {
         "title": "Webhook endpoint turned off",
-        "description": "When LobbyStack stops sending events to a webhook endpoint because every delivery failed for about a day."
+        "description": "When Kyra stops sending events to a webhook endpoint because every delivery failed for about a day."
       },
       "missedCall": {
         "title": "Missed call",
@@ -822,7 +822,7 @@
     },
     "smsConsent": {
       "title": "Enable SMS alerts",
-      "description": "Confirm that you want LobbyStack to send workspace alerts to your verified phone number.",
+      "description": "Confirm that you want Kyra to send workspace alerts to your verified phone number.",
       "cancel": "Cancel",
       "accept": "I agree, enable SMS"
     }
@@ -833,7 +833,7 @@
   },
   "apiKeys": {
     "title": "API keys",
-    "description": "Connect tools like Zapier or your own scripts to LobbyStack. Each key works for this business only.",
+    "description": "Connect tools like Zapier or your own scripts to Kyra. Each key works for this business only.",
     "empty": "No API keys yet.",
     "neverUsed": "Never",
     "createdBy": "{{date}} by {{name}}",
@@ -891,7 +891,7 @@
   },
   "webhooks": {
     "title": "Webhooks",
-    "description": "LobbyStack sends an HTTPS POST to your URL when something happens, such as a finished call or a new booking. Each request is signed so you can check it came from us.",
+    "description": "Kyra sends an HTTPS POST to your URL when something happens, such as a finished call or a new booking. Each request is signed so you can check it came from us.",
     "empty": "No webhook endpoints yet.",
     "enabledLabel": "Send events to this endpoint",
     "restricted": {
@@ -925,19 +925,19 @@
     "create": {
       "action": "Add endpoint",
       "title": "Add a webhook endpoint",
-      "description": "Choose where LobbyStack sends events and which events to send.",
+      "description": "Choose where Kyra sends events and which events to send.",
       "submit": "Add endpoint"
     },
     "edit": {
       "action": "Edit",
       "title": "Edit webhook endpoint",
-      "description": "Changes apply to the next event LobbyStack sends.",
+      "description": "Changes apply to the next event Kyra sends.",
       "submit": "Save"
     },
     "delete": {
       "action": "Delete",
       "title": "Delete this endpoint?",
-      "description": "LobbyStack stops sending events to {{url}} and deletes its delivery log.",
+      "description": "Kyra stops sending events to {{url}} and deletes its delivery log.",
       "confirm": "Delete endpoint",
       "done": "Endpoint deleted"
     },
@@ -984,8 +984,8 @@
   },
   "connectedApps": {
     "title": "Connected apps",
-    "description": "AI assistants such as Claude or ChatGPT that someone signed in to LobbyStack. Each one works for this business only, with the access they approved.",
-    "empty": "No connected apps yet. To connect one, add LobbyStack in the assistant's settings and sign in.",
+    "description": "AI assistants such as Claude or ChatGPT that someone signed in to Kyra. Each one works for this business only, with the access they approved.",
+    "empty": "No connected apps yet. To connect one, add Kyra in the assistant's settings and sign in.",
     "neverUsed": "Never",
     "unnamed": "Unnamed app",
     "grantedBy": "{{date}} by {{name}}",

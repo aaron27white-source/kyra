@@ -4,7 +4,7 @@ import type { SupportedLocale } from "@/lib/locale";
 import type { LocaleSource } from "@/lib/locale-request";
 
 export const appMetadata = {
-  title: "LobbyStack",
+  title: "Kyra",
   description: "AI receptionist dashboard",
 };
 

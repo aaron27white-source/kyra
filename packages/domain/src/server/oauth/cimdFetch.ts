@@ -46,7 +46,7 @@ export function createCimdFetch(options: CimdFetchOptions = {}): (input: Request
     if (request.method !== "GET" && request.method !== "HEAD") throw new TypeError("CIMD fetches use GET or HEAD only.");
     if (!isCimdUrlAllowed(request.url)) throw new TypeError("The client_id URL must be an HTTPS URL on a public host.");
     const url = new URL(request.url);
-    const headers: Record<string, string> = { "user-agent": "LobbyStack-OAuth/1.0" };
+    const headers: Record<string, string> = { "user-agent": "Kyra-OAuth/1.0" };
     request.headers.forEach((value, name) => { headers[name] = value; });
     return await new Promise<Response>((resolve, reject) => {
       let settled = false;

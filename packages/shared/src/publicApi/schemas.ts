@@ -176,7 +176,7 @@ export const apiAppointmentCreateSchema = z.strictObject({
   contact_id: id.optional().describe("An existing contact with a phone number. Provide contact_id or contact_phone."),
   contact_phone: e164.optional(),
   contact_name: z.string().trim().min(1).max(200).optional(),
-  staff_id: id.optional().describe("Book with this active staff member. Without it, LobbyStack picks one who is free."),
+  staff_id: id.optional().describe("Book with this active staff member. Without it, Kyra picks one who is free."),
   sms_consent: z.boolean().optional().describe("True only if the customer agreed to receive confirmation and reminder texts."),
 }).refine((value) => Boolean(value.contact_id || value.contact_phone), { message: "Provide contact_id or contact_phone.", path: ["contact_phone"] });
 

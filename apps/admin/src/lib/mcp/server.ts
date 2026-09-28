@@ -31,7 +31,7 @@ export const MCP_SERVER_NAME = "lobbystack";
 export const MCP_SERVER_VERSION = "1.0.0";
 
 export const MCP_SERVER_INSTRUCTIONS = [
-  "LobbyStack runs an AI receptionist for one business. These tools read its calls, messages, contacts and appointments, book and change appointments, and update what the receptionist knows.",
+  "Kyra runs an AI receptionist for one business. These tools read its calls, messages, contacts and appointments, book and change appointments, and update what the receptionist knows.",
   "Start with get_business: it gives the time zone and booking_mode. Tools return times in UTC; show them to people in the business time zone.",
   "Booking and rescheduling work only when booking_mode is instant. In request mode the team confirms requests themselves; when booking is off there is no booking at all. Do not retry those errors.",
   "Before booking, cancelling, rescheduling or replacing opening hours, confirm the details with the person you are helping.",
@@ -71,7 +71,7 @@ export function toolError(error: unknown, toolName: string): ToolError {
 }
 
 function rateLimitError(decision: Exclude<RateLimitDecision, { allowed: true }>): ToolError {
-  if (decision.reason === "unavailable") return { code: "rate_limit_unavailable", message: "LobbyStack is temporarily unavailable. Retry in 5 seconds." };
+  if (decision.reason === "unavailable") return { code: "rate_limit_unavailable", message: "Kyra is temporarily unavailable. Retry in 5 seconds." };
   return { code: "rate_limited", message: `This connection made too many requests. Retry in ${decision.retryAfterSeconds} seconds.` };
 }
 
@@ -92,7 +92,7 @@ async function runIdempotentTool(dependencies: { runIdempotent: typeof runIdempo
 }
 
 export function createLobbyStackMcpServer(principal: McpPrincipal, dependencies: McpServerDependencies): McpServer {
-  const server = new McpServer({ name: MCP_SERVER_NAME, title: "LobbyStack", version: MCP_SERVER_VERSION }, { instructions: MCP_SERVER_INSTRUCTIONS });
+  const server = new McpServer({ name: MCP_SERVER_NAME, title: "Kyra", version: MCP_SERVER_VERSION }, { instructions: MCP_SERVER_INSTRUCTIONS });
   const operations = dependencies.operations ?? mcpOperations;
   const log = dependencies.log ?? ((line) => console.info(JSON.stringify(line)));
   const caller = principal.caller;

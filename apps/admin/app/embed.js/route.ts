@@ -3,7 +3,7 @@ import path from "node:path";
 
 export const runtime = "nodejs";
 
-const STUB = "/* LobbyStack widget loader is unavailable. Run `pnpm --filter @lobbystack/embed build`. */";
+const STUB = "/* Kyra widget loader is unavailable. Run `pnpm --filter @lobbystack/embed build`. */";
 const EMBED_FILE = path.join(process.cwd(), "public", "embed", "embed.js");
 
 export async function GET() {

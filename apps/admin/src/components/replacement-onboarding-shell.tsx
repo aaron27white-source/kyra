@@ -43,9 +43,9 @@ export function ReplacementOnboardingShell({ eyebrow, title, description, progre
       ) : null}
       <main className="flex flex-1 flex-col items-center px-6 py-12">
         <div className={cn("my-auto flex w-full flex-col items-center", widths[width])}>
-          <div aria-label="LobbyStack" className="flex w-full items-center justify-center gap-2.5">
+          <div aria-label="Kyra" className="flex w-full items-center justify-center gap-2.5">
             <img alt="" aria-hidden="true" className="size-6 select-none dark:invert" draggable={false} src={versionedAssetUrl("/brand/logo-icon.svg")} />
-            <span className="font-heading text-xl font-semibold leading-none text-foreground">LobbyStack</span>
+            <span className="font-heading text-xl font-semibold leading-none text-foreground">Kyra</span>
           </div>
           <div className="mt-10 flex w-full flex-col items-center gap-4 text-center">
             {eyebrow ? <span className="inline-flex items-center rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">{eyebrow}</span> : null}

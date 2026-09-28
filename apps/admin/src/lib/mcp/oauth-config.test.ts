@@ -23,7 +23,7 @@ describe("MCP OAuth configuration", () => {
   });
 
   it("points 401 challenges at the metadata", () => {
-    expect(mcpBearerChallenge(undefined, env)).toBe(`Bearer realm="LobbyStack MCP", resource_metadata="https://app.example.com/.well-known/oauth-protected-resource/api/mcp", scope="${MCP_OAUTH_SCOPES.join(" ")}"`);
+    expect(mcpBearerChallenge(undefined, env)).toBe(`Bearer realm="Kyra MCP", resource_metadata="https://app.example.com/.well-known/oauth-protected-resource/api/mcp", scope="${MCP_OAUTH_SCOPES.join(" ")}"`);
     expect(mcpBearerChallenge("invalid_token", env)).toContain('error="invalid_token"');
   });
 
