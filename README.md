@@ -1,5 +1,24 @@
-> **Kyra the Receptionist** (Key 20 Consultations) — private build on top of LobbyStack (MIT). See `NOTICE`.
-> Kyra adds missed-call recovery, AI callbacks, Tier 3 automations and a back-office add-on. Everything below is the upstream LobbyStack README.
+# Kyra the Receptionist
+
+An AI receptionist for home-service businesses (plumbers, HVAC, electricians) that wins back the calls nobody picked up. Built by Aaron White (Key 20 Consultations) on top of [LobbyStack](https://github.com/lobbystack/lobbystack), an open-source AI receptionist, used under the MIT License (see `NOTICE`).
+
+## What I built on top of LobbyStack
+
+My work is the two most recent commits (`d5ba199`, `187d52d`). They touch 104 files and add about 3,900 lines across the database, worker, API and dashboard. Everything older in the history is upstream LobbyStack.
+
+- **Missed-call recovery:** Twilio voice and call-status webhooks detect an unanswered call and text the caller back right away. After hours, the caller gets a hold message, and emergencies get fixed, pre-approved wording.
+- **AI callback:** the assistant calls the customer back, either automatically or after the owner approves it.
+- **Tier 3 automations:** a scheduled worker sweep runs follow-up outreach, and every message sent is logged.
+- **Back office:** quotes and invoices.
+- **Multi-tenant data safety:** migration `0070` adds six tables, each keyed by `business_id` and locked with PostgreSQL `FORCE ROW LEVEL SECURITY`. Tier gating is enforced on the server, never only in the UI.
+- **Tests:** an 11-test integration suite, including a cross-business probe that checks one business can't read another's rows in any of the six tables.
+- **Rebrand:** customer-facing text in SMS, email, the dashboard, the API and the English and French locales now says Kyra, while internal IDs stay stable. I also pinned the AES-GCM auth tag length on stored webhook secrets after a semgrep finding.
+
+**Stack:** TypeScript, Next.js, PostgreSQL + Drizzle, Redis, Twilio, Vitest. Built with Claude Code as a pair programmer.
+
+---
+
+*Everything below is the upstream LobbyStack README.*
 
 <p align="center">
   <img src=".github/readme/lobbystack-hero.png" width="100%" alt="LobbyStack dashboard hero image">
