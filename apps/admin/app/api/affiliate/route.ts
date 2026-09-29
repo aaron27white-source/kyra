@@ -2,11 +2,13 @@ import { NextResponse } from "next/server";
 import { desc, eq } from "drizzle-orm";
 
 import { affiliateAttributions, affiliateClicks, affiliateCommissions, affiliatePayoutItems, affiliatePayoutRuns, affiliateProfileStats, affiliateProfiles, withBusinessTransaction } from "@lobbystack/db";
+import { affiliateProgramEnabled } from "@/lib/affiliate-program";
 import { asApiResponse, getAppDatabase, requireApiSession } from "@/lib/api-helpers";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
+  if (!affiliateProgramEnabled()) return NextResponse.json({ error: "Not found." }, { status: 404 });
   try {
     const session = await requireApiSession(request);
     return NextResponse.json(await withBusinessTransaction(getAppDatabase().db, { userId: session.user.id, actorType: "operator" }, async (tx) => {

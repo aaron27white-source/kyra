@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { GiftIcon } from "lucide-react";
 
 import { selectActiveBusiness } from "@/lib/active-business";
+import { affiliateProgramEnabled } from "@/lib/affiliate-program";
 import { Button } from "./ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { DashboardTestCallWidget } from "./dashboard-test-call-widget";
@@ -26,7 +27,7 @@ export function DashboardUtilityBar() {
       <div className="mx-auto flex w-full max-w-7xl items-center justify-end gap-0.5 px-6">
         <DashboardTestCallWidget className="pointer-events-auto" businessId={business.businessId} businessSlug={business.slug} />
         <span aria-hidden="true" className="ml-3 mr-1.5 h-4 w-px bg-border" />
-        <Tooltip>
+        {affiliateProgramEnabled() ? <Tooltip>
           <TooltipTrigger
             render={
               <Button
@@ -43,7 +44,7 @@ export function DashboardUtilityBar() {
             <GiftIcon className="size-[18px] -translate-x-px" strokeWidth={1.75} />
           </TooltipTrigger>
           <TooltipContent>{t("items.affiliate")}</TooltipContent>
-        </Tooltip>
+        </Tooltip> : null}
         <DashboardFeedbackWidget className="pointer-events-auto" businessId={business.businessId} />
       </div>
     </div>

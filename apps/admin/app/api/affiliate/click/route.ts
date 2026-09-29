@@ -2,9 +2,11 @@ import { NextResponse } from "next/server";
 
 import { recordAffiliateClick } from "@lobbystack/domain";
 import { asApiResponse, readJson } from "@/lib/api-helpers";
+import { affiliateProgramEnabled } from "@/lib/affiliate-program";
 import { createDomainContext } from "@/lib/domain-context";
 
 export async function POST(request: Request) {
+  if (!affiliateProgramEnabled()) return NextResponse.json({ error: "Not found." }, { status: 404 });
   try {
     const parsed = await readJson(request);
     const body = typeof parsed === "object" && parsed !== null && !Array.isArray(parsed) ? parsed as Record<string, unknown> : {};

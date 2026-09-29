@@ -129,7 +129,7 @@ describe.skipIf(!testUrl)("onboarding follow-up email against dedicated PostgreS
 
   it("skips owners on the sender's own email domain", async () => {
     await rollbackTest(async tx => {
-      const { businessId } = await completedWorkspace(tx, `${randomUUID()}@Kyra.test`);
+      const { businessId } = await completedWorkspace(tx, `${randomUUID()}@LobbyStack.test`);
       expect(await queueAsWorker(tx, businessId, new Date(Date.now() - ONBOARDING_FOLLOWUP_DELAY_MS))).toBe(false);
       expect(await followupEmails(tx, businessId)).toHaveLength(0);
     });
