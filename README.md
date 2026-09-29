@@ -4,7 +4,7 @@ An AI receptionist for home-service businesses (plumbers, HVAC, electricians) th
 
 ## What I built on top of LobbyStack
 
-My work is the two most recent commits (`d5ba199`, `187d52d`). They touch 104 files and add about 3,900 lines across the database, worker, API and dashboard. Everything older in the history is upstream LobbyStack.
+This repo is the public portfolio copy; the live product is developed privately. My work starts at commit `d5ba199`. The core Kyra commits touch 104 files and add about 3,900 lines across the database, worker, API and dashboard. Everything older in the history is upstream LobbyStack.
 
 - **Missed-call recovery:** Twilio voice and call-status webhooks detect an unanswered call and text the caller back right away. After hours, the caller gets a hold message, and emergencies get fixed, pre-approved wording.
 - **AI callback:** the assistant calls the customer back, either automatically or after the owner approves it.
