@@ -51,9 +51,10 @@
     },
     {
       "id": "billing.ai_sms",
-      "status": "excluded",
-      "reason": "AI-generated SMS and AI-SMS add-on billing or metering are intentionally excluded.",
-      "forbiddenPatterns": ["ai_sms", "sms_ai", "sms.processInbound", "sms.reply"]
+      "status": "required",
+      "implementation": ["packages/domain/src/server/assistant/smsAssistant.ts"],
+      "tests": ["packages/domain/src/server/assistant/assistant.test.ts", "packages/domain/src/server/assistant/assistant.integration.test.ts"],
+      "certification": ["docs/validation/kyra-ai-sms.md"]
     },
     {
       "id": "compliance.twilio_a2p",

@@ -26,7 +26,9 @@
     "/settings/api-keys",
     "/integrations/webhooks",
     "/settings/connected-apps",
-    "/oauth/consent"
+    "/oauth/consent",
+    "/settings/kyra",
+    "/settings/kyra/back-office"
   ],
   "localizedPortRoutes": [
     "/[locale]/accept-invite",
@@ -1340,6 +1342,20 @@
       "state": "default",
       "comparison": "excluded",
       "reason": "New outbound webhook management"
+    },
+    {
+      "path": "/settings/kyra",
+      "fixtureState": "operator",
+      "state": "default",
+      "comparison": "excluded",
+      "reason": "New Kyra settings (missed-call recovery, back office)"
+    },
+    {
+      "path": "/settings/kyra/back-office",
+      "fixtureState": "operator",
+      "state": "default",
+      "comparison": "excluded",
+      "reason": "New Kyra settings (missed-call recovery, back office)"
     },
     {
       "path": "/settings/connected-apps",
