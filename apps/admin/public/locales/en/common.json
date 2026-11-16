@@ -1,7 +1,13 @@
 {
   "appName": "Lead My Company",
-  "accessibility": { "close": "Close", "toggleSidebar": "Toggle sidebar", "skipToContent": "Skip to main content" },
-  "errors": { "unexpected": "Something went wrong. Please try again." },
+  "accessibility": {
+    "close": "Close",
+    "toggleSidebar": "Toggle sidebar",
+    "skipToContent": "Skip to main content"
+  },
+  "errors": {
+    "unexpected": "Something went wrong. Please try again."
+  },
   "loading": {
     "title": "Loading...",
     "retry": "Retry loading",
@@ -123,6 +129,27 @@
       "failed": "Failed",
       "error": "Error",
       "cancelled": "Cancelled"
+    },
+    "pageDescription": "Review upcoming appointments, customer details, and calendar sync status.",
+    "retry": "Try again",
+    "locationIntake": "Service location & intake",
+    "noAddress": "No service address",
+    "correctLocations": "Correct service locations",
+    "address": "Address",
+    "unit": "Unit (optional)",
+    "city": "City",
+    "region": "State / region",
+    "postalCode": "Postal / ZIP code",
+    "country": "Country code",
+    "instructions": "Access instructions (optional)",
+    "saving": "Saving…",
+    "saveLocation": "Save corrected location",
+    "locationSaved": "Location saved.",
+    "locationSaveFailed": "Location could not be saved. Check required fields and service-area settings.",
+    "intakeStates": {
+      "complete": "Complete",
+      "pending_follow_up": "Follow-up needed",
+      "not_required": "Not required"
     }
   },
   "abandonIntent": {

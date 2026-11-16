@@ -41,6 +41,7 @@
   "errors": {
     "configLoad": "The widget could not be loaded.",
     "invalidKey": "This widget is not available.",
-    "originDenied": "This website is not authorized to load this widget."
+    "originDenied": "This website is not authorized to load this widget.",
+    "retry": "Try again"
   }
 }

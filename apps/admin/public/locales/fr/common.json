@@ -1,7 +1,13 @@
 {
   "appName": "Lead My Company",
-  "accessibility": { "close": "Fermer", "toggleSidebar": "Afficher ou masquer la barre latérale", "skipToContent": "Aller au contenu principal" },
-  "errors": { "unexpected": "Une erreur est survenue. Veuillez réessayer." },
+  "accessibility": {
+    "close": "Fermer",
+    "toggleSidebar": "Afficher ou masquer la barre latérale",
+    "skipToContent": "Aller au contenu principal"
+  },
+  "errors": {
+    "unexpected": "Une erreur est survenue. Veuillez réessayer."
+  },
   "loading": {
     "title": "Chargement...",
     "retry": "Réessayer le chargement",
@@ -123,6 +129,27 @@
       "failed": "Échec",
       "error": "Erreur",
       "cancelled": "Annulé"
+    },
+    "pageDescription": "Consultez les rendez-vous à venir, les coordonnées des clients et la synchronisation du calendrier.",
+    "retry": "Réessayer",
+    "locationIntake": "Lieu et informations du service",
+    "noAddress": "Aucune adresse de service",
+    "correctLocations": "Corriger les lieux de service",
+    "address": "Adresse",
+    "unit": "Complément (facultatif)",
+    "city": "Ville",
+    "region": "Région",
+    "postalCode": "Code postal",
+    "country": "Code du pays",
+    "instructions": "Instructions d’accès (facultatif)",
+    "saving": "Enregistrement…",
+    "saveLocation": "Enregistrer le lieu corrigé",
+    "locationSaved": "Lieu enregistré.",
+    "locationSaveFailed": "Impossible d’enregistrer le lieu. Vérifiez les champs obligatoires et la zone de service.",
+    "intakeStates": {
+      "complete": "Complet",
+      "pending_follow_up": "Suivi nécessaire",
+      "not_required": "Non requis"
     }
   },
   "abandonIntent": {
