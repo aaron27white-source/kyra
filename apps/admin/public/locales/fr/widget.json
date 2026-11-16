@@ -41,6 +41,7 @@
   "errors": {
     "configLoad": "Le widget n'a pas pu être chargé.",
     "invalidKey": "Ce widget n'est pas disponible.",
-    "originDenied": "Ce site n'est pas autorisé à charger ce widget."
+    "originDenied": "Ce site n'est pas autorisé à charger ce widget.",
+    "retry": "Réessayer"
   }
 }

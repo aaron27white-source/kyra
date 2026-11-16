@@ -40,7 +40,12 @@
     "uploadFailed": "Impossible de téléverser cette pièce jointe.",
     "maxAttachments": "Vous pouvez envoyer jusqu'à {{count}} pièces jointes à la fois.",
     "partialAttachmentsAdded": "Seules les {{count}} premières pièces jointes ont été ajoutées.",
-    "deliveryFailed": "Échec de l'envoi"
+    "deliveryFailed": "Échec de l'envoi",
+    "loading": "Chargement des conversations…",
+    "loadFailed": "Impossible de charger les conversations.",
+    "retry": "Réessayer",
+    "noMatches": "Aucune conversation ne correspond à ces filtres.",
+    "noConversations": "Aucune conversation pour le moment."
   },
   "outcome": {
     "label": "Résumé",
