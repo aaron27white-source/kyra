@@ -161,6 +161,7 @@ function BillingBanner() {
 }
 
 function ReplacementSidebar({ user, pilotMode = false, pilotCapabilities = [] }: Pick<DashboardShellProps, "user" | "pilotMode" | "pilotCapabilities">) {
+  const pathname = usePathname();
   const { t } = useTranslation(["nav", "settings", "agent", "common"]);
   const pilotHas = (capability: PilotDashboardCapability) => pilotCapabilities.includes(capability);
   const general: NavigationItem[] = pilotMode ? [
