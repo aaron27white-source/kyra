@@ -317,6 +317,19 @@ export function createReceptionistTools(context: AgentToolContext): ToolSet {
   const changePolicy = normalizeAppointmentChangePolicy(snapshot.appointmentChangePolicy);
   const callerPhone = context.callerPhone;
   if (callerPhone && changePolicy.enabled && changePolicy.verificationMode !== "operator_only" && bookingMode !== "off") {
+    let lookupAttempt = 0;
+    let verifyAttempt = 0;
+    let otpSendAttempt = 0;
+    let otpVerifyAttempt = 0;
+    let cancelAttempt = 0;
+    let rescheduleAttempt = 0;
+    let lastFailedLookup: { key: string; reason: string } | undefined;
+    const lookupKey = (input: { callerName?: string | undefined; appointmentStartsAt?: string | undefined; serviceName?: string | undefined; appointmentId?: string | undefined }) => JSON.stringify([
+      input.callerName ? input.callerName.normalize("NFKD").replace(/\p{M}/gu, "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim() : "",
+      input.appointmentStartsAt?.trim().toLowerCase() ?? "",
+      input.serviceName ? input.serviceName.normalize("NFKD").replace(/\p{M}/gu, "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim() : "",
+      input.appointmentId ?? "",
+    ]);
     tools.lookupAppointmentForChange = tool({
       description: "Find a confirmed appointment using the caller's incoming number plus facts, or use the customer's full name with the appointment date/time or service if the booking used another number. It returns an internal ID only for one unique match. An alternate-number match must be verified with the code sent to the phone saved on that booking before discussing details or making changes.",
       inputSchema: z.object({
@@ -325,14 +338,27 @@ export function createReceptionistTools(context: AgentToolContext): ToolSet {
         serviceName: z.string().optional(),
         appointmentId: z.string().optional(),
       }),
-      execute: async (input) => await lookupCallerAppointments(domain, {
-        businessId,
-        callerPhone,
-        ...(input.callerName ? { callerName: input.callerName } : {}),
-        ...(input.appointmentStartsAt ? { appointmentStartsAt: input.appointmentStartsAt } : {}),
-        ...(input.serviceName ? { serviceName: input.serviceName } : {}),
-        ...(input.appointmentId ? { appointmentId: input.appointmentId } : {}),
-      }),
+      execute: async (input) => {
+        const startedAt = Date.now();
+        const key = lookupKey(input);
+        lookupAttempt += 1;
+        const logBase = { operation: "lookup_appointment_for_change", businessId, ...(context.callId ? { callId: context.callId } : {}), ...(context.sessionId ? { sessionId: context.sessionId } : {}), attemptNumber: lookupAttempt };
+        if (lastFailedLookup?.key === key) {
+          logOperational("voice.appointment_lookup.duplicate_suppressed", { ...logBase, outcome: "no_lookup", reasonCode: "unchanged_query", durationMs: 0 });
+          return { ok: true, reason: lastFailedLookup.reason, reasonCode: "unchanged_query", matchingAppointmentCount: 0, repeatSuppressed: true };
+        }
+        try {
+          const result = await lookupCallerAppointments(domain, { businessId, callerPhone, timezone, ...(input.callerName ? { callerName: input.callerName } : {}), ...(input.appointmentStartsAt ? { appointmentStartsAt: input.appointmentStartsAt } : {}), ...(input.serviceName ? { serviceName: input.serviceName } : {}), ...(input.appointmentId ? { appointmentId: input.appointmentId } : {}) });
+          const outcome = result.reason;
+          logOperational("voice.appointment_lookup.completed", { ...logBase, outcome, reasonCode: outcome, candidateCount: result.matchingAppointmentCount, matchingStrategy: result.matchingStrategy, durationMs: Date.now() - startedAt });
+          lastFailedLookup = outcome === "matched" ? undefined : { key, reason: outcome };
+          return result;
+        } catch {
+          logOperational("voice.appointment_lookup.failed", { ...logBase, outcome: "system_error", reasonCode: "database_or_service_error", durationMs: Date.now() - startedAt });
+          lastFailedLookup = undefined;
+          return { ok: false, reasonCode: "system_error", matchingAppointmentCount: 0 };
+        }
+      },
     });
     tools.verifyAppointmentForChange = tool({
       description: "Verify the caller's name and one fact about their appointment (date/time or service) before any change.",
@@ -343,38 +369,85 @@ export function createReceptionistTools(context: AgentToolContext): ToolSet {
         appointmentStartsAt: z.string().optional().describe("The appointment time as the caller described it."),
         serviceName: z.string().optional(),
       }),
-      execute: async (input) => await verifyCallerForChange(domain, {
-        businessId,
-        callerPhone,
-        action: input.action,
-        ...(input.appointmentId ? { appointmentId: input.appointmentId } : {}),
-        ...(input.callerName ? { callerName: input.callerName } : {}),
-        ...(input.appointmentStartsAt ? { appointmentStartsAt: input.appointmentStartsAt } : {}),
-        ...(input.serviceName ? { serviceName: input.serviceName } : {}),
-      }),
+      execute: async (input) => {
+        const startedAt = Date.now();
+        const attemptNumber = ++verifyAttempt;
+        try {
+          const result = await verifyCallerForChange(domain, { businessId, callerPhone, timezone, action: input.action, ...(input.appointmentId ? { appointmentId: input.appointmentId } : {}), ...(input.callerName ? { callerName: input.callerName } : {}), ...(input.appointmentStartsAt ? { appointmentStartsAt: input.appointmentStartsAt } : {}), ...(input.serviceName ? { serviceName: input.serviceName } : {}) });
+          logOperational("voice.appointment_change.verification", { operation: "verify_appointment_change", businessId, ...(context.callId ? { callId: context.callId } : {}), ...(context.sessionId ? { sessionId: context.sessionId } : {}), attemptNumber, outcome: result.verified ? "verified" : "verification_required", reasonCode: "status" in result ? result.status : "verification_failed", durationMs: Date.now() - startedAt });
+          return result;
+        } catch {
+          logOperational("voice.appointment_change.verification_failed", { operation: "verify_appointment_change", businessId, ...(context.callId ? { callId: context.callId } : {}), ...(context.sessionId ? { sessionId: context.sessionId } : {}), attemptNumber, outcome: "system_error", reasonCode: "database_or_service_error", durationMs: Date.now() - startedAt });
+          return { ok: false, verified: false, reasonCode: "system_error" };
+        }
+      },
     });
     tools.sendAppointmentChangeOtp = tool({
       description: "Text the caller a one-time code when verifyAppointmentForChange says a code is required.",
       inputSchema: z.object({ verificationId: z.string() }),
-      execute: async ({ verificationId }) => await issueAppointmentChangeOtp(domain, { businessId, verificationId }),
+      execute: async ({ verificationId }) => {
+        const startedAt = Date.now();
+        const attemptNumber = ++otpSendAttempt;
+        try {
+          const result = await issueAppointmentChangeOtp(domain, { businessId, verificationId });
+          logOperational("voice.appointment_change.otp_send", { operation: "send_change_otp", businessId, ...(context.callId ? { callId: context.callId } : {}), ...(context.sessionId ? { sessionId: context.sessionId } : {}), attemptNumber, outcome: result.ok ? result.status : "not_sent", reasonCode: result.ok ? result.status : result.status, durationMs: Date.now() - startedAt });
+          return result;
+        } catch {
+          logOperational("voice.appointment_change.otp_send_failed", { operation: "send_change_otp", businessId, ...(context.callId ? { callId: context.callId } : {}), ...(context.sessionId ? { sessionId: context.sessionId } : {}), attemptNumber, outcome: "system_error", reasonCode: "database_or_service_error", durationMs: Date.now() - startedAt });
+          return { ok: false, status: "system_error", reason: "The verification code could not be sent." };
+        }
+      },
     });
     tools.verifyAppointmentChangeOtp = tool({
       description: "Check the one-time code the caller reads back.",
       inputSchema: z.object({ verificationId: z.string(), code: z.string() }),
-      execute: async ({ verificationId, code }) => await verifyAppointmentChangeOtp(domain, { businessId, verificationId, code }),
+      execute: async ({ verificationId, code }) => {
+        const startedAt = Date.now();
+        const attemptNumber = ++otpVerifyAttempt;
+        try {
+          const result = await verifyAppointmentChangeOtp(domain, { businessId, verificationId, code });
+          logOperational("voice.appointment_change.otp_verification", { operation: "verify_change_otp", businessId, ...(context.callId ? { callId: context.callId } : {}), ...(context.sessionId ? { sessionId: context.sessionId } : {}), attemptNumber, outcome: result.ok ? "verified" : "rejected", reasonCode: result.status, durationMs: Date.now() - startedAt });
+          return result;
+        } catch {
+          logOperational("voice.appointment_change.otp_verification_failed", { operation: "verify_change_otp", businessId, ...(context.callId ? { callId: context.callId } : {}), ...(context.sessionId ? { sessionId: context.sessionId } : {}), attemptNumber, outcome: "system_error", reasonCode: "database_or_service_error", durationMs: Date.now() - startedAt });
+          return { ok: false, status: "system_error", verificationId, reason: "The verification could not be completed." };
+        }
+      },
     });
     if (changePolicy.allowCancel) {
       tools.cancelAppointment = tool({
         description: "Cancel the verified appointment. Only after the caller explicitly confirms they want it cancelled now.",
         inputSchema: z.object({ appointmentId: z.string(), verificationId: z.string(), finalConfirmation: z.boolean() }),
-        execute: async (input) => await cancelForCaller(domain, { businessId, callerPhone, ...input }),
+        execute: async (input) => {
+          const startedAt = Date.now();
+          const attemptNumber = ++cancelAttempt;
+          try {
+            const result = await cancelForCaller(domain, { businessId, callerPhone, ...input });
+            logOperational("voice.appointment_change.cancellation", { operation: "cancel_appointment", businessId, ...(context.callId ? { callId: context.callId } : {}), ...(context.sessionId ? { sessionId: context.sessionId } : {}), attemptNumber, outcome: result.ok ? "committed" : "not_committed", reasonCode: result.ok ? "committed" : "verification_or_confirmation_required", durationMs: Date.now() - startedAt });
+            return result;
+          } catch {
+            logOperational("voice.appointment_change.cancellation_failed", { operation: "cancel_appointment", businessId, ...(context.callId ? { callId: context.callId } : {}), ...(context.sessionId ? { sessionId: context.sessionId } : {}), attemptNumber, outcome: "system_error", reasonCode: "database_or_service_error", durationMs: Date.now() - startedAt });
+            return { ok: false, reason: "The cancellation could not be completed." };
+          }
+        },
       });
     }
     if (changePolicy.allowReschedule && bookingMode === "instant") {
       tools.rescheduleAppointment = tool({
         description: "Move the verified appointment to a new time that findAvailability returned. Only after the caller explicitly confirms the new time.",
         inputSchema: z.object({ appointmentId: z.string(), verificationId: z.string(), startsAt: z.string(), finalConfirmation: z.boolean() }),
-        execute: async (input) => await rescheduleForCaller(domain, { businessId, callerPhone, ...input }),
+        execute: async (input) => {
+          const startedAt = Date.now();
+          const attemptNumber = ++rescheduleAttempt;
+          try {
+            const result = await rescheduleForCaller(domain, { businessId, callerPhone, ...input });
+            logOperational("voice.appointment_change.rescheduling", { operation: "reschedule_appointment", businessId, ...(context.callId ? { callId: context.callId } : {}), ...(context.sessionId ? { sessionId: context.sessionId } : {}), attemptNumber, outcome: result.ok ? "committed" : "not_committed", reasonCode: result.ok ? "committed" : "verification_or_confirmation_required", durationMs: Date.now() - startedAt });
+            return result;
+          } catch {
+            logOperational("voice.appointment_change.rescheduling_failed", { operation: "reschedule_appointment", businessId, ...(context.callId ? { callId: context.callId } : {}), ...(context.sessionId ? { sessionId: context.sessionId } : {}), attemptNumber, outcome: "system_error", reasonCode: "database_or_service_error", durationMs: Date.now() - startedAt });
+            return { ok: false, reason: "The rescheduling could not be completed." };
+          }
+        },
       });
     }
   }

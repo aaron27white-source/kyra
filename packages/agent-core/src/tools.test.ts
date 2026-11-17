@@ -1,8 +1,8 @@
 import { demoSnapshot, type BookingMode, type BusinessContextSnapshot } from "@lobbystack/shared";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const domainMocks = vi.hoisted(() => ({ bookForCaller: vi.fn(), findOpenings: vi.fn() }));
-vi.mock("@lobbystack/domain", () => ({ bookForCaller: domainMocks.bookForCaller, findOpenings: domainMocks.findOpenings }));
+const domainMocks = vi.hoisted(() => ({ bookForCaller: vi.fn(), findOpenings: vi.fn(), lookupCallerAppointments: vi.fn() }));
+vi.mock("@lobbystack/domain", () => ({ bookForCaller: domainMocks.bookForCaller, findOpenings: domainMocks.findOpenings, lookupCallerAppointments: domainMocks.lookupCallerAppointments }));
 
 import { createReceptionistTools, type AgentToolContext } from "./tools";
 
@@ -136,6 +136,25 @@ describe("createReceptionistTools", () => {
   it("offers appointment changes only when the call carries the caller's number", () => {
     expect(toolNames({ channel: "web_voice" })).not.toContain("cancelAppointment");
     expect(toolNames({ channel: "voice", callerPhone: "+14165550100" })).toEqual(expect.arrayContaining(["lookupAppointmentForChange", "verifyAppointmentForChange", "cancelAppointment", "rescheduleAppointment"]));
+  });
+
+  it("suppresses an unchanged failed appointment lookup and retries when a fact changes", async () => {
+    domainMocks.lookupCallerAppointments.mockResolvedValue({ ok: true, reason: "no_match", matchingAppointmentCount: 0, matchingStrategy: "appointment_facts" });
+    const tools = createReceptionistTools({ domain: { db: {} as never }, channel: "voice", callerPhone: "+14165550100", snapshot: demoSnapshot });
+    const execute = tools.lookupAppointmentForChange!.execute! as (input: object, options: object) => Promise<Record<string, unknown>>;
+    const base = { callerName: "João", appointmentStartsAt: "November 18, 2026", serviceName: "AC Repair" };
+    await execute(base, { toolCallId: "lookup-1", messages: [] });
+    await expect(execute(base, { toolCallId: "lookup-2", messages: [] })).resolves.toMatchObject({ repeatSuppressed: true, reasonCode: "unchanged_query" });
+    expect(domainMocks.lookupCallerAppointments).toHaveBeenCalledTimes(1);
+    await execute({ ...base, serviceName: "HVAC Repair" }, { toolCallId: "lookup-3", messages: [] });
+    expect(domainMocks.lookupCallerAppointments).toHaveBeenCalledTimes(2);
+  });
+
+  it("reports lookup system errors separately from a no-match result", async () => {
+    domainMocks.lookupCallerAppointments.mockRejectedValue(new Error("database unavailable"));
+    const tools = createReceptionistTools({ domain: { db: {} as never }, channel: "voice", callerPhone: "+14165550100", snapshot: demoSnapshot });
+    const execute = tools.lookupAppointmentForChange!.execute! as (input: object, options: object) => Promise<Record<string, unknown>>;
+    await expect(execute({ callerName: "João", serviceName: "AC Repair" }, { toolCallId: "lookup-error", messages: [] })).resolves.toMatchObject({ ok: false, reasonCode: "system_error" });
   });
 
   it("offers transfer and hang-up only on calls it can control", () => {
