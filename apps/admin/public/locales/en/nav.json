@@ -17,9 +17,9 @@
   },
   "sidebar": {
     "businessSlugFallback": "Workspace console",
-    "general": "General",
+    "general": "Daily work",
     "agent": "Agent",
-    "other": "Manage",
+    "other": "Workspace",
     "workspace": "Workspace",
     "openSettings": "Open settings",
     "signedIn": "Signed in",

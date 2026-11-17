@@ -1253,5 +1253,29 @@
         "addLine": "Ajouter une ligne"
       }
     }
+  },
+  "navigation": {
+    "selectSection": "Choisir une section des réglages",
+    "groups": {
+      "workspace": "Espace de travail",
+      "agent": "Agent",
+      "channels": "Canaux clients",
+      "account": "Compte"
+    },
+    "descriptions": {
+      "businessProfile": "Définissez l’identité et les horaires utilisés par votre réceptionniste.",
+      "business": "Invitez des collègues et gérez leur accès à cet espace.",
+      "phoneNumber": "Choisissez et gérez le numéro utilisé par vos clients pour joindre votre réceptionniste.",
+      "kyra": "Gérez le compte Lead My Company et ses automatisations.",
+      "backOffice": "Configurez les processus internes et les préférences opérationnelles.",
+      "email": "Gérez la collecte et l’envoi des prospects reçus par e-mail.",
+      "widget": "Personnalisez le chat intégré à votre site web.",
+      "connectedApps": "Consultez les applications et services connectés à cet espace.",
+      "apiKeys": "Gérez les identifiants utilisés par les outils et services externes.",
+      "usage": "Suivez votre utilisation et les limites de votre offre.",
+      "billing": "Consultez votre offre, vos factures et vos moyens de paiement.",
+      "appearance": "Choisissez la langue et l’apparence du tableau de bord.",
+      "notifications": "Choisissez les notifications reçues par votre équipe et leur destination."
+    }
   }
 }

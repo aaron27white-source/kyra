@@ -33,9 +33,9 @@ function setup(role = "business_owner", pilotMode = false, pilotCapabilities: re
 describe("original shared navigation", () => {
   it("keeps the original group ordering and integrations link", () => {
     setup();
-    // The sidebar header carries the workspace switcher alone; no brand mark.
+    // The branded workspace header remains text-first and does not use an image logo.
     expect(screen.queryByRole("img", { name: "Lead My Company" })).toBeNull();
-    expect(screen.getAllByRole("link").map(link => link.getAttribute("href"))).toEqual(["#dashboard-main-content", "/", "/leads", "/calls", "/appointments", "/contacts", "/agent", "/agent/knowledge", "/agent/services", "/agent/rules", "/analytics", "/integrations", "/settings/email", "/settings/usage"]);
+    expect(screen.getAllByRole("link").map(link => link.getAttribute("href"))).toEqual(["#dashboard-main-content", "/", "/leads", "/calls", "/appointments", "/messages", "/contacts", "/agent", "/agent/knowledge", "/agent/services", "/agent/rules", "/analytics", "/integrations", "/settings/usage"]);
     expect(document.getElementById("dashboard-main-content")?.tabIndex).toBe(-1);
   });
   it("keeps integrations visible for viewers", () => {

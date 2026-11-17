@@ -17,9 +17,9 @@
   },
   "sidebar": {
     "businessSlugFallback": "Tableau de bord",
-    "general": "Général",
+    "general": "Activité",
     "agent": "Agent",
-    "other": "Gestion",
+    "other": "Espace",
     "workspace": "Espace",
     "openSettings": "Ouvrir les réglages",
     "signedIn": "Connecté",
