@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 
 import { NestedPageSurfaceProvider } from "@/components/page-surface";
 import { PageHeader } from "@/components/page-header";
+import { Surface } from "@/components/ui/surface";
 import { cn } from "@/lib/utils";
 
 type SettingsItem = { id: string; href: string };
@@ -55,7 +56,8 @@ export function SettingsShell({ children, pilotMode = false }: { children: React
         title={t(`sections.${activeItem.id}`)}
       />
       <div className="grid min-w-0 gap-4 lg:grid-cols-[14rem_minmax(0,1fr)] lg:items-start lg:gap-6">
-        <nav aria-label={t("header.title")} className="hidden rounded-2xl border bg-card p-3 shadow-sm lg:sticky lg:top-24 lg:block">
+        <Surface className="hidden rounded-2xl shadow-sm lg:sticky lg:top-24 lg:block">
+        <nav aria-label={t("header.title")} className="p-3">
           {groups.map((group) => (
             <div className="mt-5 first:mt-0" key={group.id}>
               <h2 className="px-3 pb-2 text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
@@ -82,6 +84,7 @@ export function SettingsShell({ children, pilotMode = false }: { children: React
             </div>
           ))}
         </nav>
+        </Surface>
         <label className="lg:hidden">
           <span className="sr-only">{t("navigation.selectSection")}</span>
           <select
