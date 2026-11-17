@@ -165,27 +165,28 @@ export async function bookForCaller(
   }
 }
 
-export async function lookupCallerAppointments(context: DomainContext, input: { businessId: string; callerPhone: string; callerName?: string; appointmentStartsAt?: string; serviceName?: string; appointmentId?: string }) {
+export async function lookupCallerAppointments(context: DomainContext, input: { businessId: string; callerPhone: string; callerName?: string; appointmentStartsAt?: string; serviceName?: string; appointmentId?: string; timezone?: string }) {
   return await withBusinessTransaction(context.db, { businessId: input.businessId, actorType: "worker" }, async (tx) => {
-    const [{ matches, callerPhoneAppointmentCount }, profile] = await Promise.all([
+    const [lookup, profile] = await Promise.all([
       findAppointmentChangeMatches(tx, input),
       tx.select({ appointmentChangePolicy: receptionistProfiles.appointmentChangePolicy }).from(receptionistProfiles).where(eq(receptionistProfiles.businessId, input.businessId)).limit(1),
     ]);
+    const { matches, callerPhoneAppointmentCount } = lookup;
     const policy = normalizeAppointmentChangePolicy(profile[0]?.appointmentChangePolicy);
     // Return only an opaque ID for a unique match. Alternate-number matches
     // require OTP to the saved contact number before any change or disclosure.
-    return { ok: true as const, policy: { ...policy, enabled: policy.enabled && (callerPhoneAppointmentCount > 0 || matches.length > 0) }, phoneMatched: callerPhoneAppointmentCount > 0, appointmentCount: callerPhoneAppointmentCount, matchingAppointmentCount: matches.length, ...(matches.length === 1 ? { appointmentId: matches[0]!.id } : {}) };
+    return { ok: true as const, policy: { ...policy, enabled: policy.enabled && (callerPhoneAppointmentCount > 0 || matches.length > 0) }, phoneMatched: callerPhoneAppointmentCount > 0, appointmentCount: callerPhoneAppointmentCount, matchingAppointmentCount: matches.length, reason: lookup.reason, matchingStrategy: lookup.matchingStrategy, matchedFacts: lookup.matchedFacts, ...(matches.length === 1 ? { appointmentId: matches[0]!.id } : {}) };
   });
 }
 
 export async function verifyCallerForChange(
   context: DomainContext,
-  input: { businessId: string; callerPhone: string; action: "cancel" | "reschedule"; appointmentId?: string; callerName?: string; appointmentStartsAt?: string; serviceName?: string },
+  input: { businessId: string; callerPhone: string; action: "cancel" | "reschedule"; appointmentId?: string; callerName?: string; appointmentStartsAt?: string; serviceName?: string; timezone?: string },
 ) {
   const verification = await createAppointmentChangeVerification(context, input);
   if (!verification) return { ok: false as const, verified: false, reason: "The appointment could not be verified." };
   const verified = verification.status === "otp_verified" || verification.status === "facts_verified";
-  return { ok: true as const, verified, requiresOtp: !verified, verificationId: verification.verificationId, appointmentId: verification.appointmentId, status: verification.status };
+  return { ok: true as const, verified, requiresOtp: !verified, verificationId: verification.verificationId, appointmentId: verification.appointmentId, status: verification.status, ...(verified && verification.appointment ? { appointment: verification.appointment } : {}) };
 }
 
 export async function cancelForCaller(

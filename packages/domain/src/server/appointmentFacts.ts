@@ -6,41 +6,95 @@ function getServiceNameCandidates(service: ServiceFact): string[] {
   return [...new Set([service.name, service.slug, service.localizedNames?.en, service.localizedNames?.fr].map(value => value?.trim()).filter((value): value is string => Boolean(value)))];
 }
 
-function normalizeComparable(value: string): string {
-  return value.trim().toLowerCase().replace(/[^a-z0-9]+/g, " ");
+/** Accent-insensitive comparison only. The original contact name is never changed. */
+export function normalizeComparable(value: string): string {
+  return value
+    .normalize("NFKD")
+    .replace(/\p{M}+/gu, "")
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, " ")
+    .trim();
+}
+
+export function normalizePersonNameForSearch(value: string): string {
+  return normalizePersonName(value);
+}
+
+function normalizePersonName(value: string): string {
+  const normalized = normalizeComparable(value);
+  const tokens = normalized.split(" ").filter(Boolean);
+  // Callers sometimes spell a name letter by letter ("J-O-A-O"). Join only
+  // an all-single-letter sequence so ordinary multiword names stay intact.
+  if (tokens.length > 1 && tokens.every((token) => [...token].length === 1)) {
+    return tokens.join("");
+  }
+  return normalized;
 }
 
 function tokenizeComparable(value: string): Array<string> {
-  return normalizeComparable(value)
+  return normalizePersonName(value)
     .split(" ")
     .map((token) => token.trim())
     .filter((token) => token.length >= 2);
 }
 
-function personNamesMatch(storedName: string | undefined, providedName: string | undefined): boolean {
+export type PersonNameMatch = "normalized" | "transcription_variant" | "mismatch" | "missing";
+
+function editDistanceAtMostOne(left: string, right: string): boolean {
+  if (left === right) return true;
+  if (Math.abs(left.length - right.length) > 1) return false;
+  let leftIndex = 0;
+  let rightIndex = 0;
+  let edits = 0;
+  while (leftIndex < left.length && rightIndex < right.length) {
+    if (left[leftIndex] === right[rightIndex]) {
+      leftIndex += 1;
+      rightIndex += 1;
+      continue;
+    }
+    if (++edits > 1) return false;
+    if (left.length > right.length) leftIndex += 1;
+    else if (right.length > left.length) rightIndex += 1;
+    else { leftIndex += 1; rightIndex += 1; }
+  }
+  return edits + Number(leftIndex < left.length || rightIndex < right.length) <= 1;
+}
+
+/**
+ * Approximate transcription matching is for discovery only. Callers whose
+ * incoming phone does not match the contact still require OTP verification.
+ */
+export function classifyPersonNameMatch(storedName: string | undefined, providedName: string | undefined): PersonNameMatch {
   if (!storedName?.trim() || !providedName?.trim()) {
-    return false;
+    return "missing";
   }
 
-  const stored = normalizeComparable(storedName);
-  const provided = normalizeComparable(providedName);
-  if (!stored || !provided) {
-    return false;
+  const stored = tokenizeComparable(storedName);
+  const provided = tokenizeComparable(providedName);
+  if (!stored.length || !provided.length) return "missing";
+  const remaining = [...stored];
+  let transcriptionVariant = false;
+  for (const providedToken of provided) {
+    const exactIndex = remaining.indexOf(providedToken);
+    if (exactIndex >= 0) {
+      remaining.splice(exactIndex, 1);
+      continue;
+    }
+    const variantIndex = remaining.findIndex((token) =>
+      Math.min(providedToken.length, token.length) >= 4 && editDistanceAtMostOne(providedToken, token),
+    );
+    if (variantIndex < 0) return "mismatch";
+    transcriptionVariant = true;
+    remaining.splice(variantIndex, 1);
   }
-  if (stored === provided || stored.includes(provided) || provided.includes(stored)) {
-    return true;
-  }
-
-  const storedTokens = tokenizeComparable(storedName);
-  const providedTokens = new Set(tokenizeComparable(providedName));
-  return storedTokens.length > 0 && storedTokens.every((token) => providedTokens.has(token));
+  return transcriptionVariant ? "transcription_variant" : "normalized";
 }
 
 export function storedContactNameMatchesIfPresent(
   storedName: string | undefined,
   providedName: string | undefined,
 ): boolean {
-  return !storedName?.trim() || personNamesMatch(storedName, providedName);
+  return !storedName?.trim() || Boolean(providedName?.trim() && classifyPersonNameMatch(storedName, providedName) !== "mismatch");
 }
 
 export function serviceNamesMatch(service: ServiceFact, providedServiceName: string): boolean {
@@ -96,67 +150,61 @@ export function appointmentTimesMatch(
   appointment: AppointmentFact,
   providedStartsAt: string,
 ): boolean {
-  const actualMs = Date.parse(appointment.startsAt);
-  const providedMs = Date.parse(providedStartsAt);
-  if (!Number.isFinite(actualMs)) {
-    return false;
-  }
-
-  if (Number.isFinite(providedMs) && Math.abs(actualMs - providedMs) <= 30 * 60 * 1000) {
-    return true;
-  }
-
-  return appointmentLocalTimeFactMatches(appointment, providedStartsAt);
+  return inspectAppointmentTimeFact(appointment, providedStartsAt).matches;
 }
+
+export type AppointmentTimeFactInspection = {
+  valid: boolean;
+  hasDate: boolean;
+  hasTime: boolean;
+  dateMatches: boolean;
+  timeMatches: boolean;
+  matches: boolean;
+};
 
 const MONTHS_BY_NAME = new Map(
   [
-    ["jan", 1],
+    ["jan", 1], ["janvier", 1], ["janv", 1], ["enero", 1], ["ene", 1], ["janeiro", 1],
     ["january", 1],
-    ["feb", 2],
+    ["feb", 2], ["fevrier", 2], ["fevr", 2], ["febrero", 2], ["febr", 2], ["fevereiro", 2], ["fev", 2],
     ["february", 2],
-    ["mar", 3],
+    ["mar", 3], ["mars", 3], ["marzo", 3], ["marco", 3],
     ["march", 3],
-    ["apr", 4],
+    ["apr", 4], ["avril", 4], ["abril", 4],
     ["april", 4],
-    ["may", 5],
-    ["jun", 6],
+    ["may", 5], ["mai", 5], ["mayo", 5],
+    ["jun", 6], ["juin", 6], ["junio", 6],
     ["june", 6],
-    ["jul", 7],
+    ["jul", 7], ["juillet", 7], ["julio", 7],
     ["july", 7],
-    ["aug", 8],
+    ["aug", 8], ["aout", 8], ["agosto", 8],
     ["august", 8],
-    ["sep", 9],
+    ["sep", 9], ["septembre", 9], ["septiembre", 9], ["setembro", 9],
     ["sept", 9],
     ["september", 9],
-    ["oct", 10],
+    ["oct", 10], ["octobre", 10], ["octubre", 10],
     ["october", 10],
-    ["nov", 11],
+    ["nov", 11], ["novembre", 11], ["noviembre", 11],
     ["november", 11],
-    ["dec", 12],
+    ["dec", 12], ["decembre", 12], ["diciembre", 12], ["dezembro", 12],
     ["december", 12],
   ].map(([name, month]) => [name, month as number]),
 );
+const MONTH_PATTERN = [...MONTHS_BY_NAME.keys()].sort((a, b) => String(b).length - String(a).length).join("|");
 
 const WEEKDAYS_BY_NAME = new Map(
   [
     ["sun", 0],
     ["sunday", 0],
-    ["mon", 1],
-    ["monday", 1],
-    ["tue", 2],
+    ["mon", 1], ["monday", 1], ["lundi", 1], ["lunes", 1],
+    ["tue", 2], ["tuesday", 2], ["mardi", 2], ["martes", 2],
     ["tues", 2],
-    ["tuesday", 2],
-    ["wed", 3],
-    ["wednesday", 3],
-    ["thu", 4],
+    ["wed", 3], ["wednesday", 3], ["mercredi", 3], ["miercoles", 3],
+    ["thu", 4], ["thursday", 4], ["jeudi", 4], ["jueves", 4],
     ["thur", 4],
     ["thurs", 4],
-    ["thursday", 4],
-    ["fri", 5],
-    ["friday", 5],
-    ["sat", 6],
-    ["saturday", 6],
+    ["fri", 5], ["friday", 5], ["vendredi", 5], ["viernes", 5],
+    ["sat", 6], ["saturday", 6], ["samedi", 6], ["sabado", 6],
   ].map(([name, weekday]) => [name, weekday as number]),
 );
 
@@ -316,102 +364,173 @@ function appointmentClockTimeMatches(
   });
 }
 
-function appointmentLocalTimeFactMatches(
+export function inspectAppointmentTimeFact(
   appointment: AppointmentFact,
   providedStartsAt: string,
-): boolean {
-  const local = getAppointmentLocalDateTime(appointment);
-  if (!local) {
-    return false;
+): AppointmentTimeFactInspection {
+  const empty: AppointmentTimeFactInspection = { valid: false, hasDate: false, hasTime: false, dateMatches: false, timeMatches: false, matches: false };
+  const normalized = normalizeComparable(providedStartsAt);
+  if (!normalized) return empty;
+
+  const absoluteInput = /^\d{4}-\d{2}-\d{2}T.*(?:Z|[+-]\d{2}:?\d{2})$/i.test(providedStartsAt.trim());
+  const actualMs = Date.parse(appointment.startsAt);
+  const providedMs = absoluteInput ? Date.parse(providedStartsAt) : Number.NaN;
+  if (absoluteInput && Number.isFinite(actualMs) && Number.isFinite(providedMs)) {
+    const matches = Math.abs(actualMs - providedMs) <= 30 * 60 * 1000;
+    return { valid: true, hasDate: true, hasTime: true, dateMatches: matches, timeMatches: matches, matches };
   }
+
+  let local: LocalAppointmentDateTime | null;
+  try {
+    local = getAppointmentLocalDateTime(appointment);
+  } catch {
+    return empty;
+  }
+  if (!local) return empty;
 
   const raw = providedStartsAt.trim().toLowerCase();
-  const normalized = normalizeComparable(providedStartsAt);
-  if (!normalized) {
-    return false;
-  }
-
-  let hasDateSignal = false;
-
+  let hasDate = false;
+  let dateMatches = true;
+  const isoDateMatch = raw.match(/\b((?:19|20)\d{2})-(\d{1,2})-(\d{1,2})\b/);
   const yearMatch = normalized.match(/\b((?:19|20)\d{2})\b/);
   if (yearMatch) {
-    hasDateSignal = true;
-    if (Number(yearMatch[1]) !== local.year) {
-      return false;
-    }
+    hasDate = true;
+    dateMatches = dateMatches && Number(yearMatch[1]) === local.year;
   }
 
-  const monthDayMatch = normalized.match(
-    /\b(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:t|tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\s+(\d{1,2})(?:st|nd|rd|th)?\b/,
-  );
-  const dayMonthMatch = normalized.match(
-    /\b(\d{1,2})(?:st|nd|rd|th)?\s+(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:t|tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\b/,
-  );
-  const numericDateMatch = raw.match(/\b(\d{1,2})[/-](\d{1,2})(?:[/-]((?:19|20)\d{2}))?\b/);
-  if (monthDayMatch || dayMonthMatch || numericDateMatch) {
-    hasDateSignal = true;
-    let month: number | undefined;
+  const monthDayMatch = normalized.match(new RegExp("\\b(" + MONTH_PATTERN + ")\\s+(\\d{1,2})(?:st|nd|rd|th)?\\b"));
+  const dayMonthMatch = normalized.match(new RegExp("\\b(\\d{1,2})(?:st|nd|rd|th)?\\s+(" + MONTH_PATTERN + ")\\b"));
+  const numericDateMatch = isoDateMatch ? null : raw.match(/\b(\d{1,2})[/.\\-](\d{1,2})(?:[/.\\-]((?:19|20)\d{2}))?\b/);
+  if (isoDateMatch || monthDayMatch || dayMonthMatch || numericDateMatch) {
+    hasDate = true;
+    let month: number;
     let day: number;
-    if (numericDateMatch) {
+    let year: number | undefined;
+    if (isoDateMatch) {
+      year = Number(isoDateMatch[1]);
+      month = Number(isoDateMatch[2]);
+      day = Number(isoDateMatch[3]);
+    } else if (numericDateMatch) {
       const first = Number(numericDateMatch[1]);
       const second = Number(numericDateMatch[2]);
-      // Prefer the common North American month/day order; accept day/month
-      // when the first number cannot be a month.
       month = first > 12 ? second : first;
       day = first > 12 ? first : second;
-      const numericYear = numericDateMatch[3];
-      if (numericYear && Number(numericYear) !== local.year) return false;
+      year = numericDateMatch[3] ? Number(numericDateMatch[3]) : undefined;
     } else {
-      month = monthDayMatch
-        ? MONTHS_BY_NAME.get(monthDayMatch[1] ?? "")
-        : MONTHS_BY_NAME.get(dayMonthMatch?.[2] ?? "");
-      day = Number(monthDayMatch?.[2] ?? dayMonthMatch?.[1]);
+      const monthFirst = Boolean(monthDayMatch);
+      month = MONTHS_BY_NAME.get(monthFirst ? monthDayMatch![1]! : dayMonthMatch![2]!) ?? 0;
+      day = Number(monthFirst ? monthDayMatch![2] : dayMonthMatch![1]);
     }
-    if (month !== local.month || day !== local.day) {
-      return false;
-    }
+    const numericAlternatives = numericDateMatch && Number(numericDateMatch[1]) <= 12 && Number(numericDateMatch[2]) <= 12
+      ? [[Number(numericDateMatch[2]), Number(numericDateMatch[1])]]
+      : [];
+    const dateMatchesAnyInterpretation = [[month, day], ...numericAlternatives].some(([candidateMonth, candidateDay]) =>
+      candidateMonth === local.month && candidateDay === local.day && (year === undefined || year === local.year),
+    );
+    dateMatches = dateMatches && dateMatchesAnyInterpretation;
   }
 
   const weekday = [...WEEKDAYS_BY_NAME.entries()].find(([name]) =>
-    new RegExp(`\\b${name}\\b`).test(normalized),
+    new RegExp("\\b" + name + "\\b").test(normalized),
   )?.[1];
   if (weekday !== undefined) {
-    hasDateSignal = true;
-    if (weekday !== local.weekday) {
-      return false;
-    }
+    hasDate = true;
+    dateMatches = dateMatches && weekday === local.weekday;
   }
 
-  const relativeDay = /\b(tomorrow|tmrw|demain)\b/.test(normalized)
+  const relativeDay = /\b(tomorrow|tmrw|demain|manana|amanha|morgen)\b/.test(normalized)
     ? getBusinessRelativeLocalDate(appointment.timezone, 1)
-    : /\b(today|aujourd hui)\b/.test(normalized)
+    : /\b(today|aujourd hui|hoy|hoje|heute)\b/.test(normalized)
       ? getBusinessRelativeLocalDate(appointment.timezone, 0)
       : null;
   if (relativeDay) {
-    hasDateSignal = true;
-    if (
-      relativeDay.year !== local.year ||
-      relativeDay.month !== local.month ||
-      relativeDay.day !== local.day
-    ) {
-      return false;
-    }
+    hasDate = true;
+    dateMatches = dateMatches && relativeDay.year === local.year && relativeDay.month === local.month && relativeDay.day === local.day;
   }
 
   const clockTime = parseProvidedClockTime(raw);
+  const isoClockMatch = raw.match(/\b(?:t|at)\s*(\d{1,2}):(\d{2})\b/) ?? raw.match(/\b(\d{1,2}):(\d{2}):\d{2}\b/);
+  const clock = clockTime ?? (isoClockMatch ? { hour: Number(isoClockMatch[1]), minute: Number(isoClockMatch[2]), hasMeridiem: true } : null);
   const dayPartMatches = appointmentDayPartMatches(local.hour, normalized);
-  if (clockTime) {
-    return appointmentClockTimeMatches(local, clockTime);
-  }
-
-  if (dayPartMatches !== null) {
-    return dayPartMatches && hasDateSignal;
-  }
-
-  // A calendar date is a useful partial fact on its own. The verification
-  // query still requires exactly one matching appointment, so a yearless
-  // month/day that matches multiple appointments remains ambiguous and fails
-  // closed in createAppointmentChangeVerification.
-  return hasDateSignal;
+  const hasTime = Boolean(clock || dayPartMatches !== null);
+  const timeMatches = clock ? appointmentClockTimeMatches(local, clock) : dayPartMatches === null ? true : dayPartMatches;
+  const valid = hasDate || hasTime;
+  return { valid, hasDate, hasTime, dateMatches, timeMatches, matches: valid && dateMatches && timeMatches };
 }
 
+export function appointmentSearchRanges(
+  input: string,
+  timezone: string,
+  now = new Date(),
+): Array<{ startsAtOrAfter: Date; startsBefore: Date }> {
+  const normalized = normalizeComparable(input);
+  if (!normalized) return [];
+  const isoDate = input.match(/\b((?:19|20)\d{2})-(\d{1,2})-(\d{1,2})\b/);
+  const named = normalized.match(new RegExp("\\b(" + MONTH_PATTERN + ")\\s+(\\d{1,2})(?:st|nd|rd|th)?\\b"))
+    ?? normalized.match(new RegExp("\\b(\\d{1,2})(?:st|nd|rd|th)?\\s+(" + MONTH_PATTERN + ")\\b"));
+  const numeric = isoDate ? null : input.match(/\b(\d{1,2})[/.\\-](\d{1,2})(?:[/.\\-]((?:19|20)\d{2}))?\b/);
+  let month = 0;
+  let day = 0;
+  let alternateNumericDate: { month: number; day: number } | undefined;
+  let year: number | undefined = Number(normalized.match(/\b((?:19|20)\d{2})\b/)?.[1]) || undefined;
+  if (isoDate) {
+    year = Number(isoDate[1]);
+    month = Number(isoDate[2]);
+    day = Number(isoDate[3]);
+  } else if (named) {
+    const monthFirst = Boolean(named[1] && MONTHS_BY_NAME.has(named[1]));
+    month = MONTHS_BY_NAME.get(monthFirst ? named[1]! : named[2]!) ?? 0;
+    day = Number(monthFirst ? named[2] : named[1]);
+  } else if (numeric) {
+    const first = Number(numeric[1]);
+    const second = Number(numeric[2]);
+    month = first > 12 ? second : first;
+    day = first > 12 ? first : second;
+    year = numeric[3] ? Number(numeric[3]) : undefined;
+    if (first <= 12 && second <= 12) alternateNumericDate = { month: second, day: first };
+  }
+
+  let nowLocal: DateTime;
+  try {
+    nowLocal = DateTime.fromJSDate(now, { zone: timezone });
+  } catch {
+    return [];
+  }
+  if (!nowLocal.isValid) return [];
+  const years = new Set<number>();
+  if (month && day) {
+    if (year) years.add(year);
+    else {
+      years.add(nowLocal.year - 1);
+      years.add(nowLocal.year);
+      years.add(nowLocal.year + 1);
+    }
+  } else if (/\b(tomorrow|tmrw|demain|manana|amanha|morgen)\b/.test(normalized)) {
+    const date = nowLocal.plus({ days: 1 });
+    years.add(date.year);
+    month = date.month;
+    day = date.day;
+  } else if (/\b(today|aujourd hui|hoy|hoje|heute)\b/.test(normalized)) {
+    years.add(nowLocal.year);
+    month = nowLocal.month;
+    day = nowLocal.day;
+  } else {
+    return [];
+  }
+
+  const ranges: Array<{ startsAtOrAfter: Date; startsBefore: Date }> = [];
+  const dateOptions = [{ month, day }, ...(alternateNumericDate ? [alternateNumericDate] : [])];
+  for (const selectedYear of years) {
+    for (const option of dateOptions) {
+      const date = DateTime.fromObject({ year: selectedYear, month: option.month, day: option.day }, { zone: "UTC" });
+      if (!date.isValid) continue;
+      ranges.push({
+        // Appointments may be stored in any civil timezone, so widen the UTC
+        // window rather than interpreting a spoken date in the server timezone.
+        startsAtOrAfter: date.startOf("day").minus({ hours: 14 }).toJSDate(),
+        startsBefore: date.startOf("day").plus({ days: 1, hours: 12 }).toJSDate(),
+      });
+    }
+  }
+  return ranges;
+}
