@@ -7,9 +7,9 @@ import test from "node:test";
 import { verifyPilotStatic } from "./verify-pilot-static.mjs";
 
 const source=fileURLToPath(new URL("../dist",import.meta.url));
-test("published pilot artifact has only six pages, four placeholder pages and preserved attribution",async()=>{
+test("published pilot artifact has six pages, two remaining placeholder pages and preserved attribution",async()=>{
   const report=await verifyPilotStatic(source);
-  assert.equal(report.pages,6);assert.equal(report.placeholderPages,4);assert.equal(report.requiredAttributions,4);
+  assert.equal(report.pages,6);assert.equal(report.placeholderPages,2);assert.equal(report.requiredAttributions,4);
   assert.equal(report.scripts,0);assert.equal(report.serverFiles,0);assert.equal(report.externalRequests,0);
 });
 
@@ -24,6 +24,8 @@ for(const [name,mutate,reason] of [
   ["inherited company claims",async root=>{const file=join(root,"index.html");await writeFile(file,(await readFile(file,"utf8"))+"LobbyStack");},/INHERITED_PUBLIC_TEXT/],
   ["external images",async root=>{const file=join(root,"index.html");await writeFile(file,(await readFile(file,"utf8")).replace("/brand/lmc-logo.svg","https://example.invalid/logo.svg"));},/EXTERNAL_STATIC_REFERENCE/],
   ["removed placeholders",async root=>{const file=join(root,"contact/index.html");await writeFile(file,(await readFile(file,"utf8")).replaceAll("[FILL]","Example"));},/MISSING_LMC_PLACEHOLDER/],
+  ["unresolved legal placeholder",async root=>{const file=join(root,"terms/index.html");await writeFile(file,(await readFile(file,"utf8")).replace("Terms and Conditions","[FILL]"));},/UNRESOLVED_LEGAL_PLACEHOLDER/],
+  ["missing required SMS disclosure",async root=>{const file=join(root,"privacy/index.html");await writeFile(file,(await readFile(file,"utf8")).replaceAll("STOP","REMOVED"));},/MISSING_LEGAL_DISCLOSURE/],
   ["changed license notices",async root=>writeFile(join(root,"attributions/NOTICE.txt"),"Changed notice"),/ALTERED_REQUIRED_ATTRIBUTION/],
   ["changed font bytes",async root=>writeFile(join(root,"fonts/geist-latin-wght-normal.woff2"),"Changed font"),/ALTERED_LOCAL_FONT/],
 ])test(`rejects ${name} in the deployable directory`,async()=>{

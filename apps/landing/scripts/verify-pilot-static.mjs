@@ -81,9 +81,15 @@ export async function verifyPilotStatic(directory=resolve(fileURLToPath(new URL(
       if(node.tagName==="meta"&&attrs["http-equiv"]?.toLowerCase()==="content-security-policy"&&attrs.content?.includes("script-src 'none'")&&attrs.content?.includes("connect-src 'none'")&&attrs.content?.includes("form-action 'none'"))csp=true;
     });
     if(h1!==1||!noindex||!csp)fail(`MISSING_PILOT_PAGE_CONTROL:${file}`);
-    if(["contact/index.html","privacy/index.html","terms/index.html","cookie-policy/index.html"].includes(file)){
+    if(["contact/index.html","cookie-policy/index.html"].includes(file)){
       if(!text.includes("[FILL]"))fail(`MISSING_LMC_PLACEHOLDER:${file}`);
       placeholderPages++;
+    }
+    if(["privacy/index.html","terms/index.html"].includes(file)){
+      if(text.includes("[FILL]"))fail(`UNRESOLVED_LEGAL_PLACEHOLDER:${file}`);
+      for(const required of ["BONSES INOVA SIMPLES (I.S.)","68.814.207/0001-33","joao@leadmycompany.com","STOP","HELP"]){
+        if(!text.includes(required))fail(`MISSING_LEGAL_DISCLOSURE:${file}:${required}`);
+      }
     }
   }
   const headers=await readFile(join(root,"_headers"),"utf8"),robots=await readFile(join(root,"robots.txt"),"utf8");
