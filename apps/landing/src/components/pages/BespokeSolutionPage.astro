@@ -77,53 +77,53 @@ const locale = assertLocale(Astro.props.locale ?? Astro.currentLocale)
 const variants = {
   phone: {
     path: "/solutions/ai-phone-answering/",
-    title: "AI Phone Answering Service for Small Businesses | LobbyStack",
+    title: "AI Phone Answering Service for Small Businesses | Lead My Company",
     description:
-      "LobbyStack answers business calls 24/7, books appointments, captures caller details, and routes urgent calls to your team.",
+      "Lead My Company answers business calls 24/7, books appointments, captures caller details, and routes urgent calls to your team.",
     image: "/illustrations/call-capture.webp",
-    imageAlt: "LobbyStack AI phone answering service capturing caller details",
+    imageAlt: "Lead My Company AI phone answering service capturing caller details",
     breadcrumb:
       locale === "fr" ? "Réponse téléphonique IA" : "AI Phone Answering",
     faqs: aiPhoneAnsweringFaqs,
     fr: {
       title: "Réponse téléphonique IA pour petites entreprises",
       description:
-        "Répondez aux appels entrants, collectez les détails, prenez des rendez‑vous et transférez les demandes urgentes avec LobbyStack.",
+        "Répondez aux appels entrants, collectez les détails, prenez des rendez‑vous et transférez les demandes urgentes avec Lead My Company.",
     },
   },
   scheduler: {
     path: "/solutions/ai-appointment-scheduler/",
-    title: "AI Appointment Scheduler and Answering Service | LobbyStack",
+    title: "AI Appointment Scheduler and Answering Service | Lead My Company",
     description:
-      "LobbyStack is an answering service with appointment scheduling built in. It books appointments during calls, captures caller details, sends confirmations, and routes urgent requests.",
+      "Lead My Company is an answering service with appointment scheduling built in. It books appointments during calls, captures caller details, sends confirmations, and routes urgent requests.",
     image: "/illustrations/booking-flow.webp",
-    imageAlt: "LobbyStack AI appointment scheduler booking a caller",
+    imageAlt: "Lead My Company AI appointment scheduler booking a caller",
     breadcrumb:
       locale === "fr" ? "Planification IA" : "AI Appointment Scheduler",
     faqs: appointmentSchedulerFaqs,
     fr: {
       title: "Planificateur de rendez‑vous IA pour petites entreprises",
       description:
-        "LobbyStack planifie les rendez‑vous depuis les appels, collecte les détails, envoie les confirmations et transfère les demandes urgentes.",
+        "Lead My Company planifie les rendez‑vous depuis les appels, collecte les détails, envoie les confirmations et transfère les demandes urgentes.",
     },
   },
   homeServices: {
     path: "/solutions/ai-receptionist-for-home-services/",
-    title: "Home Services Answering Service with AI | LobbyStack",
+    title: "Home Services Answering Service with AI | Lead My Company",
     description:
-      "LobbyStack is an AI answering service for home services teams. It answers HVAC, plumbing, electrical, roofing, and landscaping calls while crews are on the job.",
+      "Lead My Company is an AI answering service for home services teams. It answers HVAC, plumbing, electrical, roofing, and landscaping calls while crews are on the job.",
     image: "/illustrations/industry-bookings.webp",
     imageAlt:
-      "LobbyStack AI receptionist booking home services jobs from phone calls",
+      "Lead My Company AI receptionist booking home services jobs from phone calls",
     breadcrumb:
       locale === "fr"
         ? "Services à domicile"
         : "Home Services Answering Service",
     faqs: homeServicesFaqs,
     fr: {
-      title: "Réceptionniste IA pour services à domicile | LobbyStack",
+      title: "Réceptionniste IA pour services à domicile | Lead My Company",
       description:
-        "LobbyStack répond aux appels pour CVC, plomberie, électricité, toiture, paysagement et autres services pendant que vos équipes travaillent.",
+        "Lead My Company répond aux appels pour CVC, plomberie, électricité, toiture, paysagement et autres services pendant que vos équipes travaillent.",
     },
   },
 } satisfies Record<

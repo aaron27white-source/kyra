@@ -5,16 +5,16 @@ const support = `<a href="mailto:support@lobbystack.com">support@lobbystack.com<
 export const privacyEn: LegalDocument = {
   updated: "Last updated: September 26, 2026",
   h1: "Privacy Policy",
-  intro: `This Privacy Policy explains how Lobbystack Inc. ("LobbyStack," "we," "our," or "us") collects, uses, shares, and protects personal information when you visit our websites, use the hosted LobbyStack service, call or chat with a business that uses LobbyStack, receive a text sent through LobbyStack, or contact us.`,
+  intro: `This Privacy Policy explains how Lobbystack Inc. ("Lead My Company," "we," "our," or "us") collects, uses, shares, and protects personal information when you visit our websites, use the hosted Lead My Company service, call or chat with a business that uses Lead My Company, receive a text sent through Lead My Company, or contact us.`,
   sections: [
     {
       id: "scope",
       nav: "Scope",
       title: "1. Who we are and what this Policy covers",
       blocks: [
-        `1.1 LobbyStack is an AI receptionist for small businesses. Businesses use it to answer phone calls and browser calls, chat with website visitors, book appointments, take messages, and transfer calls to their staff. We are based in Canada.`,
-        `1.2 This Policy covers our websites, including lobbystack.com, the hosted LobbyStack service (the "Service"), our support, and our affiliate program.`,
-        `1.3 This Policy does not cover copies of LobbyStack that other people run on their own servers. See section 20.`,
+        `1.1 Lead My Company is an AI receptionist for small businesses. Businesses use it to answer phone calls and browser calls, chat with website visitors, book appointments, take messages, and transfer calls to their staff. We are based in Canada.`,
+        `1.2 This Policy covers our websites, including lobbystack.com, the hosted Lead My Company service (the "Service"), our support, and our affiliate program.`,
+        `1.3 This Policy does not cover copies of Lead My Company that other people run on their own servers. See section 20.`,
       ],
     },
     {
@@ -23,7 +23,7 @@ export const privacyEn: LegalDocument = {
       title: "2. Our role",
       blocks: [
         `2.1 <strong>When we decide how data is used.</strong> We are responsible, as a controller or business, for personal information about our website visitors, account holders, Authorized Users of customer accounts, billing contacts, affiliates, and people who contact us.`,
-        `2.2 <strong>When a business decides how data is used.</strong> When a business uses LobbyStack to talk with its callers, website visitors, or customers ("Callers"), that business decides why and how their information is processed. We act as its service provider or processor and handle Callers' information on its behalf, under our <a href="/terms/">Terms of Service</a>. That business's own privacy notice applies. If you are a Caller, see section 18.`,
+        `2.2 <strong>When a business decides how data is used.</strong> When a business uses Lead My Company to talk with its callers, website visitors, or customers ("Callers"), that business decides why and how their information is processed. We act as its service provider or processor and handle Callers' information on its behalf, under our <a href="/terms/">Terms of Service</a>. That business's own privacy notice applies. If you are a Caller, see section 18.`,
       ],
     },
     {
@@ -97,7 +97,7 @@ export const privacyEn: LegalDocument = {
             `<strong>Legal obligation:</strong> to keep tax and accounting records and answer lawful requests.`,
           ],
         },
-        `For Callers' information, the business that uses LobbyStack is responsible for choosing and documenting its legal basis.`,
+        `For Callers' information, the business that uses Lead My Company is responsible for choosing and documenting its legal basis.`,
       ],
     },
     {
@@ -117,19 +117,19 @@ export const privacyEn: LegalDocument = {
       nav: "Google Calendar",
       title: "7. Google Calendar integration",
       blocks: [
-        `7.1 When you connect a Google account in LobbyStack, we use Google OAuth to manage bookings on the calendar you select. We request these permissions:`,
+        `7.1 When you connect a Google account in Lead My Company, we use Google OAuth to manage bookings on the calendar you select. We request these permissions:`,
         {
           ul: [
             `<strong>openid</strong> and <strong>email</strong>, to identify the connected Google account;`,
-            `<strong>calendar.calendarlist.readonly</strong>, to list your calendars so you can pick the one LobbyStack should use;`,
-            `<strong>calendar.events</strong>, to read events on the selected calendar to find busy times, and to create, update, and delete the appointment events that LobbyStack books, reschedules, or cancels.`,
+            `<strong>calendar.calendarlist.readonly</strong>, to list your calendars so you can pick the one Lead My Company should use;`,
+            `<strong>calendar.events</strong>, to read events on the selected calendar to find busy times, and to create, update, and delete the appointment events that Lead My Company books, reschedules, or cancels.`,
           ],
         },
         `7.2 <strong>Data we access.</strong> Your Google account identifier and email address, the list of your calendars, and event times on the selected calendar.`,
         `7.3 <strong>Storage and protection.</strong> We store the OAuth tokens needed to keep the connection working. We encrypt them at rest. When you disconnect Google Calendar, we stop syncing, delete the stored tokens, and delete the busy times we copied from your calendar. Appointment events we already created stay on your Google Calendar; you can delete them there.`,
         `7.4 <strong>Sharing.</strong> We share Google user data only with the Google Calendar API to complete the actions you asked for, and with our hosting providers that store it for us.`,
         `7.5 <strong>AI processing.</strong> We do not send the titles or descriptions of your Google Calendar events to AI providers. The AI receptionist receives only derived scheduling facts, such as whether a time is free and whether a booking succeeded.`,
-        `7.6 <strong>Limited Use.</strong> LobbyStack's use and transfer of information received from Google APIs follows the <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>, including its Limited Use requirements. We do not sell Google user data, use it for advertising, or use it to train or improve general AI or machine learning models.`,
+        `7.6 <strong>Limited Use.</strong> Lead My Company's use and transfer of information received from Google APIs follows the <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>, including its Limited Use requirements. We do not sell Google user data, use it for advertising, or use it to train or improve general AI or machine learning models.`,
       ],
     },
     {
@@ -137,7 +137,7 @@ export const privacyEn: LegalDocument = {
       nav: "Text messages",
       title: "8. Text messages",
       blocks: [
-        `8.1 LobbyStack sends non-marketing texts through Twilio: alerts to a business's staff, one appointment reminder about 24 hours before an appointment to Callers who agreed during booking, and one-time verification codes. Message frequency varies. Message and data rates may apply. Reply <strong>STOP</strong> to opt out or <strong>HELP</strong> for help, or contact ${support}.`,
+        `8.1 Lead My Company sends non-marketing texts through Twilio: alerts to a business's staff, one appointment reminder about 24 hours before an appointment to Callers who agreed during booking, and one-time verification codes. Message frequency varies. Message and data rates may apply. Reply <strong>STOP</strong> to opt out or <strong>HELP</strong> for help, or contact ${support}.`,
         `8.2 We keep records of phone numbers, consent, opt-outs, message content, and delivery status to send texts, honor opt-outs, and meet carrier requirements.`,
         `<strong>8.3 We do not sell, rent, or share mobile phone numbers, text message opt-in data, or consent information with third parties or affiliates for their marketing or promotional purposes.</strong>`,
       ],
@@ -163,8 +163,8 @@ export const privacyEn: LegalDocument = {
             `monitoring and logging providers that help us detect errors and keep the Service running.`,
           ],
         },
-        `9.2 <strong>The business you contact.</strong> When you call or chat with a business that uses LobbyStack, we make your information available to that business in its dashboard, alerts, and connected calendar.`,
-        `9.3 <strong>Legal and safety reasons.</strong> We may disclose information to comply with law, a court order, or a lawful request from authorities, to enforce our Terms, or to protect the rights, property, or safety of LobbyStack, our customers, or others.`,
+        `9.2 <strong>The business you contact.</strong> When you call or chat with a business that uses Lead My Company, we make your information available to that business in its dashboard, alerts, and connected calendar.`,
+        `9.3 <strong>Legal and safety reasons.</strong> We may disclose information to comply with law, a court order, or a lawful request from authorities, to enforce our Terms, or to protect the rights, property, or safety of Lead My Company, our customers, or others.`,
         `9.4 <strong>Business transfers.</strong> We may share information with a buyer, investor, or successor in a merger, acquisition, financing, reorganization, or sale of assets, under confidentiality terms. We will tell you if your information becomes subject to a different privacy policy.`,
         `9.5 <strong>With your consent.</strong> We may share information for other purposes when you ask us to or agree.`,
         `9.6 <strong>No sale.</strong> We do not sell personal information, and we do not share it for cross-context behavioral advertising.`,
@@ -177,7 +177,7 @@ export const privacyEn: LegalDocument = {
       blocks: [
         `10.1 We use necessary cookies and browser storage to run our website, remember your cookie choice, and protect against abuse. We use PostHog analytics cookies and session recordings only after you accept them in our cookie banner. Before you choose, we count page views without storing anything on your device. If you reject optional cookies, we stop analytics on our website.`,
         `10.2 You can change your choice at any time with the <strong>Cookie preferences</strong> link in the footer. Our <a href="/cookie-policy/">Cookie Policy</a> lists the cookies we use.`,
-        `10.3 The LobbyStack dashboard uses PostHog to understand how signed-in users use the product, only while product analytics is turned on in your settings. It does not collect analytics on pages marked sensitive.`,
+        `10.3 The Lead My Company dashboard uses PostHog to understand how signed-in users use the product, only while product analytics is turned on in your settings. It does not collect analytics on pages marked sensitive.`,
       ],
     },
     {
@@ -278,7 +278,7 @@ export const privacyEn: LegalDocument = {
       nav: "Callers",
       title: "18. If you called or chatted with a business",
       blocks: [
-        `18.1 If you called, chatted with, or received a text from a business that uses LobbyStack, that business controls your information. Please send access, correction, deletion, and other privacy requests to that business first.`,
+        `18.1 If you called, chatted with, or received a text from a business that uses Lead My Company, that business controls your information. Please send access, correction, deletion, and other privacy requests to that business first.`,
         `18.2 If you contact us instead, we will send your request to the business or tell you how to reach it, and we will help the business respond. We cannot act on your request without the business's instructions, except where the law requires us to.`,
         `18.3 To stop reminder texts or verification codes, reply <strong>STOP</strong> to any message.`,
       ],
@@ -294,9 +294,9 @@ export const privacyEn: LegalDocument = {
     {
       id: "self-hosted",
       nav: "Self-hosting",
-      title: "20. Self-hosted LobbyStack",
+      title: "20. Self-hosted Lead My Company",
       blocks: [
-        `LobbyStack's source code is open source. When an organization runs LobbyStack on its own servers, we do not receive, access, or process any data from that deployment. The organization that runs it is responsible for its privacy practices. Contact that organization with any questions.`,
+        `Lead My Company's source code is open source. When an organization runs Lead My Company on its own servers, we do not receive, access, or process any data from that deployment. The organization that runs it is responsible for its privacy practices. Contact that organization with any questions.`,
       ],
     },
     {

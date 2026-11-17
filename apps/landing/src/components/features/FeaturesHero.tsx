@@ -12,11 +12,11 @@ const featuresHeroCopy = {
   en: {
     h1Start: "AI receptionist features that actually",
     h1Emphasis: "get work done",
-    body: "LobbyStack handles AI phone answering, appointment booking, team notifications, call routing, quotes, and lead qualification without phone trees or workflow-builder mess.",
+    body: "Lead My Company handles AI phone answering, appointment booking, team notifications, call routing, quotes, and lead qualification without phone trees or workflow-builder mess.",
     workflowLabel: "Write the workflow",
     workflowText:
       "When someone asks for a quote, ask what service they need, where they are located, their timeline, and their budget. Give our approved price range for standard jobs. If they need exact pricing, book an on-site estimate and attach the summary for the team.",
-    callLabel: "LobbyStack handles the call",
+    callLabel: "Lead My Company handles the call",
     quoteTitle: "Quote request from Sarah M.",
     service: "Service: Renovation estimate",
     budget: "Budget: $8,000 to $12,000",
@@ -34,11 +34,11 @@ const featuresHeroCopy = {
   fr: {
     h1Start: "Tout ce qu’il faut pour",
     h1Emphasis: "répondre, qualifier et réserver",
-    body: "LobbyStack prend les appels, qualifie les demandes, planifie les rendez‑vous et transmet les bonnes informations à votre équipe, sans menu téléphonique ni scénarios impossibles à maintenir.",
+    body: "Lead My Company prend les appels, qualifie les demandes, planifie les rendez‑vous et transmet les bonnes informations à votre équipe, sans menu téléphonique ni scénarios impossibles à maintenir.",
     workflowLabel: "Décrivez vos règles",
     workflowText:
       "Si quelqu’un demande un devis, demandez le service, l’adresse, le délai souhaité et le budget. Donnez la fourchette approuvée pour les demandes standards. Si le prix doit être confirmé, planifiez une visite d’estimation et joignez le résumé pour l’équipe.",
-    callLabel: "LobbyStack prend l’appel",
+    callLabel: "Lead My Company prend l’appel",
     quoteTitle: "Demande de devis - Sarah M.",
     service: "Service : estimation de rénovation",
     budget: "Budget : 8 000 $ à 12 000 $",

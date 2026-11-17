@@ -34,7 +34,7 @@ export function BusinessFit() {
             Built for the trades that run on phone calls
           </h2>
           <p className="section-intro">
-            LobbyStack works for any home services business where a missed call
+            Lead My Company works for any home services business where a missed call
             means a missed job.
           </p>
         </div>
@@ -148,7 +148,7 @@ export function OpenSource() {
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="section-heading">Open source and self-hosted ready</h2>
           <p className="section-intro">
-            LobbyStack is open source. You can self-host on your own
+            Lead My Company is open source. You can self-host on your own
             infrastructure for full data control, custom deployments, and
             white-label options.
           </p>

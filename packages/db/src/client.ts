@@ -17,6 +17,7 @@ export type DatabaseRole =
   | "lobbystack_migrator"
   | "lobbystack_auth"
   | "lobbystack_app"
+  | "lobbystack_system"
   | "lobbystack_worker"
   | "lobbystack_dispatcher"
   | "lobbystack_readonly"
@@ -27,6 +28,9 @@ export type DatabaseClient = {
   db: Database;
   role: DatabaseRole;
 };
+
+// Metadata identifies the connection capability; SQL session settings cannot grant it.
+const databaseSources = new WeakMap<Database, { role: DatabaseRole; source: Record<string, string | undefined> }>();
 
 const poolWaitHistogram = getMeter("lobbystack-db").createHistogram("db.pool.wait_ms", {
   unit: "ms",
@@ -56,6 +60,9 @@ function databaseUrl(source: Record<string, string | undefined> = process.env): 
 export function roleDatabaseUrl(role: DatabaseRole, source: Record<string, string | undefined> = process.env): string {
   const explicit = source[`${role.toUpperCase()}_DATABASE_URL`];
   if (explicit) return explicit;
+  if (role === "lobbystack_system" && !source.LOBBYSTACK_SYSTEM_PASSWORD) {
+    throw new Error("LOBBYSTACK_SYSTEM_CREDENTIALS_REQUIRED");
+  }
   const base = databaseUrl(source);
   const password = role === "lobbystack_migrator" ? undefined : source[`${role.toUpperCase()}_PASSWORD`];
   if (!password) return base;
@@ -87,6 +94,7 @@ export function createDatabaseClient(
   });
 
   const db = drizzle(pool, { schema });
+  databaseSources.set(db, { role, source: { ...source } });
   return { pool, db, role };
 }
 
@@ -97,6 +105,7 @@ export function createDatabaseClients(
     lobbystack_migrator: createDatabaseClient("lobbystack_migrator", source),
     lobbystack_auth: createDatabaseClient("lobbystack_auth", source),
     lobbystack_app: createDatabaseClient("lobbystack_app", source),
+    lobbystack_system: createDatabaseClient("lobbystack_system", source),
     lobbystack_worker: createDatabaseClient("lobbystack_worker", source),
     lobbystack_dispatcher: createDatabaseClient("lobbystack_dispatcher", source),
     lobbystack_readonly: createDatabaseClient("lobbystack_readonly", source),
@@ -110,6 +119,22 @@ export async function withBusinessTransaction<T>(
   callback: (tx: DatabaseTransaction) => Promise<T>,
   options: { maxRetries?: number } = {},
 ): Promise<T> {
+  const origin = databaseSources.get(db);
+  if (context.actorType === "system" && origin?.role === "lobbystack_app") {
+    const source = { ...process.env, ...origin.source };
+    const appTarget = new URL(roleDatabaseUrl("lobbystack_app", origin.source));
+    const systemTarget = new URL(roleDatabaseUrl("lobbystack_system", source));
+    if (appTarget.hostname !== systemTarget.hostname || appTarget.port !== systemTarget.port || appTarget.pathname !== systemTarget.pathname) {
+      throw new Error("LOBBYSTACK_SYSTEM_DATABASE_MISMATCH");
+    }
+    const internal = createDatabaseClient("lobbystack_system", source);
+    try {
+      await assertDatabaseRole(internal, { NODE_ENV: "production" });
+      return await withBusinessTransaction(internal.db, context, callback, options);
+    } finally {
+      await internal.pool.end();
+    }
+  }
   const maxRetries = options.maxRetries ?? 3;
   const tracer = getTracer("lobbystack-db");
 
@@ -126,10 +151,23 @@ export async function withBusinessTransaction<T>(
 
     try {
       const result = await db.transaction(async (tx) => {
+        // An existing transaction may be owned by a privileged migration/test session.
+        // SET ROLE here needs PostgreSQL membership; a raw app login cannot elevate.
+        let previousRole: string | undefined;
+        if (context.actorType === "system" && !origin) {
+          const result = await tx.execute<{ role: string }>(sql`select current_user as role`);
+          previousRole = result.rows[0]?.role;
+          if (!previousRole) throw new Error("MISSING_DATABASE_ROLE");
+          await tx.execute(sql`set local role lobbystack_system`);
+        }
         for (const statement of rlsContextStatements(context)) {
           await tx.execute(statement);
         }
-        return await callback(tx);
+        const result = await callback(tx);
+        if (previousRole) {
+          await tx.execute(sql.raw(`set local role "${previousRole.replaceAll('"', '""')}"`));
+        }
+        return result;
       });
       span.end();
       transactionDurationHistogram.record(Date.now() - startedAt, {

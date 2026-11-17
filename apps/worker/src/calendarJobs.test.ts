@@ -1,6 +1,7 @@
+import type * as DbModule from "@lobbystack/db";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({ transaction: vi.fn(), token: vi.fn(), update: vi.fn(), updateTx: vi.fn(), mark: vi.fn(), busy: vi.fn(), backfill: vi.fn(), record: vi.fn() }));
-vi.mock("@lobbystack/db", async (original) => ({ ...await original<typeof import("@lobbystack/db")>(), withBusinessTransaction: mocks.transaction }));
+vi.mock("@lobbystack/db", async (original) => ({ ...await original<typeof DbModule>(), withBusinessTransaction: mocks.transaction }));
 vi.mock("@lobbystack/domain", () => ({ CALENDAR_SYNC_HORIZON_MS: 90 * 86400_000, resolveCalendarAccessToken: mocks.token, updateAppointmentSyncState: mocks.update, updateAppointmentSyncStateInTransaction: mocks.updateTx, markCalendarConnectionSync: mocks.mark, queueUnsyncedAppointmentSyncs: mocks.backfill, upsertBusyBlocks: mocks.busy, recordProductEvent: mocks.record }));
 import { reconcileBusinessCalendar, syncAppointmentCalendar } from "./calendarJobs";
 
@@ -30,6 +31,26 @@ it("rereads durable cancellation state and deletes instead of rewriting the even
   expect(provider.upsertEvent).not.toHaveBeenCalled();
   expect(execute).toHaveBeenCalledOnce();
   expect(mocks.updateTx).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ state: "synced" }));
+});
+
+it("shares a stored address only after the business has explicitly enabled calendar sharing", async () => {
+  const withAddress = { ...appointment, serviceLocation: { line1: "123 Main Street", city: "Miami", region: "FL", postalCode: "33101", country: "US" } };
+  batches = [[withAddress], [withAddress]];
+  await syncAppointmentCalendar(dependencies, { businessId: "business", appointmentId: "appointment" });
+  expect(provider.upsertEvent).toHaveBeenCalledWith(expect.objectContaining({ eventId: "event", location: null }));
+  provider.upsertEvent.mockClear();
+  batches = [[{ ...withAddress, shareServiceAddress: true }], [{ ...withAddress, shareServiceAddress: true }]];
+  await syncAppointmentCalendar(dependencies, { businessId: "business", appointmentId: "appointment" });
+  expect(provider.upsertEvent).toHaveBeenCalledWith(expect.objectContaining({ eventId: "event", location: "123 Main Street, Miami, FL, 33101, US" }));
+});
+
+it("fails a malformed shared address without marking the calendar connection broken", async () => {
+  const malformed = { ...appointment, shareServiceAddress: true, serviceLocation: { line1: "123 Main Street", city: "Miami", country: "Not a code" } };
+  batches = [[malformed], [malformed]];
+  await expect(syncAppointmentCalendar(dependencies, { businessId: "business", appointmentId: "appointment" })).rejects.toThrow("Stored service location is invalid.");
+  expect(provider.upsertEvent).not.toHaveBeenCalled();
+  expect(mocks.mark).not.toHaveBeenCalled();
+  expect(mocks.update).toHaveBeenCalledWith(dependencies.domain, expect.objectContaining({ state: "failed" }));
 });
 
 it("uses deterministic event identity for creates and reschedules", async () => {

@@ -7,7 +7,7 @@ export const GET: APIRoute = () =>
   markdownResponse({
     markdown: affiliateProgramMarkdown("fr"),
     canonical: absoluteUrl("/fr/affiliate-program/"),
-    title: "Programme d'affiliation LobbyStack | 20 % de commission",
+    title: "Programme d'affiliation Lead My Company | 20 % de commission",
     description:
-      "Parrainez des entreprises vers les forfaits hébergés LobbyStack et touchez 20 % de leurs paiements pendant 12 mois. Rabais de 5 % à l'inscription. Paiements PayPal mensuels après 30 jours de retenue.",
+      "Parrainez des entreprises vers les forfaits hébergés Lead My Company et touchez 20 % de leurs paiements pendant 12 mois. Rabais de 5 % à l'inscription. Paiements PayPal mensuels après 30 jours de retenue.",
   })

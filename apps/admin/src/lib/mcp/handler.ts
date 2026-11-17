@@ -126,10 +126,10 @@ export function createLobbyStackMcpHttpHandler(dependencies: McpHandlerDependenc
     // outside the configured app URLs is refused, including one that matches the
     // request's Host, so a DNS-rebinding page cannot drive the endpoint.
     const origin = request.headers.get("origin");
-    if (origin !== null && !trustedMcpOrigins().has(origin.trim())) return jsonError(403, "forbidden", "This origin may not call the Kyra MCP server.");
+    if (origin !== null && !trustedMcpOrigins().has(origin.trim())) return jsonError(403, "forbidden", "This origin may not call the Lead My Company MCP server.");
 
     const token = bearerToken(request.headers.get("authorization"));
-    if (!token) return jsonError(401, "unauthorized", "Sign in with OAuth, or send a Kyra API key as Authorization: Bearer <key>.", { "WWW-Authenticate": mcpBearerChallenge() });
+    if (!token) return jsonError(401, "unauthorized", "Sign in with OAuth, or send a Lead My Company API key as Authorization: Bearer <key>.", { "WWW-Authenticate": mcpBearerChallenge() });
 
     let credential: VerifiedCredential | null = null;
     if (isOAuthAccessToken(token)) {

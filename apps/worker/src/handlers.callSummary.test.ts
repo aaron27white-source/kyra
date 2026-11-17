@@ -1,3 +1,4 @@
+import type * as DomainModule from "@lobbystack/domain";
 import { randomUUID } from "node:crypto";
 
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -7,7 +8,7 @@ import type { JobEnvelope } from "@lobbystack/contracts";
 import { finalizeConversationSession, loadCallSummaryInput, recordAiGenerationEvent, type CallSummaryInput } from "@lobbystack/domain";
 
 vi.mock("@lobbystack/domain", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@lobbystack/domain")>();
+  const actual = await importOriginal<typeof DomainModule>();
   return {
     ...actual,
     finalizeConversationSession: vi.fn(),

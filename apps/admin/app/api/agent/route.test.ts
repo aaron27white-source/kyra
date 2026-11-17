@@ -1,8 +1,10 @@
+import type * as ApiHelpersModule from "@/lib/api-helpers";
+import type * as DbModule from "@lobbystack/db";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const fixture = vi.hoisted(() => ({ denied: false, insert: vi.fn(), update: vi.fn(), transaction: vi.fn(), enqueue: vi.fn() }));
 vi.mock("@/lib/api-helpers", async (original) => ({
-  ...await original<typeof import("@/lib/api-helpers")>(),
+  ...await original<typeof ApiHelpersModule>(),
   withOperatorTransaction: async (_request: Request, callback: (input: unknown) => unknown, options: unknown) => {
     fixture.transaction(options);
     if (fixture.denied) throw Object.assign(new Error("Forbidden"), { status: 403 });
@@ -13,7 +15,7 @@ vi.mock("@/lib/api-helpers", async (original) => ({
     } });
   },
 }));
-vi.mock("@lobbystack/db", async (original) => ({ ...await original<typeof import("@lobbystack/db")>(), enqueueOutbox: fixture.enqueue }));
+vi.mock("@lobbystack/db", async (original) => ({ ...await original<typeof DbModule>(), enqueueOutbox: fixture.enqueue }));
 import { PATCH } from "./route";
 const patch = (body: unknown) => PATCH(new Request("http://localhost:3000/api/agent", { method: "PATCH", body: JSON.stringify(body) }));
 beforeEach(() => { vi.clearAllMocks(); fixture.denied = false; });
@@ -37,7 +39,7 @@ describe("agent settings validation", () => {
   it("requires administrator access before any mutation", async () => {
     fixture.denied = true;
     expect((await patch({ transferMode: "always" })).status).toBe(403);
-    expect(fixture.transaction).toHaveBeenCalledWith({ minimumRole: "business_admin" });
+    expect(fixture.transaction).toHaveBeenCalledWith({ minimumRole: "business_admin", pilotCapability: "voice" });
     expect(fixture.insert).not.toHaveBeenCalled();
   });
 });

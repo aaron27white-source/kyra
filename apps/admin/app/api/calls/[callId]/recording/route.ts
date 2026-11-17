@@ -14,7 +14,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ call
       session,
       businessId,
       detail: await getCallDetail(createDomainContext(), { userId: session.user.id, businessId, callId }),
-    }));
+    }), { pilotCapability: "voice" });
     const { session, businessId, detail } = resolved;
     if (!detail) return NextResponse.json({ error: "Call not found.", code: "not_found" }, { status: 404 });
     if (detail.recording.state !== "available" || !detail.recording.objectId) {

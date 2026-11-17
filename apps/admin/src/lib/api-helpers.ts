@@ -3,7 +3,12 @@ import { reportServerError } from "./error-reporting";
 import { eq } from "drizzle-orm";
 
 import { users, withBusinessTransaction, type DatabaseTransaction } from "@lobbystack/db";
-import { requireBusinessMembership } from "@lobbystack/domain";
+import { requireBusinessMembership, resolveLmcPilotPageAccess } from "@lobbystack/domain";
+import {
+  hasPilotDashboardCapability,
+  isPilotMode,
+  type PilotDashboardCapability,
+} from "@lobbystack/shared";
 
 import { getSession, type Session } from "./auth";
 import { getDatabase } from "./databases";
@@ -110,25 +115,54 @@ async function activeBusinessIdForUser(userId: string): Promise<string | null> {
 }
 
 /** The signed-in user and the business the request targets, for domain calls that open their own transaction. */
-export async function requireOperatorBusiness(request: Request): Promise<{ session: NonNullable<Session>; businessId: string }> {
+async function requirePilotDashboardCapability(
+  session: NonNullable<Session>,
+  businessId: string,
+  capability?: PilotDashboardCapability,
+): Promise<void> {
+  if (!capability || !isPilotMode(process.env)) return;
+  const access = await resolveLmcPilotPageAccess(
+    { database: getAppDatabase().db, authDatabase: getDatabase("lobbystack_auth").db },
+    session.user.id,
+  );
+  if (
+    !access ||
+    access.tenantId !== businessId ||
+    !hasPilotDashboardCapability(access.capabilities, capability)
+  ) {
+    // Match the outer pilot boundary: unavailable capabilities are not
+    // discoverable and forged tenant selectors never become authorization.
+    throw jsonError("Not found.", 404, "not_found");
+  }
+}
+
+export async function requireOperatorBusiness(
+  request: Request,
+  options: { pilotCapability?: PilotDashboardCapability } = {},
+): Promise<{ session: NonNullable<Session>; businessId: string }> {
   const session = await requireApiSession(request);
   const businessId = businessIdFromRequest(request) ?? await activeBusinessIdForUser(session.user.id);
   if (!businessId) {
     throw jsonError("A businessId is required.", 400, "business_required");
   }
+  await requirePilotDashboardCapability(session, businessId, options.pilotCapability);
   return { session, businessId };
 }
 
 export async function withOperatorTransaction<T>(
   request: Request,
   callback: (input: { session: NonNullable<Session>; businessId: string; tx: DatabaseTransaction }) => Promise<T>,
-  options: { minimumRole?: "viewer" | "scheduler" | "business_admin" | "business_owner" } = {},
+  options: {
+    minimumRole?: "viewer" | "scheduler" | "business_admin" | "business_owner";
+    pilotCapability?: PilotDashboardCapability;
+  } = {},
 ): Promise<T> {
   const session = await requireApiSession(request);
   const businessId = businessIdFromRequest(request) ?? await activeBusinessIdForUser(session.user.id);
   if (!businessId) {
     throw jsonError("A businessId is required.", 400, "business_required");
   }
+  await requirePilotDashboardCapability(session, businessId, options.pilotCapability);
   return await withBusinessTransaction(getAppDatabase().db, { userId: session.user.id, businessId, actorType: "operator" }, async (tx) => {
     await requireBusinessMembership(tx, { userId: session.user.id, businessId, ...(options.minimumRole ? { minimumRole: options.minimumRole } : {}) });
     return await callback({ session, businessId, tx });

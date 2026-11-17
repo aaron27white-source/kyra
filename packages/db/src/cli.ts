@@ -61,6 +61,7 @@ async function main(): Promise<void> {
           ["lobbystack_migrator", process.env.LOBBYSTACK_MIGRATOR_PASSWORD],
           ["lobbystack_auth", process.env.LOBBYSTACK_AUTH_PASSWORD],
           ["lobbystack_app", process.env.LOBBYSTACK_APP_PASSWORD],
+          ["lobbystack_system", process.env.LOBBYSTACK_SYSTEM_PASSWORD],
           ["lobbystack_worker", process.env.LOBBYSTACK_WORKER_PASSWORD],
           ["lobbystack_dispatcher", process.env.LOBBYSTACK_DISPATCHER_PASSWORD],
           ["lobbystack_readonly", process.env.LOBBYSTACK_READONLY_PASSWORD],

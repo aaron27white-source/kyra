@@ -1,62 +1,23 @@
-# LobbyStack landing site
+# Lead My Company pilot public site
 
-Astro marketing site for `lobbystack.com`, with React islands, shadcn/ui components, SEO routes, RSS, Pagefind search, localized French pages, and Cloudflare Pages middleware.
+This app builds six static HTML pages: home, contact, privacy, terms, cookie policy and 404. The contact/legal pages deliberately contain `[FILL]` until the LMC operator supplies approved details. All pages remain noindex and robots disallows crawling during the pilot.
 
-## Run the landing site
+Run from the repository root:
 
-Run commands from the repository root:
-
-```bash
-pnpm dev:landing
-pnpm landing:typecheck
+```sh
 pnpm landing:build
-pnpm landing:preview
+pnpm landing:typecheck
+pnpm --filter @lobbystack/landing lint
+pnpm --filter @lobbystack/landing test
+pnpm --filter @lobbystack/landing pilot:test
+pnpm landing:preview --host 127.0.0.1 --port 4321
+pnpm --filter @lobbystack/landing pilot:http http://127.0.0.1:4321
 ```
 
-## PostHog analytics
+`build` verifies the **entire** resulting directory before success. The gate requires the six-page inventory and declared local assets, rejects JavaScript/server files/inline scripts or styles/external resources/inherited claims, checks internal links and requires placeholders and exact software/font license notices. Regression tests mutate a disposable copy and prove these failures are detected. HTTP checks require exact artifact bytes for GET, empty HEAD responses and 404 for retired public surfaces.
 
-The site initializes PostHog from `src/lib/posthog.ts` when `PUBLIC_POSTHOG_ENABLED=true` and `PUBLIC_POSTHOG_KEY` is present.
+Deploy **only `apps/landing/dist/`**, separately from admin/worker, as ordinary static files. Do not upload the app source, `functions/`, `public/`, `src/content/`, the repository, environment files or `node_modules`. No runtime, provider key or database connection belongs in this site. The explicit `pilot/src/pages/` and `pilot-public/` directories are the only routed pages and copied public assets. This is the sole build profile; there is no flag to publish the legacy routes. `_headers` and `_redirects` are host configuration files; a host that does not support that format must configure equivalent response headers/redirects itself. Production host enforcement remains part of staging validation.
 
-Production should use the first-party Cloudflare Pages proxy:
+Legacy articles, marketing helpers, public assets and function sources remain solely to preserve original source/history/tests. They are outside the active route/public-asset inputs and are never included in the verified deployment directory. All original unit tests remain unchanged. The former SEO validator is retained as `seo:validate:legacy`; the pilot validation command checks the current static artifact, which deliberately has no public sitemap, search index, Markdown alternate pages, analytics, voice demo or machine/API discovery claims. Required copyright and license attribution is preserved under `dist/attributions/`; it is not LMC contact or operator legal information.
 
-```ini
-PUBLIC_POSTHOG_ENABLED=true
-PUBLIC_POSTHOG_KEY=your_posthog_project_token_here
-PUBLIC_POSTHOG_HOST=https://ts.lobbystack.com
-PUBLIC_POSTHOG_UI_HOST=https://us.posthog.com
-```
-
-Attach `ts.lobbystack.com` to the same Cloudflare Pages project. Requests on that hostname are handled by `functions/_middleware.js` and forwarded to the correct PostHog US ingestion or asset host. Keep preview deployments disabled unless actively validating analytics.
-
-## Add a component
-
-To add components to your app, run the following command:
-
-```bash
-pnpm --filter @lobbystack/landing exec shadcn add button
-```
-
-The command adds the UI component to `src/components`.
-
-## Use a component
-
-To use the components in your app, import them in an `.astro` file:
-
-```astro
----
-import { Button } from "@/components/ui/button"
----
-
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>Astro App</title>
-  </head>
-  <body>
-    <div class="grid h-screen place-items-center content-center">
-      <Button>Button</Button>
-    </div>
-  </body>
-</html>
-```
+The font is the bundled local Geist variable font with its SIL OFL 1.1 notice. No asset is fetched by a page from a font CDN. The only external navigation is the explicit link to the LMC app sign-in page. This local cleanup does not claim a hosted deployment or reviewed final legal terms.

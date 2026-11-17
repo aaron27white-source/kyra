@@ -84,7 +84,7 @@ describe.skipIf(!testUrl)("onboarding follow-up email against dedicated PostgreS
         template: "onboarding_followup",
         to: email,
         from: sender.from,
-        subject: "Qu'avez-vous pensé de Kyra ?",
+        subject: "Qu'avez-vous pensé de Lead My Company ?",
         variables: { locale: "fr", firstName: "Sam", senderName: "Raphael" },
       });
     });

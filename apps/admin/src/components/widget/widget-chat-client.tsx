@@ -87,6 +87,7 @@ export function WidgetChatClient({ widgetKey }: { widgetKey: string }) {
   const threadRef = useRef<HTMLDivElement | null>(null);
   const [lead, setLead] = useState({ name: "", email: "", phone: "" });
   const [leadSubmitting, setLeadSubmitting] = useState(false);
+  const failedDraftRef = useRef<string | null>(null);
 
   const visitorId = useMemo(() => (parentVisitorId ?? visitorIdRef.current) || "", [parentVisitorId]);
 
@@ -120,7 +121,12 @@ export function WidgetChatClient({ widgetKey }: { widgetKey: string }) {
     id: `widget:${widgetKey}`,
     generateId: () => crypto.randomUUID(),
     transport,
-    onError: (error) => setSubmitError(chatErrorKey(error)),
+    onError: (error) => {
+      setSubmitError(chatErrorKey(error));
+      if (failedDraftRef.current !== null) setDraft(failedDraftRef.current);
+      failedDraftRef.current = null;
+    },
+    onFinish: ({ isError }) => { if (!isError) failedDraftRef.current = null; },
   });
 
   const sending = status === "submitted" || status === "streaming";
@@ -232,12 +238,15 @@ export function WidgetChatClient({ widgetKey }: { widgetKey: string }) {
     if (!content || sending) return;
     if (!visitorIdRef.current) return;
     setSubmitError(null);
+    failedDraftRef.current = content;
     setDraft("");
     try {
       clearError();
       await sendMessage({ text: content });
     } catch {
       setSubmitError("chat.sendingFailed");
+      setDraft(content);
+      failedDraftRef.current = null;
     }
   }
 
@@ -277,7 +286,7 @@ export function WidgetChatClient({ widgetKey }: { widgetKey: string }) {
 
   const showLeadBeforeChat = Boolean(configState?.config?.leadForm?.showBeforeChat) && !leadDone && messages.length === 0;
   const voiceEnabled = Boolean(configState?.voiceEnabled) && Boolean(configState?.businessSlug);
-  const configErrorCode = config.error instanceof Error && ["originDenied", "invalidKey", "configLoad"].includes(config.error.message) ? config.error.message : null;
+  const configErrorCode = config.error instanceof Error && ["originDenied", "invalidKey", "configLoad"].includes(config.error.message) ? config.error.message : config.isError ? "configLoad" : null;
 
   return (
     <main className="flex h-full min-h-0 flex-col bg-white text-zinc-900" style={{ minHeight: "100dvh" }}>
@@ -295,8 +304,7 @@ export function WidgetChatClient({ widgetKey }: { widgetKey: string }) {
       {handoff ? <div className="border-b bg-amber-50 px-4 py-2 text-xs font-medium text-amber-800">{t("chat.handoffBanner")}</div> : null}
 
       <div ref={threadRef} className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-4">
-        {configErrorCode ? <p className="text-center text-sm text-zinc-500">{t(`errors.${configErrorCode}` as never)}</p> : null}
-        {config.isError ? <p className="text-center text-sm text-zinc-500">{t("errors.configLoad")}</p> : null}
+        {configErrorCode ? <div className="space-y-2 text-center" role="alert"><p className="text-sm text-zinc-600">{t(`errors.${configErrorCode}` as never)}</p>{configErrorCode === "configLoad" ? <Button size="sm" variant="outline" onClick={() => void config.refetch()} loading={config.isFetching}>{t("errors.retry")}</Button> : null}</div> : null}
         {config.isLoading ? <p className="text-center text-sm text-zinc-400">{t("chat.loadingTranscript")}</p> : null}
         {config.data && messages.length === 0 && !showLeadBeforeChat ? (
           <div className="flex flex-col gap-1 text-sm text-zinc-600">
@@ -312,11 +320,11 @@ export function WidgetChatClient({ widgetKey }: { widgetKey: string }) {
           </div>
         ))}
         {sending && messages.at(-1)?.role === "user" ? <div className="flex justify-start"><div className="rounded-2xl rounded-bl-sm bg-zinc-100 px-3 py-2 text-sm text-zinc-400">{t("chat.pendingLabel")}</div></div> : null}
-        {submitError ? <p className="text-center text-xs text-red-600">{t(submitError)}</p> : null}
+        {submitError ? <p className="text-center text-xs text-red-600" role="alert">{t(submitError)}</p> : null}
       </div>
 
       {showLeadBeforeChat ? (
-        <LeadForm className="border-t p-4" lead={lead} setLead={setLead} onSubmit={submitLead} submitting={leadSubmitting} onSkip={() => { setLeadDone(true); setLeadOpen(false); }} t={t} />
+        <LeadForm className="border-t p-4" lead={lead} setLead={setLead} onSubmit={submitLead} submitting={leadSubmitting} onSkip={() => { setLeadDone(true); setLeadOpen(false); }} t={t} requireEmail={Boolean(configState?.config?.leadForm?.requireEmail)} requirePhone={Boolean(configState?.config?.leadForm?.requirePhone)} />
       ) : null}
 
       <form className="flex items-end gap-2 border-t p-3" onSubmit={(event) => void submitChat(event)}>
@@ -334,7 +342,7 @@ export function WidgetChatClient({ widgetKey }: { widgetKey: string }) {
         <Button aria-label={t("chat.send")} disabled={!draft.trim() || sending || leadOpen} loading={sending} size="icon-lg" type="submit" style={{ backgroundColor: color }}><Send /></Button>
       </form>
 
-      {leadOpen && !showLeadBeforeChat ? <LeadOverlay lead={lead} setLead={setLead} onSubmit={submitLead} submitting={leadSubmitting} onClose={() => setLeadOpen(false)} t={t} /> : null}
+      {leadOpen && !showLeadBeforeChat ? <LeadOverlay lead={lead} setLead={setLead} onSubmit={submitLead} submitting={leadSubmitting} onClose={() => setLeadOpen(false)} t={t} requireEmail={Boolean(configState?.config?.leadForm?.requireEmail)} requirePhone={Boolean(configState?.config?.leadForm?.requirePhone)} /> : null}
     </main>
   );
 }
@@ -368,7 +376,7 @@ function VoiceButton({ className, businessSlug, visitorId, sessionToken, parentO
   );
 }
 
-function LeadOverlay({ lead, setLead, onSubmit, submitting, onClose, t }: { lead: { name: string; email: string; phone: string }; setLead: (value: { name: string; email: string; phone: string }) => void; onSubmit: (event: FormEvent) => void; submitting: boolean; onClose: () => void; t: (key: string) => string }) {
+function LeadOverlay({ lead, setLead, onSubmit, submitting, onClose, t, requireEmail, requirePhone }: { lead: { name: string; email: string; phone: string }; setLead: (value: { name: string; email: string; phone: string }) => void; onSubmit: (event: FormEvent) => void; submitting: boolean; onClose: () => void; t: (key: string) => string; requireEmail: boolean; requirePhone: boolean }) {
   return (
     <div className="absolute inset-0 z-10 flex items-end bg-black/30 p-4 sm:items-center">
       <form className="w-full rounded-2xl bg-white p-4 shadow-xl" onSubmit={onSubmit}>
@@ -376,8 +384,8 @@ function LeadOverlay({ lead, setLead, onSubmit, submitting, onClose, t }: { lead
         <p className="mb-3 text-xs text-zinc-500">{t("lead.description")}</p>
         <div className="space-y-3">
           <label className="block text-xs font-medium text-zinc-700">{t("lead.name")}<Input className="mt-1" value={lead.name} onChange={(event) => setLead({ ...lead, name: event.target.value })} /></label>
-          <label className="block text-xs font-medium text-zinc-700">{t("lead.email")}<Input className="mt-1" type="email" value={lead.email} onChange={(event) => setLead({ ...lead, email: event.target.value })} /></label>
-          <label className="block text-xs font-medium text-zinc-700">{t("lead.phone")}<Input className="mt-1" type="tel" value={lead.phone} onChange={(event) => setLead({ ...lead, phone: event.target.value })} /></label>
+          <label className="block text-xs font-medium text-zinc-700">{t("lead.email")}<Input className="mt-1" autoComplete="email" type="email" required={requireEmail} value={lead.email} onChange={(event) => setLead({ ...lead, email: event.target.value })} /></label>
+          <label className="block text-xs font-medium text-zinc-700">{t("lead.phone")}<Input className="mt-1" autoComplete="tel" type="tel" required={requirePhone} value={lead.phone} onChange={(event) => setLead({ ...lead, phone: event.target.value })} /></label>
         </div>
         <div className="mt-4 flex justify-end gap-2">
           <Button type="button" variant="ghost" onClick={onClose}>{t("lead.skip")}</Button>
@@ -388,16 +396,16 @@ function LeadOverlay({ lead, setLead, onSubmit, submitting, onClose, t }: { lead
   );
 }
 
-function LeadForm({ lead, setLead, onSubmit, submitting, onSkip, t, className }: { lead: { name: string; email: string; phone: string }; setLead: (value: { name: string; email: string; phone: string }) => void; onSubmit: (event: FormEvent) => void; submitting: boolean; onSkip: () => void; t: (key: string) => string; className?: string }) {
+function LeadForm({ lead, setLead, onSubmit, submitting, onSkip, t, className, requireEmail, requirePhone }: { lead: { name: string; email: string; phone: string }; setLead: (value: { name: string; email: string; phone: string }) => void; onSubmit: (event: FormEvent) => void; submitting: boolean; onSkip: () => void; t: (key: string) => string; className?: string; requireEmail: boolean; requirePhone: boolean }) {
   return (
     <form className={cn("space-y-3", className)} onSubmit={onSubmit}>
       <div>
         <h2 className="text-sm font-semibold">{t("lead.beforeChatHeading")}</h2>
         <p className="text-xs text-zinc-500">{t("lead.description")}</p>
       </div>
-      <Input placeholder={t("lead.name")} value={lead.name} onChange={(event) => setLead({ ...lead, name: event.target.value })} />
-      <Input placeholder={t("lead.email")} type="email" value={lead.email} onChange={(event) => setLead({ ...lead, email: event.target.value })} />
-      <Input placeholder={t("lead.phone")} type="tel" value={lead.phone} onChange={(event) => setLead({ ...lead, phone: event.target.value })} />
+      <label className="block text-xs font-medium text-zinc-700">{t("lead.name")}<Input className="mt-1" autoComplete="name" value={lead.name} onChange={(event) => setLead({ ...lead, name: event.target.value })} /></label>
+      <label className="block text-xs font-medium text-zinc-700">{t("lead.email")}<Input className="mt-1" autoComplete="email" type="email" required={requireEmail} value={lead.email} onChange={(event) => setLead({ ...lead, email: event.target.value })} /></label>
+      <label className="block text-xs font-medium text-zinc-700">{t("lead.phone")}<Input className="mt-1" autoComplete="tel" type="tel" required={requirePhone} value={lead.phone} onChange={(event) => setLead({ ...lead, phone: event.target.value })} /></label>
       <div className="flex gap-2">
         <Button type="submit" className="flex-1" loading={submitting}>{t("lead.submit")}</Button>
         <Button type="button" variant="ghost" onClick={onSkip}>{t("lead.skip")}</Button>

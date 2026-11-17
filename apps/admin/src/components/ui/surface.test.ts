@@ -1,6 +1,6 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { join } from "node:path";
+import { join, sep } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const forbiddenSurfacePatterns = [
@@ -22,7 +22,10 @@ const forbiddenSurfacePatterns = [
 const componentsDirectory = fileURLToPath(new URL("../", import.meta.url));
 const sourceModules = Object.fromEntries(readdirSync(componentsDirectory, { recursive: true })
   .filter((entry): entry is string => typeof entry === "string" && /\.tsx?$/.test(entry) && !entry.includes(".test."))
-  .map((entry) => [entry === "ui/surface.tsx" ? "./surface.tsx" : entry, readFileSync(join(componentsDirectory, entry), "utf8")]));
+  .map((entry) => {
+    const relativePath = entry.split(sep).join("/");
+    return [relativePath === "ui/surface.tsx" ? "./surface.tsx" : relativePath, readFileSync(join(componentsDirectory, entry), "utf8")];
+  }));
 
 describe("surface styling", () => {
   it("keeps operator surface outlines routed through shared primitives", () => {

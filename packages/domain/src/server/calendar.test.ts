@@ -1,6 +1,7 @@
+import type * as DbModule from "@lobbystack/db";
 import { beforeEach, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({ transaction: vi.fn() }));
-vi.mock("@lobbystack/db", async (original) => ({ ...await original<typeof import("@lobbystack/db")>(), withBusinessTransaction: mocks.transaction }));
+vi.mock("@lobbystack/db", async (original) => ({ ...await original<typeof DbModule>(), withBusinessTransaction: mocks.transaction }));
 import { resolveCalendarAccessToken } from "./calendar";
 
 const now = new Date("2026-09-13T12:00:00Z");

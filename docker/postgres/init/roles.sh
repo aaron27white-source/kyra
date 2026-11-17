@@ -32,6 +32,7 @@ SQL
 ensure_role lobbystack_migrator "${LOBBYSTACK_MIGRATOR_PASSWORD:-migrator}"
 ensure_role lobbystack_auth "${LOBBYSTACK_AUTH_PASSWORD:-auth}"
 ensure_role lobbystack_app "${LOBBYSTACK_APP_PASSWORD:-app}"
+ensure_role lobbystack_system "${LOBBYSTACK_SYSTEM_PASSWORD:?LOBBYSTACK_SYSTEM_PASSWORD is required}"
 ensure_role lobbystack_worker "${LOBBYSTACK_WORKER_PASSWORD:-worker}"
 ensure_role lobbystack_dispatcher "${LOBBYSTACK_DISPATCHER_PASSWORD:-dispatcher}"
 ensure_role lobbystack_readonly "${LOBBYSTACK_READONLY_PASSWORD:-readonly}"

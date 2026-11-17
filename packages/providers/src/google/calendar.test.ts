@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { GoogleCalendarProvider } from "./calendar";
@@ -16,12 +17,62 @@ describe("GoogleCalendarProvider", () => {
   });
 
   it("treats a deterministic insert conflict as an already-created event", async () => {
-    const fetchMock = vi.fn().mockResolvedValueOnce({ ok: false, status: 409 }).mockResolvedValueOnce({ ok: true, status: 200, json: async () => ({ id: "a1234567890abcdef" }) });
+    const fetchMock = vi.fn().mockResolvedValueOnce({ ok: false, status: 409 }).mockResolvedValueOnce({ ok: true, status: 200, json: async () => ({ id: "a1234567890abcdef" }) }).mockResolvedValueOnce({ ok: true, status: 200, json: async () => ({ id: "a1234567890abcdef" }) });
     vi.stubGlobal("fetch", fetchMock);
     const provider = new GoogleCalendarProvider({ clientId: "client", clientSecret: "secret", redirectUri: "https://app.example/oauth" });
 
     await expect(provider.upsertEvent({ accessToken: "access", calendarId: "primary", clientEventId: "a1234567890abcdef", title: "Appointment", startsAt: "2026-08-12T10:00:00.000Z", endsAt: "2026-08-12T10:30:00.000Z" })).resolves.toEqual({ externalEventId: "a1234567890abcdef" });
-    expect(fetchMock.mock.calls[1]?.[1]).toMatchObject({ method: "PUT" });
+    expect(fetchMock.mock.calls[1]?.[1]).not.toHaveProperty("method");
+    expect(fetchMock.mock.calls[2]?.[1]).toMatchObject({ method: "PATCH" });
+  });
+
+  it("writes a consented address into the native location and patches without removing other event metadata", async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce(Response.json({ id: "event-1", location: "Old address", reminders: { useDefault: false }, conferenceData: { conferenceId: "existing" }, extendedProperties: { private: { other: "keep" } } })).mockResolvedValueOnce(Response.json({ id: "event-1" }));
+    vi.stubGlobal("fetch", fetchMock);
+    const provider = new GoogleCalendarProvider({ clientId: "client", clientSecret: "secret", redirectUri: "https://app.example/oauth" });
+    await provider.upsertEvent({ accessToken: "access", calendarId: "primary", eventId: "event-1", title: "Appointment", startsAt: "2026-08-12T10:00:00.000Z", endsAt: "2026-08-12T10:30:00.000Z", description: "Automated description", location: "123 Main Street, Miami, FL 33101" });
+    const request = fetchMock.mock.calls[1]?.[1] as RequestInit;
+    expect(request.method).toBe("PATCH");
+    expect(JSON.parse(String(request.body))).toMatchObject({ location: "123 Main Street, Miami, FL 33101", extendedProperties: { private: { other: "keep", kyraLocationHash: expect.any(String) } } });
+    expect(JSON.parse(String(request.body))).not.toHaveProperty("attendees");
+    expect(JSON.parse(String(request.body))).not.toHaveProperty("reminders");
+    expect(JSON.parse(String(request.body))).not.toHaveProperty("conferenceData");
+    expect(JSON.parse(String(request.body))).not.toHaveProperty("description");
+  });
+
+  it("creates an address-bearing event as private", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(Response.json({ id: "event-1" }));
+    vi.stubGlobal("fetch", fetchMock);
+    const provider = new GoogleCalendarProvider({ clientId: "client", clientSecret: "secret", redirectUri: "https://app.example/oauth" });
+    await provider.upsertEvent({ accessToken: "access", calendarId: "primary", clientEventId: "a1234567890abcdef", title: "Appointment", startsAt: "2026-08-12T10:00:00.000Z", endsAt: "2026-08-12T10:30:00.000Z", location: "123 Main Street" });
+    expect(JSON.parse(String(fetchMock.mock.calls[0]?.[1].body))).toMatchObject({ location: "123 Main Street", visibility: "private", extendedProperties: { private: { kyraLocationHash: expect.any(String) } } });
+  });
+
+  it("blocks sharing an address with unexpected event attendees", async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce(Response.json({ id: "event-1", attendees: [{ email: "outside@example.test" }] }));
+    vi.stubGlobal("fetch", fetchMock);
+    const provider = new GoogleCalendarProvider({ clientId: "client", clientSecret: "secret", redirectUri: "https://app.example/oauth" });
+    await expect(provider.upsertEvent({ accessToken: "access", calendarId: "primary", eventId: "event-1", title: "Appointment", startsAt: "2026-08-12T10:00:00.000Z", endsAt: "2026-08-12T10:30:00.000Z", location: "123 Main Street" })).rejects.toThrow("recipients must be private");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("removes only a location previously written by Kyra when sharing is disabled", async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce(Response.json({ id: "event-1", location: "123 Main Street", extendedProperties: { private: { kyraLocationHash: createHash("sha256").update("123 Main Street").digest("hex") } } })).mockResolvedValueOnce(Response.json({ id: "event-1" }));
+    vi.stubGlobal("fetch", fetchMock);
+    const provider = new GoogleCalendarProvider({ clientId: "client", clientSecret: "secret", redirectUri: "https://app.example/oauth" });
+    await provider.upsertEvent({ accessToken: "access", calendarId: "primary", eventId: "event-1", title: "Appointment", startsAt: "2026-08-12T10:00:00.000Z", endsAt: "2026-08-12T10:30:00.000Z", location: null });
+    expect(JSON.parse(String(fetchMock.mock.calls[1]?.[1].body))).toMatchObject({ location: null, extendedProperties: { private: { kyraLocationHash: null } } });
+  });
+
+  it("preserves a manually changed calendar location when sharing is disabled", async () => {
+    const originalHash = createHash("sha256").update("Original address").digest("hex");
+    const fetchMock = vi.fn().mockResolvedValueOnce(Response.json({ id: "event-1", location: "Staff changed location", extendedProperties: { private: { kyraLocationHash: originalHash, other: "keep" } } })).mockResolvedValueOnce(Response.json({ id: "event-1" }));
+    vi.stubGlobal("fetch", fetchMock);
+    const provider = new GoogleCalendarProvider({ clientId: "client", clientSecret: "secret", redirectUri: "https://app.example/oauth" });
+    await provider.upsertEvent({ accessToken: "access", calendarId: "primary", eventId: "event-1", title: "Appointment", startsAt: "2026-08-12T10:00:00.000Z", endsAt: "2026-08-12T10:30:00.000Z", location: null });
+    const body = JSON.parse(String(fetchMock.mock.calls[1]?.[1].body));
+    expect(body).not.toHaveProperty("location");
+    expect(body.extendedProperties.private).toMatchObject({ other: "keep", kyraLocationHash: null });
   });
 
   it("requests only the submitted identity and Calendar scopes", () => {
@@ -101,5 +152,15 @@ describe("GoogleCalendarProvider", () => {
 
     await expect(provider.listCalendars({ accessToken: "access" })).resolves.toEqual([{ id: "primary", summary: "Personal", primary: true, accessRole: "owner" }, { id: "team", summary: "Team", primary: false, accessRole: "writer" }]);
     expect(JSON.stringify(fetchMock.mock.calls)).not.toContain("client");
+  });
+});
+
+describe("email calendar event identity",()=>{
+  it("retains event IDs so rescheduling can ignore only its own mirrored event",async()=>{
+    const request=vi.fn().mockResolvedValue(Response.json({timeZone:"America/New_York",items:[{id:"owned-event",start:{dateTime:"2030-01-09T14:00:00Z"},end:{dateTime:"2030-01-09T15:00:00Z"}}]}));
+    vi.stubGlobal("fetch",request);
+    const provider=new GoogleCalendarProvider({clientId:"client",clientSecret:"secret",redirectUri:"https://app.example/oauth"});
+    expect(await provider.getBusyBlocks({accessToken:"access",calendarId:"selected",startsAt:"2030-01-09T00:00:00Z",endsAt:"2030-01-10T00:00:00Z"})).toEqual([{startsAt:"2030-01-09T14:00:00.000Z",endsAt:"2030-01-09T15:00:00.000Z",externalEventId:"owned-event"}]);
+    expect(new URL(String(request.mock.calls[0]?.[0])).searchParams.get("fields")).toContain("items(id,");
   });
 });

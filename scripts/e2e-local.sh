@@ -80,6 +80,7 @@ export LOBBYSTACK_WORKER_DATABASE_URL="postgres://lobbystack_worker:worker@127.0
 export LOBBYSTACK_DISPATCHER_DATABASE_URL="postgres://lobbystack_dispatcher:dispatcher@127.0.0.1:${POSTGRES_PORT}/lobbystack"
 export LOBBYSTACK_APP_PASSWORD=app
 export LOBBYSTACK_AUTH_PASSWORD=auth
+export LOBBYSTACK_SYSTEM_PASSWORD=system
 export LOBBYSTACK_WORKER_PASSWORD=worker
 export LOBBYSTACK_DISPATCHER_PASSWORD=dispatcher
 export REDIS_URL="redis://127.0.0.1:${REDIS_PORT}"
@@ -88,6 +89,13 @@ export SMTP_HOST=127.0.0.1
 export SMTP_PORT="$MAILPIT_SMTP_PORT"
 export SMTP_SECURE=false
 export EMAIL_FROM="LobbyStack <no-reply@example.test>"
+# The supported browser journeys exercise self-serve onboarding. Production
+# defaults to the restricted LMC pilot surface, so the isolated test server
+# must opt out explicitly instead of inheriting that deployment-safe default.
+export LMC_PILOT_MODE=false
+# Keep the dormant affiliate implementation covered without enabling it in a
+# deployed build. NEXT_PUBLIC_ flags are embedded while Next.js builds.
+export NEXT_PUBLIC_AFFILIATE_PROGRAM_ENABLED=true
 
 if [[ "$SKIP_BUILD" -eq 0 ]]; then
   echo "==> Building workspace packages and the admin standalone server"

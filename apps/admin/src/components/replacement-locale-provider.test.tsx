@@ -35,11 +35,11 @@ function Controls() {
   return <><span>{locale}</span><button disabled={isSaving} onClick={() => void setLocale("fr")}>French</button></>;
 }
 
-function renderProvider(children: ReactNode) {
+function renderProvider(children: ReactNode, persistAccountPreferences = true) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={client}>
-      <LocaleProvider initialLocale="en" initialLocaleSource="default">{children}</LocaleProvider>
+      <LocaleProvider persistAccountPreferences={persistAccountPreferences} initialLocale="en" initialLocaleSource="default">{children}</LocaleProvider>
     </QueryClientProvider>,
   );
 }
@@ -153,4 +153,15 @@ it("restores the previous locale and reports a failed save", async () => {
   await waitFor(() => expect(mocks.error).toHaveBeenCalled());
   expect(mocks.changeLanguage).toHaveBeenLastCalledWith("en");
   expect(window.localStorage.getItem("lobbystack.locale")).toBe("en");
+});
+
+it("uses local locale preferences without calling a closed endpoint in pilot mode",async()=>{
+  mocks.pathname="/leads";
+  const fetchMock=vi.fn();vi.stubGlobal("fetch",fetchMock);
+  renderProvider(<Controls />,false);
+  expect(mocks.readSession).not.toHaveBeenCalled();expect(fetchMock).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button",{name:"French"}));
+  await waitFor(()=>expect((screen.getByRole("button",{name:"French"}) as HTMLButtonElement).disabled).toBe(false));
+  expect(mocks.changeLanguage).toHaveBeenCalledWith("fr");
+  expect(document.cookie).toContain("fr");expect(fetchMock).not.toHaveBeenCalled();
 });

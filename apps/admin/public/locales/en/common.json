@@ -1,7 +1,13 @@
 {
-  "appName": "Kyra",
-  "accessibility": { "close": "Close", "toggleSidebar": "Toggle sidebar", "skipToContent": "Skip to main content" },
-  "errors": { "unexpected": "Something went wrong. Please try again." },
+  "appName": "Lead My Company",
+  "accessibility": {
+    "close": "Close",
+    "toggleSidebar": "Toggle sidebar",
+    "skipToContent": "Skip to main content"
+  },
+  "errors": {
+    "unexpected": "Something went wrong. Please try again."
+  },
   "loading": {
     "title": "Loading...",
     "retry": "Retry loading",
@@ -41,7 +47,7 @@
     "title": "Send feedback",
     "description": "Tell us what would make this dashboard better.",
     "label": "Feedback message",
-    "placeholder": "Have an idea to improve Kyra? Tell the team.",
+    "placeholder": "Have an idea to improve Lead My Company? Tell the team.",
     "characterCount": "{{count}} / {{max}} characters",
     "helpText": "Need help?",
     "helpCenter": "Help Center",
@@ -83,7 +89,7 @@
       "microphoneNotFound": "No microphone was found on this device.",
       "microphoneInUse": "The microphone is already in use by another app.",
       "gatewayTimeout": "The call took too long to connect.",
-      "gatewayUnreachable": "This page can't reach Kyra to start the call.",
+      "gatewayUnreachable": "This page can't reach Lead My Company to start the call.",
       "connectionDropped": "The voice connection dropped.",
       "browserNoMicrophone": "This browser does not support microphone calls.",
       "browserNoWebRtc": "This browser does not support live voice calls.",
@@ -123,6 +129,27 @@
       "failed": "Failed",
       "error": "Error",
       "cancelled": "Cancelled"
+    },
+    "pageDescription": "Review upcoming appointments, customer details, and calendar sync status.",
+    "retry": "Try again",
+    "locationIntake": "Service location & intake",
+    "noAddress": "No service address",
+    "correctLocations": "Correct service locations",
+    "address": "Address",
+    "unit": "Unit (optional)",
+    "city": "City",
+    "region": "State / region",
+    "postalCode": "Postal / ZIP code",
+    "country": "Country code",
+    "instructions": "Access instructions (optional)",
+    "saving": "Saving…",
+    "saveLocation": "Save corrected location",
+    "locationSaved": "Location saved.",
+    "locationSaveFailed": "Location could not be saved. Check required fields and service-area settings.",
+    "intakeStates": {
+      "complete": "Complete",
+      "pending_follow_up": "Follow-up needed",
+      "not_required": "Not required"
     }
   },
   "abandonIntent": {

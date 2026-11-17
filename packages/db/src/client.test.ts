@@ -1,11 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { assertDatabaseRole, roleDatabaseUrl, type DatabaseClient } from "./client";
+import { assertDatabaseRole, createDatabaseClient, roleDatabaseUrl, withBusinessTransaction, type DatabaseClient } from "./client";
 
 const DATABASE_URL = "postgresql://postgres:superuser@postgres.internal:5432/lobbystack";
 
 describe("effective database role assertion", () => {
-  it.each(["lobbystack_worker", "lobbystack_dispatcher", "lobbystack_app"] as const)("checks %s in production", async (role) => {
+  it.each(["lobbystack_worker", "lobbystack_dispatcher", "lobbystack_app", "lobbystack_system"] as const)("checks %s in production", async (role) => {
     const query = vi.fn().mockResolvedValue({ rows: [{ role, privileged: false }] });
     const client = { role, pool: { query } } as unknown as DatabaseClient;
     await expect(assertDatabaseRole(client, { NODE_ENV: "production" })).resolves.toBeUndefined();
@@ -56,5 +56,41 @@ describe("roleDatabaseUrl", () => {
 
   it("requires DATABASE_URL when no explicit role URL is set", () => {
     expect(() => roleDatabaseUrl("lobbystack_app", { LOBBYSTACK_APP_PASSWORD: "a" })).toThrow("DATABASE_URL is required");
+  });
+});
+
+it("requires separate credentials for the internal system identity instead of using the base login", () => {
+  expect(() => roleDatabaseUrl("lobbystack_system", { DATABASE_URL })).toThrow("LOBBYSTACK_SYSTEM_CREDENTIALS_REQUIRED");
+  expect(new URL(roleDatabaseUrl("lobbystack_system", { DATABASE_URL, LOBBYSTACK_SYSTEM_PASSWORD: "test-only-password" })).username).toBe("lobbystack_system");
+});
+
+describe("internal system routing fails closed before executing work", () => {
+  it("does not reuse app or base credentials when internal credentials are missing", async () => {
+    const client = createDatabaseClient("lobbystack_app", {
+      DATABASE_URL,
+      LOBBYSTACK_SYSTEM_DATABASE_URL: undefined,
+      LOBBYSTACK_SYSTEM_PASSWORD: undefined,
+    });
+    const callback = vi.fn();
+    try {
+      await expect(withBusinessTransaction(client.db, { actorType: "system" }, callback)).rejects.toThrow("LOBBYSTACK_SYSTEM_CREDENTIALS_REQUIRED");
+      expect(callback).not.toHaveBeenCalled();
+    } finally { await client.pool.end(); }
+  });
+
+  it.each([
+    "postgresql://lobbystack_system:unused@other.internal:5432/lobbystack",
+    "postgresql://lobbystack_system:unused@postgres.internal:5433/lobbystack",
+    "postgresql://lobbystack_system:unused@postgres.internal:5432/other_database",
+  ])("rejects a different internal connection target", async (internalUrl) => {
+    const client = createDatabaseClient("lobbystack_app", {
+      DATABASE_URL,
+      LOBBYSTACK_SYSTEM_DATABASE_URL: internalUrl,
+    });
+    const callback = vi.fn();
+    try {
+      await expect(withBusinessTransaction(client.db, { actorType: "system" }, callback)).rejects.toThrow("LOBBYSTACK_SYSTEM_DATABASE_MISMATCH");
+      expect(callback).not.toHaveBeenCalled();
+    } finally { await client.pool.end(); }
   });
 });

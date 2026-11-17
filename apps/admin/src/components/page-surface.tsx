@@ -22,12 +22,14 @@ export function NestedPageSurfaceProvider({ children }: { children: React.ReactN
   return <NestedPageSurfaceContext.Provider value>{children}</NestedPageSurfaceContext.Provider>;
 }
 
-export function PageSurface({ title, action, children }: PageSurfaceProps) {
+export function PageSurface({ eyebrow, title, description, action, children }: PageSurfaceProps) {
   const nested = useContext(NestedPageSurfaceContext);
   return (
     <div className="flex flex-col gap-6">
       {!nested ? <PageHeader
         actions={action ? <Button><Plus data-icon="inline-start" />{action}</Button> : undefined}
+        description={description}
+        eyebrow={eyebrow}
         title={title}
       /> : null}
       {children}

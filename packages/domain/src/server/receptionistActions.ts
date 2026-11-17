@@ -1,7 +1,7 @@
 import { and, asc, eq, ilike, or } from "drizzle-orm";
 import { DateTime } from "luxon";
 
-import { appointments, contacts, receptionistProfiles, services, withBusinessTransaction } from "@lobbystack/db";
+import { receptionistProfiles, services, withBusinessTransaction } from "@lobbystack/db";
 import { normalizeAppointmentChangePolicy, type HoursWindow } from "@lobbystack/shared";
 import { getPostHogDistinctIdForBusinessSystem } from "@lobbystack/telemetry";
 
@@ -13,6 +13,8 @@ import { appendMessage, getOrCreateConversation } from "./conversations";
 import { queueOperatorAlert } from "./notifications";
 import { recordProductEvent } from "./productEvents";
 import { createVoiceFollowUpTask } from "./voice";
+import type { ServiceIntake } from "./service-intake";
+import { findAppointmentChangeMatches } from "./appointmentChangeLookup";
 
 // Actions the receptionist agent takes on a business's behalf, whatever the
 // channel. Each one opens its own tenant-scoped transaction.
@@ -115,15 +117,24 @@ export async function checkOpening(
 
 export async function bookForCaller(
   context: DomainContext,
-  input: { businessId: string; serviceName: string; startsAt: string; timezone: string; contactPhone: string; contactName?: string; smsConsentGranted?: boolean; channel: ReceptionistChannel; callId?: string },
+  input: { businessId: string; serviceName: string; startsAt: string; timezone: string; contactPhone: string; contactName?: string; smsConsentGranted?: boolean; intake?: ServiceIntake; channel: ReceptionistChannel; callId?: string; sessionId?: string },
 ) {
-  const distinctId = getPostHogDistinctIdForBusinessSystem(input.businessId);
-  const service = await resolveActiveService(context, input.businessId, input.serviceName);
-  if (!service) {
-    await safeRecordProductEvent(context, { name: "appointment.booking_failed", businessId: input.businessId, distinctId, properties: { reason: "service_unavailable", requestedServiceName: input.serviceName, channel: input.channel, sourceChannel: input.channel } });
-    return { ok: false as const, reason: "Service is not available." };
+  const startedAt = Date.now();
+  const operationalLog = (event: string, reasonCode: string) => {
+    try { console.info(JSON.stringify({ event, operation: "book_appointment", businessId: input.businessId, ...(input.callId ? { callId: input.callId } : {}), ...(input.sessionId ? { sessionId: input.sessionId } : {}), reasonCode, durationMs: Date.now() - startedAt })); } catch { /* observability never controls booking */ }
+  };
+  if (!/^\+[1-9]\d{7,14}$/.test(input.contactPhone)) {
+    operationalLog("voice.booking.failed", "invalid_phone");
+    return { ok: false as const, reason: "A valid callback number in international format is needed." };
   }
+  const distinctId = getPostHogDistinctIdForBusinessSystem(input.businessId);
   try {
+    const service = await resolveActiveService(context, input.businessId, input.serviceName);
+    if (!service) {
+      operationalLog("voice.booking.failed", "service_unavailable");
+      await safeRecordProductEvent(context, { name: "appointment.booking_failed", businessId: input.businessId, distinctId, properties: { reason: "service_unavailable", requestedServiceName: input.serviceName, channel: input.channel, sourceChannel: input.channel } });
+      return { ok: false as const, reason: "Service is not available." };
+    }
     const appointment = await bookAppointment(context, {
       businessId: input.businessId,
       serviceId: service.id,
@@ -134,37 +145,48 @@ export async function bookForCaller(
       ...(input.callId ? { callId: input.callId } : {}),
       ...(input.smsConsentGranted ? { smsConsentGranted: true } : {}),
       ...(input.contactName ? { contactName: input.contactName } : {}),
+      ...(input.intake ? { intake: input.intake } : {}),
     });
-    await safeRecordProductEvent(context, { name: "appointment.booked", businessId: input.businessId, distinctId, properties: { appointmentId: appointment.appointmentId, channel: input.channel, serviceId: service.id, sourceChannel: input.channel } });
+    if (!appointment.idempotent) await safeRecordProductEvent(context, { name: "appointment.booked", businessId: input.businessId, distinctId, properties: { appointmentId: appointment.appointmentId, channel: input.channel, serviceId: service.id, sourceChannel: input.channel } });
+    operationalLog("voice.booking.committed", "committed");
     return { ok: true as const, appointmentId: appointment.appointmentId, serviceName: service.name, startsAt: input.startsAt };
   } catch (error) {
+    const intakeError = error as Error & { code?: string; missingFields?: string[]; validationIssues?: Array<{ field: string; code: string }> };
+    if (intakeError.code === "missing_required_fields" || intakeError.code === "invalid_service_address" || intakeError.code === "outside_service_area") {
+      operationalLog("voice.booking.intake_incomplete", intakeError.code);
+      const invalidField = intakeError.validationIssues?.[0]?.field;
+      const reason = intakeError.code === "outside_service_area" ? "That location is outside the configured service area. Do not offer an onsite appointment; offer to take a message for the team instead." : intakeError.code === "invalid_service_address" ? `The service address needs clarification. Ask only about ${invalidField ?? "the invalid address field"}; do not ask for the entire address again.` : "The appointment is not booked yet. Ask only for the required intake details listed below, then retry.";
+      return { ok: false as const, reasonCode: intakeError.code, reason, missingFields: intakeError.missingFields ?? [], validationIssues: intakeError.validationIssues ?? [] };
+    }
     const reason = bookingFailureReason(error);
-    await safeRecordProductEvent(context, { name: "appointment.booking_failed", businessId: input.businessId, distinctId, properties: { reason, serviceId: service.id, requestedServiceName: input.serviceName, channel: input.channel, sourceChannel: input.channel } });
+    operationalLog("voice.booking.failed", reason);
+    await safeRecordProductEvent(context, { name: "appointment.booking_failed", businessId: input.businessId, distinctId, properties: { reason, requestedServiceName: input.serviceName, channel: input.channel, sourceChannel: input.channel } });
     return { ok: false as const, reason: reason === "slot_unavailable" ? "That time is no longer available." : "The booking could not be completed." };
   }
 }
 
-export async function lookupCallerAppointments(context: DomainContext, input: { businessId: string; callerPhone: string }) {
+export async function lookupCallerAppointments(context: DomainContext, input: { businessId: string; callerPhone: string; callerName?: string; appointmentStartsAt?: string; serviceName?: string; appointmentId?: string; timezone?: string }) {
   return await withBusinessTransaction(context.db, { businessId: input.businessId, actorType: "worker" }, async (tx) => {
-    const [rows, profile] = await Promise.all([
-      tx.select({ id: appointments.id }).from(appointments).innerJoin(contacts, eq(appointments.contactId, contacts.id)).where(and(eq(appointments.businessId, input.businessId), eq(contacts.phone, input.callerPhone), eq(appointments.status, "confirmed"))).orderBy(asc(appointments.startsAt)),
+    const [lookup, profile] = await Promise.all([
+      findAppointmentChangeMatches(tx, input),
       tx.select({ appointmentChangePolicy: receptionistProfiles.appointmentChangePolicy }).from(receptionistProfiles).where(eq(receptionistProfiles.businessId, input.businessId)).limit(1),
     ]);
+    const { matches, callerPhoneAppointmentCount } = lookup;
     const policy = normalizeAppointmentChangePolicy(profile[0]?.appointmentChangePolicy);
-    // Only say whether the phone matched; never read appointment details out
-    // before the caller is verified.
-    return { ok: true as const, policy: { ...policy, enabled: policy.enabled && rows.length > 0 }, phoneMatched: rows.length > 0, appointmentCount: rows.length };
+    // Return only an opaque ID for a unique match. Alternate-number matches
+    // require OTP to the saved contact number before any change or disclosure.
+    return { ok: true as const, policy: { ...policy, enabled: policy.enabled && (callerPhoneAppointmentCount > 0 || matches.length > 0) }, phoneMatched: callerPhoneAppointmentCount > 0, appointmentCount: callerPhoneAppointmentCount, matchingAppointmentCount: matches.length, reason: lookup.reason, matchingStrategy: lookup.matchingStrategy, matchedFacts: lookup.matchedFacts, ...(matches.length === 1 ? { appointmentId: matches[0]!.id } : {}) };
   });
 }
 
 export async function verifyCallerForChange(
   context: DomainContext,
-  input: { businessId: string; callerPhone: string; action: "cancel" | "reschedule"; appointmentId?: string; callerName?: string; appointmentStartsAt?: string; serviceName?: string },
+  input: { businessId: string; callerPhone: string; action: "cancel" | "reschedule"; appointmentId?: string; callerName?: string; appointmentStartsAt?: string; serviceName?: string; timezone?: string },
 ) {
   const verification = await createAppointmentChangeVerification(context, input);
   if (!verification) return { ok: false as const, verified: false, reason: "The appointment could not be verified." };
   const verified = verification.status === "otp_verified" || verification.status === "facts_verified";
-  return { ok: true as const, verified, requiresOtp: !verified, verificationId: verification.verificationId, appointmentId: verification.appointmentId, status: verification.status };
+  return { ok: true as const, verified, requiresOtp: !verified, verificationId: verification.verificationId, appointmentId: verification.appointmentId, status: verification.status, ...(verified && verification.appointment ? { appointment: verification.appointment } : {}) };
 }
 
 export async function cancelForCaller(
@@ -191,7 +213,7 @@ export async function rescheduleForCaller(
 
 export async function takeMessageForStaff(
   context: DomainContext,
-  input: { businessId: string; message: string; channel: ReceptionistChannel; callerName?: string; callbackPhone?: string; urgency?: string; callbackWindow?: string; callId?: string; conversationId?: string },
+  input: { businessId: string; message: string; channel: ReceptionistChannel; callerName?: string; callbackPhone?: string; urgency?: string; callbackWindow?: string; requestKind?: "appointment_request"; callId?: string; conversationId?: string },
 ) {
   const alert = { eventKind: "voiceMessage" as const, subject: "New voice message", body: "A caller left a voice message. Open the inbox to review it." };
   // A website chat's conversation is the visitor's own thread: a staff note
@@ -217,6 +239,7 @@ export async function takeMessageForStaff(
     ...(input.callbackPhone ? { callbackPhone: input.callbackPhone } : {}),
     ...(input.urgency ? { urgency: input.urgency } : {}),
     ...(input.callbackWindow ? { callbackWindow: input.callbackWindow } : {}),
+    ...(input.requestKind ? { requestKind: input.requestKind } : {}),
   });
   if (inVisitorThread) await queueOperatorAlert(context, { businessId: input.businessId, eventKey: `${alert.eventKind}:${task.inboxItemId}`, ...alert });
   return { ok: true as const, inboxItemId: task.inboxItemId };

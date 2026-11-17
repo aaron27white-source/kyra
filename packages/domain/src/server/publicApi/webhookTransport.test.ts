@@ -120,9 +120,11 @@ describe("webhook sender", () => {
     expect(result.error).toMatch(/Timed out/);
   });
 
-  it("refuses loopback targets with the default DNS guard", async () => {
+  it("refuses loopback targets from both literals and DNS results", async () => {
     const port = await listen((_request, response) => response.writeHead(200).end());
-    const send = createWebhookSender({ policy: { allowHttp: true } });
+    // Keep this security test deterministic and independent of public DNS or
+    // proxy availability: the test resolver deliberately returns loopback.
+    const send = createWebhookSender({ policy: { allowHttp: true }, lookup: createGuardedLookup(localLookup) });
     const viaIp = await send({ url: `http://127.0.0.1:${port}/`, secret: generateWebhookSecret(), id: "evt", body: "{}" });
     expect(viaIp.ok).toBe(false);
     expect(viaIp.error).toMatch(/public IP/);

@@ -62,7 +62,7 @@ export async function startLivePhoneCall(context: DomainContext, input: { busine
     transport: "voice",
     gatewaySessionId: input.sessionId,
   });
-  return { callId: call.callId, conversationId: call.conversationId, blocked: call.blocked, duplicate: call.duplicate };
+  return { callId: call.callId, conversationId: call.conversationId, blocked: call.blocked, duplicate: call.duplicate, ended: call.ended ?? false };
 }
 
 /**

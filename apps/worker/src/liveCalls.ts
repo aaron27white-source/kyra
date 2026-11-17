@@ -1,11 +1,12 @@
 import { randomUUID, timingSafeEqual } from "node:crypto";
 import type { IncomingMessage, ServerResponse } from "node:http";
 
-import { createAgentModel, createReceptionistAgent, LiveCallController, type AgentChannel, type CallControl, type LiveCallSummary } from "@lobbystack/agent-core";
+import { createAgentModel, createReceptionistAgent, LiveCallController, LiveCallStartupError, type AgentChannel, type CallControl, type LiveCallSummary } from "@lobbystack/agent-core";
 import {
   blockLiveCaller,
   finishLiveCall,
   getCachedBusinessSnapshot,
+  loadLiveCallForPricing,
   markLiveCallMediaStarted,
   persistCallRecording,
   prepareLiveCallTransfer,
@@ -73,6 +74,17 @@ function endFromCloseReason(reason: string | undefined): LiveCallEnd {
   }
 }
 
+export function actualLiveCallEnd(summary: Pick<LiveCallSummary, "closeReason" | "sessionConfirmedClosed" | "providerHangupOutcome" | "providerCallDisconnected">, requestedEnd: LiveCallEnd | undefined, channel: LiveChannel): LiveCallEnd {
+  if (requestedEnd === "transferred") return "transferred";
+  if (summary.closeReason === "remote_hangup") return "caller_hung_up";
+  if (summary.closeReason === "expired") return "session_expired";
+  if (summary.closeReason === "content") return "content_blocked";
+  if (!summary.sessionConfirmedClosed) return "connection_lost";
+  if (channel === "voice" && !summary.providerCallDisconnected) return "connection_lost";
+  if (summary.closeReason === "close_requested" && summary.providerHangupOutcome === "accepted") return requestedEnd ?? "caller_finished";
+  return endFromCloseReason(summary.closeReason);
+}
+
 export function isLivePrototypeEnabled(): boolean {
   return process.env.LIVE_PROTOTYPE_ENABLED === "true";
 }
@@ -118,8 +130,19 @@ function reply(response: ServerResponse, status: number, body: Record<string, un
   response.end(JSON.stringify(body));
 }
 
-function logError(sessionId: string, what: string) {
-  return (error: unknown) => console.error(`[live] ${sessionId} ${what}`, error instanceof Error ? error.message : error);
+function safeCode(error: unknown): string | undefined {
+  if (!error || typeof error !== "object") return undefined;
+  const code = "code" in error ? error.code : undefined;
+  return typeof code === "string" && /^[a-z0-9_.-]{1,80}$/i.test(code) ? code : undefined;
+}
+
+function logError(sessionId: string, operation: string) {
+  return (error: unknown) => console.error(JSON.stringify({
+    event: "live.worker.operation_failed",
+    sessionId,
+    operation,
+    ...(safeCode(error) ? { errorCode: safeCode(error) } : {}),
+  }));
 }
 
 /**
@@ -131,7 +154,7 @@ export function createLiveCallHandler(input: { domain: DomainContext }) {
   const active = new Map<string, { request: AttachRequest; controller: LiveCallController }>();
   // Sessions whose attach is still loading, so an overlapping duplicate attach
   // doesn't open a second sideband that would answer the same delegations.
-  const starting = new Set<string>();
+  const starting = new Map<string, Promise<void>>();
   // Call records still being finalized, so shutdown can wait for them.
   const finishing = new Set<Promise<void>>();
   const client = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY, maxRetries: 0 }) : undefined;
@@ -175,40 +198,53 @@ export function createLiveCallHandler(input: { domain: DomainContext }) {
         if (status !== 404 && status !== 409) return logError(request.sessionId, "recording unavailable")(error);
       }
     }
-    console.error(`[live] ${request.sessionId} recording never became available`);
+    console.warn(JSON.stringify({ event: "live.recording.unavailable", sessionId: request.sessionId, reason: "not_ready" }));
   }
 
-  async function attach(request: AttachRequest): Promise<void> {
+  async function attach(request: AttachRequest, signal?: AbortSignal): Promise<void> {
     if (!client || !model) throw new Error("OPENAI_API_KEY and a text model are required for live calls.");
-    if (active.has(request.sessionId) || starting.has(request.sessionId)) return;
-    starting.add(request.sessionId);
+    if (signal?.aborted) throw new LiveCallStartupError("sideband_connection_failed", "attach_request_cancelled");
+    const pending = starting.get(request.sessionId);
+    if (pending) return pending;
+    if (active.has(request.sessionId)) return;
+    const startup = startCall(request, client, model, signal);
+    starting.set(request.sessionId, startup);
     try {
-      await startCall(request, client, model);
+      await startup;
     } finally {
-      starting.delete(request.sessionId);
+      if (starting.get(request.sessionId) === startup) starting.delete(request.sessionId);
     }
   }
 
-  async function startCall(request: AttachRequest, client: OpenAI, model: NonNullable<ReturnType<typeof createAgentModel>>): Promise<void> {
+  async function startCall(request: AttachRequest, client: OpenAI, model: NonNullable<ReturnType<typeof createAgentModel>>, signal?: AbortSignal): Promise<void> {
     const snapshot = await getCachedBusinessSnapshot(input.domain, { businessId: request.businessId });
     if (!snapshot) throw new Error("The business has no published snapshot.");
+    if (signal?.aborted) throw new LiveCallStartupError("sideband_connection_failed", "attach_request_cancelled");
     const phone = request.channel === "voice";
     const call = { businessId: request.businessId, callId: request.callId };
+    const requestPhoneIsValid = typeof request.callerPhone === "string" && /^\+[1-9]\d{7,14}$/.test(request.callerPhone);
+    const callRecordPhone = phone && !requestPhoneIsValid ? (await loadLiveCallForPricing(input.domain, call))?.callerPhone : undefined;
+    const callerPhone = requestPhoneIsValid ? request.callerPhone : callRecordPhone ?? request.callerPhone;
+    if (callRecordPhone && !requestPhoneIsValid) console.info(JSON.stringify({ event: "live.caller_id.recovered_from_call_record", businessId: request.businessId, callId: request.callId, sessionId: request.sessionId }));
     const telemetryCall = { ...call, channel: request.channel, ...(request.conversationId ? { conversationId: request.conversationId } : {}) };
     let end: LiveCallEnd | undefined;
     let controller: LiveCallController | undefined;
 
     const hangup = async () => {
       // SIP calls hang up at the provider; closing the session ends a browser call.
-      if (phone) await client.live.sessions.hangup(request.sessionId).catch(() => controller?.endSession());
-      else controller?.endSession();
+      if (phone) {
+        await client.live.sessions.hangup(request.sessionId);
+        return "provider" as const;
+      }
+      controller?.endSession();
+      return "session" as const;
     };
 
     const callControl: CallControl = {
       hangup: async (reason) => {
         end = reason;
         if (reason === "abuse" && phone) await blockLiveCaller(input.domain, call);
-        await hangup();
+        controller?.requestEndCall(reason);
       },
       ...(phone ? {
         transfer: async (destination: string) => {
@@ -234,9 +270,10 @@ export function createLiveCallHandler(input: { domain: DomainContext }) {
         snapshot,
         channel: request.channel,
         callId: request.callId,
+        sessionId: request.sessionId,
         ...(request.conversationId ? { conversationId: request.conversationId } : {}),
         callControl,
-        ...(request.callerPhone ? { callerPhone: request.callerPhone } : {}),
+        ...(callerPhone ? { callerPhone } : {}),
         ...(request.intakeOnly ? { intakeOnly: true } : {}),
       },
     });
@@ -244,7 +281,8 @@ export function createLiveCallHandler(input: { domain: DomainContext }) {
     const finish = async (summary: LiveCallSummary) => {
       const seconds = providerSeconds(summary, request.channel);
       const measuredSeconds = summary.durationMs / 1000;
-      const completed = await finishLiveCall(input.domain, { ...call, seconds, measuredSeconds, end: end ?? endFromCloseReason(summary.closeReason), channel: request.channel });
+      const actualEnd = actualLiveCallEnd(summary, end, request.channel);
+      const completed = await finishLiveCall(input.domain, { ...call, seconds, measuredSeconds, end: actualEnd, channel: request.channel });
       // Only the attach that finished the call keeps its recording and reports
       // its latency, so a late retry that re-attaches to an ended call doesn't
       // copy the recording or record the call's latency twice.
@@ -256,6 +294,8 @@ export function createLiveCallHandler(input: { domain: DomainContext }) {
     controller = new LiveCallController({
       client,
       sessionId: request.sessionId,
+      callId: request.callId,
+      channel: request.channel,
       agent,
       greeting: request.greetingOverride ?? snapshot.greeting,
       silenceTimeoutMs: SILENCE_TIMEOUT_MS,
@@ -264,7 +304,16 @@ export function createLiveCallHandler(input: { domain: DomainContext }) {
       onTurn: (turn) => void saveLiveCallTurn(input.domain, { ...call, ...turn }).catch(logError(request.sessionId, "transcript save failed")),
       onTimeout: (reason) => {
         end = reason;
-        void hangup();
+        controller?.endCallNow(reason);
+      },
+      onEndIntent: (reason, source) => {
+        end = reason;
+        console.info(JSON.stringify({ event: "live.end_intent", businessId: request.businessId, callId: request.callId, sessionId: request.sessionId, reason, source }));
+      },
+      onHangup: async (reason) => {
+        console.info(JSON.stringify({ event: "live.provider_hangup.requested", businessId: request.businessId, callId: request.callId, sessionId: request.sessionId, reason, transport: phone ? "sip" : "session" }));
+        const transport = await hangup();
+        console.info(JSON.stringify({ event: "live.provider_hangup.accepted", businessId: request.businessId, callId: request.callId, sessionId: request.sessionId, reason, transport }));
       },
       onDelegation: (timing) => {
         console.info(JSON.stringify({ event: "live.delegation", sessionId: request.sessionId, agentMs: timing.agentMs, totalMs: timing.totalMs, tools: timing.tools, failed: timing.failed }));
@@ -273,7 +322,24 @@ export function createLiveCallHandler(input: { domain: DomainContext }) {
       onClose: (summary) => {
         active.delete(request.sessionId);
         setPresence(request, false);
-        console.info(JSON.stringify({ event: "live.closed", sessionId: summary.sessionId, channel: request.channel, durationMs: summary.durationMs, billedSeconds: summary.billedSeconds, closeReason: summary.closeReason, end, delegations: summary.delegations.length }));
+        console.info(JSON.stringify({
+          event: "live.closed",
+          businessId: request.businessId,
+          callId: request.callId,
+          sessionId: summary.sessionId,
+          channel: request.channel,
+          durationMs: summary.durationMs,
+          billedSeconds: summary.billedSeconds,
+          end: actualLiveCallEnd(summary, end, request.channel),
+          requestedEnd: end,
+          closeReason: summary.closeReason,
+          hangupState: summary.hangupState,
+          hangupSource: summary.hangupSource,
+          providerHangupOutcome: summary.providerHangupOutcome,
+          sessionConfirmedClosed: summary.sessionConfirmedClosed,
+          providerCallDisconnected: summary.providerCallDisconnected,
+          delegations: summary.delegations.length,
+        }));
         const pending = finish(summary).catch(logError(request.sessionId, "finish failed"));
         finishing.add(pending);
         void pending.finally(() => finishing.delete(pending));
@@ -281,7 +347,20 @@ export function createLiveCallHandler(input: { domain: DomainContext }) {
     });
     active.set(request.sessionId, { request, controller });
     setPresence(request, true);
-    controller.start();
+    const cancelStartup = () => controller?.cancelStartup();
+    signal?.addEventListener("abort", cancelStartup, { once: true });
+    try {
+      const startup = controller.start();
+      if (signal?.aborted) cancelStartup();
+      await startup;
+      console.info(JSON.stringify({ event: "live.call.ready", sessionId: request.sessionId, businessId: request.businessId, channel: request.channel }));
+    } catch (error) {
+      active.delete(request.sessionId);
+      setPresence(request, false);
+      throw error;
+    } finally {
+      signal?.removeEventListener("abort", cancelStartup);
+    }
   }
 
   async function handle(request: IncomingMessage, response: ServerResponse): Promise<boolean> {
@@ -295,17 +374,42 @@ export function createLiveCallHandler(input: { domain: DomainContext }) {
       reply(response, 401, { error: "Unauthorized." });
       return true;
     }
+    let attachIdentity: Pick<AttachRequest, "sessionId" | "businessId" | "callId"> | undefined;
+    const requestIdValue = request.headers["x-request-id"];
+    const requestId = typeof requestIdValue === "string" && /^[A-Za-z0-9_-]{1,128}$/.test(requestIdValue) ? requestIdValue : undefined;
+    const attachAbort = new AbortController();
+    const onResponseClose = () => {
+      if (!response.writableEnded) attachAbort.abort();
+    };
+    response.once("close", onResponseClose);
     try {
       const body = parseAttachRequest(await readBody(request));
       if (!body) {
         reply(response, 400, { error: "sessionId, businessId, callId and channel are required." });
         return true;
       }
-      await attach(body);
-      reply(response, 202, { ok: true });
+      attachIdentity = body;
+      console.info(JSON.stringify({ event: "live.attach.received", sessionId: body.sessionId, businessId: body.businessId, callId: body.callId, ...(requestId ? { requestId } : {}) }));
+      await attach(body, attachAbort.signal);
+      if (!response.destroyed && !response.writableEnded) reply(response, 202, { ok: true });
     } catch (error) {
-      logError("-", "attach failed")(error);
-      reply(response, 500, { error: "Attach failed." });
+      const startup = error instanceof LiveCallStartupError ? error : undefined;
+      console.error(JSON.stringify({
+        event: "live.attach.failed",
+        operation: startup ? "controller_start" : "worker_attach",
+        reason: startup ? startup.reason : "call_setup_failed",
+        ...(startup?.errorCode ? { errorCode: startup.errorCode } : {}),
+        ...(attachIdentity ? { sessionId: attachIdentity.sessionId, businessId: attachIdentity.businessId, callId: attachIdentity.callId } : {}),
+        ...(requestId ? { requestId } : {}),
+      }));
+      if (!response.destroyed && !response.writableEnded) {
+        reply(response, startup ? 503 : 500, {
+          error: startup ? "voice_startup_failed" : "attach_failed",
+          ...(startup ? { reason: startup.reason, ...(startup.errorCode ? { errorCode: startup.errorCode } : {}) } : {}),
+        });
+      }
+    } finally {
+      response.off("close", onResponseClose);
     }
     return true;
   }

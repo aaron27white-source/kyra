@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+umask 077
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 if [[ -z "${REPLACEMENT_COMPOSE_PROJECT:-}" ]]; then
@@ -14,7 +15,9 @@ fi
 BACKUP_DIR="${1:-$ROOT_DIR/.replacement-backups/$(date -u +%Y%m%dT%H%M%SZ)}"
 mkdir -p "$BACKUP_DIR"
 BACKUP_DIR="$(cd "$BACKUP_DIR" && pwd)"
-COMPOSE=(docker compose --project-name "$REPLACEMENT_COMPOSE_PROJECT" --env-file "$ENV_FILE" -f "$ROOT_DIR/docker-compose.yml")
+COMPOSE_FILE="${REPLACEMENT_COMPOSE_FILE:-$ROOT_DIR/docker-compose.yml}"
+if [[ ! -f "$COMPOSE_FILE" ]]; then echo "Explicit Compose file does not exist." >&2; exit 1; fi
+COMPOSE=(docker compose --project-name "$REPLACEMENT_COMPOSE_PROJECT" --env-file "$ENV_FILE" -f "$COMPOSE_FILE")
 RUNNING_WRITERS=()
 
 STORAGE_PROVIDER=$("${COMPOSE[@]}" run --rm --no-deps --entrypoint /bin/sh admin -eu -c '
@@ -61,9 +64,12 @@ if [[ "$STORAGE_PROVIDER" == "local" ]]; then
     --user 0:0 \
     --entrypoint /bin/sh \
     -v "$BACKUP_DIR:/backup" \
+    --env BACKUP_UID="$(id -u)" --env BACKUP_GID="$(id -g)" \
     admin -eu -c '
       find /backup/storage -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
       cp -a /var/lib/lobbystack/storage/. /backup/storage/
+      # Let the invoking backup operator checksum private runtime-owned files.
+      chown -R "$BACKUP_UID:$BACKUP_GID" /backup/storage
     '
   STORAGE_DIRECTORY=storage
   STORAGE_CHECKSUMS=storage.sha256

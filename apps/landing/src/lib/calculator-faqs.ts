@@ -31,7 +31,7 @@ export const calculatorFaqs = [
   },
   {
     q: "Will an AI receptionist replace my office manager?",
-    a: "No. LobbyStack is designed to handle the repetitive frontline work: answering basic questions, collecting intake details, and booking appointments. Your office manager can focus on complex dispatching, ordering parts, and customer service.",
+    a: "No. Lead My Company is designed to handle the repetitive frontline work: answering basic questions, collecting intake details, and booking appointments. Your office manager can focus on complex dispatching, ordering parts, and customer service.",
   },
   {
     q: "Is this the same as an answering service ROI calculator?",
@@ -74,7 +74,7 @@ export const calculatorFaqsFr = [
   },
   {
     q: "Un réceptionniste IA remplace-t-il mon ou ma responsable de bureau ?",
-    a: "Non. LobbyStack gère le travail répétitif de première ligne : questions courantes, détails d’accueil et prise de rendez‑vous. Votre équipe garde les cas complexes.",
+    a: "Non. Lead My Company gère le travail répétitif de première ligne : questions courantes, détails d’accueil et prise de rendez‑vous. Votre équipe garde les cas complexes.",
   },
   {
     q: "Est-ce pareil qu’un calculateur de ROI pour service de réponse ?",

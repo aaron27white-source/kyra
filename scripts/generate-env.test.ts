@@ -26,4 +26,24 @@ describe("generateEnv", () => {
 
     expect(output).toMatch(/^BETTER_AUTH_SECRET=[0-9a-f]{64}$/);
   });
+
+  it("generates distinct app and internal system credentials", () => {
+    const { output, generated } = generateEnv(
+      "LOBBYSTACK_APP_PASSWORD=replace-with-app-password\nLOBBYSTACK_SYSTEM_PASSWORD=replace-with-system-password",
+    );
+    const values = Object.fromEntries(output.split("\n").map((line) => line.split("=")));
+    expect(values.LOBBYSTACK_APP_PASSWORD).toMatch(/^[0-9a-f]{64}$/);
+    expect(values.LOBBYSTACK_SYSTEM_PASSWORD).toMatch(/^[0-9a-f]{64}$/);
+    expect(values.LOBBYSTACK_SYSTEM_PASSWORD).not.toBe(values.LOBBYSTACK_APP_PASSWORD);
+    expect(generated).toEqual(["LOBBYSTACK_APP_PASSWORD", "LOBBYSTACK_SYSTEM_PASSWORD"]);
+  });
+
+  it("generates credentials from a Windows CRLF environment template", () => {
+    const { output, generated } = generateEnv(
+      "LOBBYSTACK_SYSTEM_PASSWORD=replace-with-system-password\r\nADMIN_PORT=13000\r\n",
+      () => "generated-password",
+    );
+    expect(output).toBe("LOBBYSTACK_SYSTEM_PASSWORD=generated-password\nADMIN_PORT=13000\n");
+    expect(generated).toEqual(["LOBBYSTACK_SYSTEM_PASSWORD"]);
+  });
 });

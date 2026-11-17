@@ -1,10 +1,11 @@
+import type * as DbModule from "@lobbystack/db";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { PgDialect } from "drizzle-orm/pg-core";
 import type { DomainContext } from "./context";
 import type { KnowledgePassage } from "../knowledgeRanking";
 
 const mocks = vi.hoisted(() => ({ transaction: vi.fn() }));
-vi.mock("@lobbystack/db", async original => ({ ...(await original<typeof import("@lobbystack/db")>()), withBusinessTransaction: mocks.transaction }));
+vi.mock("@lobbystack/db", async original => ({ ...(await original<typeof DbModule>()), withBusinessTransaction: mocks.transaction }));
 import { chunkText, searchKnowledgeEvidence } from "./knowledge";
 
 const primary: KnowledgePassage = { chunkId: "chunk", documentId: "document", title: "BAA", content: "Management", sourceUrl: "https://example.com/baa", sourceRevision: 3, sequence: 1 };

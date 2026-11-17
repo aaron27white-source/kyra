@@ -43,7 +43,7 @@ const copy = {
         <strong>{jobs} lost jobs</strong> every month.
       </>
     ),
-    tryFree: "Try LobbyStack free",
+    tryFree: "Try Lead My Company free",
     estimateNote: "These are estimates. Actual results may vary.",
     tradeLabels: {
       Custom: "Custom",
@@ -70,7 +70,7 @@ const copy = {
         <strong>{jobs} travaux perdus</strong> chaque mois.
       </>
     ),
-    tryFree: "Essayer LobbyStack gratuitement",
+    tryFree: "Essayer Lead My Company gratuitement",
     estimateNote:
       "Ce sont des estimations. Les résultats réels peuvent varier.",
     tradeLabels: {

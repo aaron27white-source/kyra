@@ -1,0 +1,247 @@
+{
+  "scanner": "gitleaks 8.30.1",
+  "reviewedAt": "2026-10-22",
+  "scope": "Exact historical fingerprints only; no path/rule/global exclusion.",
+  "findings": [
+    {
+      "fingerprint": "e936a3a4fd1388b2bfdb3c8855cbcc6e448048bc:apps/admin/src/lib/lmc-env.test.ts:generic-api-key:26",
+      "file": "apps/admin/src/lib/lmc-env.test.ts",
+      "line": 26,
+      "rule": "generic-api-key",
+      "category": "synthetic-signing-fixture",
+      "reason": "Literal input to real-mode configuration rejection test; no provider credential or delivery."
+    },
+    {
+      "fingerprint": "5a7286c8de5443d79c679fb652a873d3873af900:integrations/zapier/test/authentication.test.js:generic-api-key:25",
+      "file": "integrations/zapier/test/authentication.test.js",
+      "line": 25,
+      "rule": "generic-api-key",
+      "category": "public-key-prefix",
+      "reason": "Public API key prefix in mocked GET /me metadata; not the bearer secret."
+    },
+    {
+      "fingerprint": "9791a34b5b2d5d86d5c97e8b57ac6d2dd3664f29:apps/admin/src/lib/public-api/rate-limit.test.ts:generic-api-key:23",
+      "file": "apps/admin/src/lib/public-api/rate-limit.test.ts",
+      "line": 23,
+      "rule": "generic-api-key",
+      "category": "public-key-id",
+      "reason": "Database key identifier passed as apiKeyId to an in-memory quota store, not a credential."
+    },
+    {
+      "fingerprint": "9791a34b5b2d5d86d5c97e8b57ac6d2dd3664f29:mintlify/api/authentication.mdx:generic-api-key:24",
+      "file": "mintlify/api/authentication.mdx",
+      "line": 24,
+      "rule": "generic-api-key",
+      "category": "public-key-prefix",
+      "reason": "Documented public lsk key prefix and format; not a complete authenticated bearer key."
+    },
+    {
+      "fingerprint": "ac78fb4026e1c3fe2741f64c24641f2825d721c3:scripts/migration/legacy-freeze.test.ts:jwt:24",
+      "file": "scripts/migration/legacy-freeze.test.ts",
+      "line": 24,
+      "rule": "jwt",
+      "category": "synthetic-jwt",
+      "reason": "Test-only JWT; HS256 signature is too short to be a valid HMAC-SHA256 signature."
+    },
+    {
+      "fingerprint": "216219f64f44fb1ee37f71d08a04ab91e3c10ed7:apps/web/src/lib/analytics.test.ts:generic-api-key:182",
+      "file": "apps/web/src/lib/analytics.test.ts",
+      "line": 182,
+      "rule": "generic-api-key",
+      "category": "synthetic-redaction-fixture",
+      "reason": "Mock analytics tests require prospect/claim fixture tokens to be removed from telemetry."
+    },
+    {
+      "fingerprint": "216219f64f44fb1ee37f71d08a04ab91e3c10ed7:apps/web/src/lib/analytics.test.ts:generic-api-key:184",
+      "file": "apps/web/src/lib/analytics.test.ts",
+      "line": 184,
+      "rule": "generic-api-key",
+      "category": "synthetic-redaction-fixture",
+      "reason": "Mock analytics tests require prospect/claim fixture tokens to be removed from telemetry."
+    },
+    {
+      "fingerprint": "216219f64f44fb1ee37f71d08a04ab91e3c10ed7:apps/web/src/lib/analytics.test.ts:generic-api-key:197",
+      "file": "apps/web/src/lib/analytics.test.ts",
+      "line": 197,
+      "rule": "generic-api-key",
+      "category": "synthetic-redaction-fixture",
+      "reason": "Mock analytics tests require prospect/claim fixture tokens to be removed from telemetry."
+    },
+    {
+      "fingerprint": "fb63c68fdff8d472d89eb55f6eda1e66a7c7e34d:convex/tests/passwordAuthEmailNormalization.test.ts:private-key:11",
+      "file": "convex/tests/passwordAuthEmailNormalization.test.ts",
+      "line": 11,
+      "rule": "private-key",
+      "category": "public-test-signing-key",
+      "reason": "Legacy TEST_JWT_PRIVATE_KEY fixture referenced only in its local auth test; not production signing material."
+    },
+    {
+      "fingerprint": "ce0408dc3f45a059b4794fcd459683d10675aea0:packages/testing/src/twilioSmsDelivery.test.ts:generic-api-key:418",
+      "file": "packages/testing/src/twilioSmsDelivery.test.ts",
+      "line": 418,
+      "rule": "generic-api-key",
+      "category": "idempotency-id",
+      "reason": "Fake inbound message identifier SM-inbound-handoff-1 in a test quota/idempotency lookup, not authentication material."
+    },
+    {
+      "fingerprint": "76d49d5b6785ab6e3c5ccc7921dcd87e32730839:convex/lib/node/tessdataFra.ts:generic-api-key:3695",
+      "file": "convex/lib/node/tessdataFra.ts",
+      "line": 3695,
+      "rule": "generic-api-key",
+      "category": "encoded-ocr-model",
+      "reason": "Entire match line is a base64 literal in a historical bundled OCR model, not an authentication assignment."
+    },
+    {
+      "fingerprint": "76d49d5b6785ab6e3c5ccc7921dcd87e32730839:convex/lib/node/tessdataFra.ts:generic-api-key:3840",
+      "file": "convex/lib/node/tessdataFra.ts",
+      "line": 3840,
+      "rule": "generic-api-key",
+      "category": "encoded-ocr-model",
+      "reason": "Entire match line is a base64 literal in a historical bundled OCR model, not an authentication assignment."
+    },
+    {
+      "fingerprint": "76d49d5b6785ab6e3c5ccc7921dcd87e32730839:convex/lib/node/tessdataFra.ts:generic-api-key:7773",
+      "file": "convex/lib/node/tessdataFra.ts",
+      "line": 7773,
+      "rule": "generic-api-key",
+      "category": "encoded-ocr-model",
+      "reason": "Entire match line is a base64 literal in a historical bundled OCR model, not an authentication assignment."
+    },
+    {
+      "fingerprint": "76d49d5b6785ab6e3c5ccc7921dcd87e32730839:convex/lib/node/tessdataEng.ts:generic-api-key:409",
+      "file": "convex/lib/node/tessdataEng.ts",
+      "line": 409,
+      "rule": "generic-api-key",
+      "category": "encoded-ocr-model",
+      "reason": "Entire match line is a base64 literal in a historical bundled OCR model, not an authentication assignment."
+    },
+    {
+      "fingerprint": "76d49d5b6785ab6e3c5ccc7921dcd87e32730839:convex/lib/node/tessdataEng.ts:generic-api-key:495",
+      "file": "convex/lib/node/tessdataEng.ts",
+      "line": 495,
+      "rule": "generic-api-key",
+      "category": "encoded-ocr-model",
+      "reason": "Entire match line is a base64 literal in a historical bundled OCR model, not an authentication assignment."
+    },
+    {
+      "fingerprint": "76d49d5b6785ab6e3c5ccc7921dcd87e32730839:convex/lib/node/tessdataEng.ts:generic-api-key:1472",
+      "file": "convex/lib/node/tessdataEng.ts",
+      "line": 1472,
+      "rule": "generic-api-key",
+      "category": "encoded-ocr-model",
+      "reason": "Entire match line is a base64 literal in a historical bundled OCR model, not an authentication assignment."
+    },
+    {
+      "fingerprint": "76d49d5b6785ab6e3c5ccc7921dcd87e32730839:convex/lib/node/tessdataEng.ts:generic-api-key:1524",
+      "file": "convex/lib/node/tessdataEng.ts",
+      "line": 1524,
+      "rule": "generic-api-key",
+      "category": "encoded-ocr-model",
+      "reason": "Entire match line is a base64 literal in a historical bundled OCR model, not an authentication assignment."
+    },
+    {
+      "fingerprint": "76d49d5b6785ab6e3c5ccc7921dcd87e32730839:convex/lib/node/tessdataEng.ts:generic-api-key:3993",
+      "file": "convex/lib/node/tessdataEng.ts",
+      "line": 3993,
+      "rule": "generic-api-key",
+      "category": "encoded-ocr-model",
+      "reason": "Entire match line is a base64 literal in a historical bundled OCR model, not an authentication assignment."
+    },
+    {
+      "fingerprint": "76d49d5b6785ab6e3c5ccc7921dcd87e32730839:convex/lib/node/tessdataEng.ts:generic-api-key:5256",
+      "file": "convex/lib/node/tessdataEng.ts",
+      "line": 5256,
+      "rule": "generic-api-key",
+      "category": "encoded-ocr-model",
+      "reason": "Entire match line is a base64 literal in a historical bundled OCR model, not an authentication assignment."
+    },
+    {
+      "fingerprint": "76d49d5b6785ab6e3c5ccc7921dcd87e32730839:convex/lib/node/tessdataEng.ts:generic-api-key:6167",
+      "file": "convex/lib/node/tessdataEng.ts",
+      "line": 6167,
+      "rule": "generic-api-key",
+      "category": "encoded-ocr-model",
+      "reason": "Entire match line is a base64 literal in a historical bundled OCR model, not an authentication assignment."
+    },
+    {
+      "fingerprint": "76d49d5b6785ab6e3c5ccc7921dcd87e32730839:convex/lib/node/tessdataEng.ts:generic-api-key:8471",
+      "file": "convex/lib/node/tessdataEng.ts",
+      "line": 8471,
+      "rule": "generic-api-key",
+      "category": "encoded-ocr-model",
+      "reason": "Entire match line is a base64 literal in a historical bundled OCR model, not an authentication assignment."
+    },
+    {
+      "fingerprint": "76d49d5b6785ab6e3c5ccc7921dcd87e32730839:convex/lib/node/tessdataEng.ts:generic-api-key:10873",
+      "file": "convex/lib/node/tessdataEng.ts",
+      "line": 10873,
+      "rule": "generic-api-key",
+      "category": "encoded-ocr-model",
+      "reason": "Entire match line is a base64 literal in a historical bundled OCR model, not an authentication assignment."
+    },
+    {
+      "fingerprint": "76d49d5b6785ab6e3c5ccc7921dcd87e32730839:convex/lib/node/tessdataEng.ts:generic-api-key:16407",
+      "file": "convex/lib/node/tessdataEng.ts",
+      "line": 16407,
+      "rule": "generic-api-key",
+      "category": "encoded-ocr-model",
+      "reason": "Entire match line is a base64 literal in a historical bundled OCR model, not an authentication assignment."
+    },
+    {
+      "fingerprint": "76d49d5b6785ab6e3c5ccc7921dcd87e32730839:convex/lib/node/tessdataEng.ts:generic-api-key:16465",
+      "file": "convex/lib/node/tessdataEng.ts",
+      "line": 16465,
+      "rule": "generic-api-key",
+      "category": "encoded-ocr-model",
+      "reason": "Entire match line is a base64 literal in a historical bundled OCR model, not an authentication assignment."
+    },
+    {
+      "fingerprint": "76d49d5b6785ab6e3c5ccc7921dcd87e32730839:convex/lib/node/tessdataEng.ts:generic-api-key:16681",
+      "file": "convex/lib/node/tessdataEng.ts",
+      "line": 16681,
+      "rule": "generic-api-key",
+      "category": "encoded-ocr-model",
+      "reason": "Entire match line is a base64 literal in a historical bundled OCR model, not an authentication assignment."
+    },
+    {
+      "fingerprint": "76d49d5b6785ab6e3c5ccc7921dcd87e32730839:convex/lib/node/tessdataEng.ts:generic-api-key:20220",
+      "file": "convex/lib/node/tessdataEng.ts",
+      "line": 20220,
+      "rule": "generic-api-key",
+      "category": "encoded-ocr-model",
+      "reason": "Entire match line is a base64 literal in a historical bundled OCR model, not an authentication assignment."
+    },
+    {
+      "fingerprint": "76d49d5b6785ab6e3c5ccc7921dcd87e32730839:convex/lib/node/tessdataEng.ts:generic-api-key:22460",
+      "file": "convex/lib/node/tessdataEng.ts",
+      "line": 22460,
+      "rule": "generic-api-key",
+      "category": "encoded-ocr-model",
+      "reason": "Entire match line is a base64 literal in a historical bundled OCR model, not an authentication assignment."
+    },
+    {
+      "fingerprint": "76d49d5b6785ab6e3c5ccc7921dcd87e32730839:convex/lib/node/tessdataEng.ts:generic-api-key:25994",
+      "file": "convex/lib/node/tessdataEng.ts",
+      "line": 25994,
+      "rule": "generic-api-key",
+      "category": "encoded-ocr-model",
+      "reason": "Entire match line is a base64 literal in a historical bundled OCR model, not an authentication assignment."
+    },
+    {
+      "fingerprint": "76d49d5b6785ab6e3c5ccc7921dcd87e32730839:convex/lib/node/tessdataEng.ts:generic-api-key:27152",
+      "file": "convex/lib/node/tessdataEng.ts",
+      "line": 27152,
+      "rule": "generic-api-key",
+      "category": "encoded-ocr-model",
+      "reason": "Entire match line is a base64 literal in a historical bundled OCR model, not an authentication assignment."
+    },
+    {
+      "fingerprint": "76d49d5b6785ab6e3c5ccc7921dcd87e32730839:convex/lib/node/tessdataEng.ts:generic-api-key:29483",
+      "file": "convex/lib/node/tessdataEng.ts",
+      "line": 29483,
+      "rule": "generic-api-key",
+      "category": "encoded-ocr-model",
+      "reason": "Entire match line is a base64 literal in a historical bundled OCR model, not an authentication assignment."
+    }
+  ]
+}

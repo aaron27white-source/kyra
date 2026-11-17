@@ -24,35 +24,35 @@ export const publicPages: PublicPage[] = [
     path: "/features/",
     title: "AI Receptionist Features for Calls, Booking, and Alerts",
     description:
-      "Explore LobbyStack AI receptionist features for phone answering, appointment booking, call transfers, lead qualification, owner alerts, and call summaries.",
+      "Explore Lead My Company AI receptionist features for phone answering, appointment booking, call transfers, lead qualification, owner alerts, and call summaries.",
     markdown: "/features.md",
   },
   {
     path: "/pricing/",
     title: "AI Receptionist Pricing for Small Businesses",
     description:
-      "Compare LobbyStack AI receptionist pricing for Free, Starter, Pro, and Enterprise plans, including voice minutes, annual billing, SMS alerts, and overage rates.",
+      "Compare Lead My Company AI receptionist pricing for Free, Starter, Pro, and Enterprise plans, including voice minutes, annual billing, SMS alerts, and overage rates.",
     markdown: "/pricing.md",
   },
   {
     path: "/blog/",
     title: "AI Receptionist Blog and Product Updates",
     description:
-      "Read LobbyStack product updates and practical guides about AI receptionists, phone answering, appointment booking, and small-business call automation.",
+      "Read Lead My Company product updates and practical guides about AI receptionists, phone answering, appointment booking, and small-business call automation.",
     markdown: "/blog.md",
   },
   {
     path: "/changelog/",
-    title: "LobbyStack Changelog",
+    title: "Lead My Company Changelog",
     description:
-      "Follow LobbyStack product updates, new AI receptionist features, integrations, and improvements for small businesses.",
+      "Follow Lead My Company product updates, new AI receptionist features, integrations, and improvements for small businesses.",
     markdown: "/changelog.md",
   },
   {
     path: "/docs/api/",
-    title: "LobbyStack Public API Documentation",
+    title: "Lead My Company Public API Documentation",
     description:
-      "Machine-readable discovery resources for agents and integrators visiting LobbyStack.",
+      "Machine-readable discovery resources for agents and integrators visiting Lead My Company.",
     markdown: "/docs/api.md",
   },
   {

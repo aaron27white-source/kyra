@@ -1,6 +1,7 @@
+import type * as DbModule from "@lobbystack/db";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { appointments, businesses, businessHours, calendarConnections, closures, contacts, notifications, services, staff, staffServiceAssignments } from "@lobbystack/db";
+import { appointments, businesses, businessHours, calendarConnections, calls, closures, contacts, notifications, receptionistProfiles, services, staff, staffServiceAssignments } from "@lobbystack/db";
 
 const mocks = vi.hoisted(() => ({
   withBusinessTransaction: vi.fn(),
@@ -8,7 +9,7 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("@lobbystack/db", async (original) => ({
-  ...(await original<typeof import("@lobbystack/db")>()),
+  ...(await original<typeof DbModule>()),
   withBusinessTransaction: mocks.withBusinessTransaction,
   enqueueOutbox: mocks.enqueueOutbox,
 }));
@@ -21,6 +22,9 @@ type TransactionConfig = {
   assignmentsAfterLock?: unknown[];
   connections?: unknown[];
   hours?: unknown[];
+  existingCallBooking?: { appointmentId: string; contactId: string; staffId: string };
+  serviceIntakePolicy?: Record<string, unknown>;
+  businessIntakePolicy?: Record<string, unknown>;
 };
 
 function createRecordingTransaction(config: TransactionConfig = {}) {
@@ -29,9 +33,13 @@ function createRecordingTransaction(config: TransactionConfig = {}) {
   let selectCount = 0;
   let notificationSeq = 0;
   const executeCalls: unknown[] = [];
+  const insertedValues = new Map<unknown, unknown>();
 
   const rowsFor = (table: unknown): unknown[] => {
-    if (table === services) return [{ id: "svc-1", name: "General Checkup", durationMinutes: 30 }];
+    if (table === services) return [{ id: "svc-1", name: "General Checkup", durationMinutes: 30, intakePolicy: config.serviceIntakePolicy }];
+    if (table === receptionistProfiles) return config.businessIntakePolicy ? [{ intakePolicy: config.businessIntakePolicy }] : [];
+    if (table === calls && config.existingCallBooking) return [{ id: "call-1", conversationId: null, contactId: "original-contact", startedAt: new Date(), transport: "phone" }];
+    if (table === appointments && config.existingCallBooking) return [config.existingCallBooking];
     if (table === businesses) return [{ timezone: "UTC" }];
     if (table === staff) return config.staffRows ?? [{ id: "staff-1" }, { id: "staff-2" }, { id: "staff-3" }];
     if (table === staffServiceAssignments) return executeCalls.length && config.assignmentsAfterLock
@@ -58,17 +66,16 @@ function createRecordingTransaction(config: TransactionConfig = {}) {
     select: () => { selectCount += 1; return thenable(() => []); },
     insert: (table: unknown) => {
       insertCounts.set(table, (insertCounts.get(table) ?? 0) + 1);
-      if (table === contacts) return thenable(() => [{ id: "contact-1" }]);
-      if (table === appointments) return thenable(() => [{ id: "apt-1", revision: 1 }]);
-      if (table === notifications) { notificationSeq += 1; return thenable(() => [{ id: `notif-${notificationSeq}` }]); }
-      return thenable(() => [{ id: "row-1" }]);
+      const query = table === contacts ? thenable(() => [{ id: "contact-1" }]) : table === appointments ? thenable(() => [{ id: "apt-1", revision: 1 }]) : table === notifications ? thenable(() => { notificationSeq += 1; return [{ id: `notif-${notificationSeq}` }]; }) : thenable(() => [{ id: "row-1" }]);
+      query.values = (values: unknown) => { insertedValues.set(table, values); return query; };
+      return query;
     },
     update: () => thenable(() => [{ id: "row-1" }]),
     delete: () => thenable(() => [{ id: "row-1" }]),
     execute: (query: unknown) => { executeCalls.push(query); return Promise.resolve([{ pg_advisory_xact_lock: null }]); },
   };
 
-  return { tx, fromCounts, insertCounts, selectCount: () => selectCount, executeCalls };
+  return { tx, fromCounts, insertCounts, selectCount: () => selectCount, executeCalls, insertedValues };
 }
 
 const context = { db: {} as never };
@@ -108,7 +115,7 @@ describe("booking availability reference locking", () => {
     expect(recording.fromCounts.get(businessHours)).toBe(4);
     expect(recording.fromCounts.get(closures)).toBe(4);
     expect(recording.fromCounts.get(appointments)).toBe(3);
-    expect(recording.selectCount()).toBe(31);
+    expect(recording.selectCount()).toBe(35);
   });
 
   it("rechecks conflicts after the lock and stops at the first available candidate", async () => {
@@ -151,5 +158,30 @@ describe("booking availability reference locking", () => {
     expect(result.staffId).toBe("staff-2");
     expect(recording.executeCalls).toHaveLength(2);
     expect(recording.fromCounts.get(staffServiceAssignments)).toBe(3);
+  });
+
+  it("returns the original appointment on a duplicate voice booking invocation", async () => {
+    const existingCallBooking = { appointmentId: "apt-existing", contactId: "alternate-contact", staffId: "staff-1" };
+    const recording = useTransaction({ existingCallBooking });
+
+    const result = await bookAppointment(context, { ...input, callId: "call-1" });
+
+    expect(result).toEqual({ ...existingCallBooking, idempotent: true });
+    expect(recording.executeCalls).toHaveLength(0);
+    expect(recording.insertCounts.get(appointments) ?? 0).toBe(0);
+    expect(recording.insertCounts.get(notifications) ?? 0).toBe(0);
+  });
+
+  it("refuses to confirm an onsite booking until its required address is supplied", async () => {
+    const recording = useTransaction({ serviceIntakePolicy: { serviceType: "onsite", fields: { serviceAddress: "required" } } });
+    await expect(bookAppointment(context, input)).rejects.toMatchObject({ code: "missing_required_fields", missingFields: ["serviceAddress"] });
+    expect(recording.insertCounts.get(appointments) ?? 0).toBe(0);
+    expect(recording.insertCounts.get(contacts) ?? 0).toBe(0);
+  });
+
+  it("persists normalized service location and complete intake with the booking", async () => {
+    const recording = useTransaction({ serviceIntakePolicy: { serviceType: "onsite", fields: { serviceAddress: "required", issueDescription: "required" } } });
+    await bookAppointment(context, { ...input, contactName: "Jamie", intake: { serviceLocation: { line1: "123 Main St", unit: "", city: "Miami", region: "FL", postalCode: "33101", country: "us" }, answers: { issueDescription: " AC not cooling " } } });
+    expect(recording.insertedValues.get(appointments)).toMatchObject({ serviceLocation: { line1: "123 Main St", city: "Miami", postalCode: "33101", country: "US" }, intakeAnswers: { issueDescription: "AC not cooling" }, intakeCompletionStatus: "complete" });
   });
 });

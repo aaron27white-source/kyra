@@ -75,27 +75,27 @@ describe("landing i18n route helpers", () => {
 
   it("generates hreflang alternates from the unprefixed canonical path", () => {
     expect(alternateLocaleLinks("/fr/pricing/")).toEqual([
-      { hrefLang: "en", href: "https://lobbystack.com/pricing/" },
-      { hrefLang: "fr", href: "https://lobbystack.com/fr/pricing/" },
-      { hrefLang: "x-default", href: "https://lobbystack.com/pricing/" },
+      { hrefLang: "en", href: "https://leadmycompany.com/pricing/" },
+      { hrefLang: "fr", href: "https://leadmycompany.com/fr/pricing/" },
+      { hrefLang: "x-default", href: "https://leadmycompany.com/pricing/" },
     ])
     expect(alternateLocaleLinks("/cookie-policy/")).toEqual([
-      { hrefLang: "en", href: "https://lobbystack.com/cookie-policy/" },
-      { hrefLang: "fr", href: "https://lobbystack.com/fr/cookie-policy/" },
-      { hrefLang: "x-default", href: "https://lobbystack.com/cookie-policy/" },
+      { hrefLang: "en", href: "https://leadmycompany.com/cookie-policy/" },
+      { hrefLang: "fr", href: "https://leadmycompany.com/fr/cookie-policy/" },
+      { hrefLang: "x-default", href: "https://leadmycompany.com/cookie-policy/" },
     ])
     expect(alternateLocaleLinks("/blog/best-open-source-ai-phone-answering-services/")).toEqual([
       {
         hrefLang: "en",
-        href: "https://lobbystack.com/blog/best-open-source-ai-phone-answering-services/",
+        href: "https://leadmycompany.com/blog/best-open-source-ai-phone-answering-services/",
       },
       {
         hrefLang: "fr",
-        href: "https://lobbystack.com/fr/blog/best-open-source-ai-phone-answering-services/",
+        href: "https://leadmycompany.com/fr/blog/best-open-source-ai-phone-answering-services/",
       },
       {
         hrefLang: "x-default",
-        href: "https://lobbystack.com/blog/best-open-source-ai-phone-answering-services/",
+        href: "https://leadmycompany.com/blog/best-open-source-ai-phone-answering-services/",
       },
     ])
   })

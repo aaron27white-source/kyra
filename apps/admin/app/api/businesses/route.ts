@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { attributeBusiness, createBusiness, listUserBusinesses, updateBusiness } from "@lobbystack/domain";
-import { getAppDatabase, asApiResponse, businessIdFromRequest, readJson, requireApiSession } from "@/lib/api-helpers";
+import { getAppDatabase, asApiResponse, readJson, requireApiSession, requireOperatorBusiness } from "@/lib/api-helpers";
 import { createDomainContext } from "@/lib/domain-context";
 
 export const dynamic = "force-dynamic";
@@ -40,10 +40,8 @@ export async function POST(request: Request) {
 
 export async function PATCH(request: Request) {
   try {
-    const session = await requireApiSession(request);
-    const businessId = businessIdFromRequest(request);
+    const { session, businessId } = await requireOperatorBusiness(request, { pilotCapability: "business_profile" });
     const body = await readJson(request) as { name?: string; timezone?: string; businessType?: string; defaultLocale?: string; websiteUrl?: string | null };
-    if (!businessId) return NextResponse.json({ error: "A businessId is required." }, { status: 400 });
     await updateBusiness(createDomainContext(), { userId: session.user.id, businessId, ...body });
     return NextResponse.json({ ok: true });
   } catch (error) { return asApiResponse(error); }

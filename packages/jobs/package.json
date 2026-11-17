@@ -21,9 +21,9 @@
     "@lobbystack/contracts": "workspace:*",
     "bullmq": "^5.71.0",
     "ioredis": "^5.8.2",
-    "zod": "^3.25.76"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.12"
   }
 }

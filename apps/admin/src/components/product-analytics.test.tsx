@@ -41,7 +41,7 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-function setup(enabled: boolean | undefined) {
+function setup(enabled: boolean | undefined, disabled = false) {
   const client = new QueryClient({ defaultOptions: { queries: { staleTime: Infinity, retry: false } } });
   clients.push(client);
   client.setQueryData(["product-analytics-session"], { user: { id: "operator" } });
@@ -54,7 +54,7 @@ function setup(enabled: boolean | undefined) {
     if (enabled === undefined) return new Promise<Response>(() => {});
     return Promise.resolve(Response.json({ telemetryEnabled: enabled ?? false }));
   }));
-  render(<QueryClientProvider client={client}><ProductAnalytics /></QueryClientProvider>);
+  render(<QueryClientProvider client={client}><ProductAnalytics disabled={disabled} /></QueryClientProvider>);
   return client;
 }
 
@@ -231,4 +231,11 @@ describe("queued workspace-switch analytics", () => {
     expect(mocks.posthog.capture).not.toHaveBeenCalledWith("web.workspace.business_switched", expect.anything());
     await waitFor(() => expect(window.sessionStorage.getItem("lobbystack.pending-workspace-switch")).toBeNull());
   });
+});
+
+it("does not read closed preference endpoints or opt in when the pilot disables analytics",async()=>{
+  mocks.pathname="/leads";setup(true,true);
+  await act(async()=>{});
+  expect(fetch).not.toHaveBeenCalled();expect(mocks.posthog.opt_in_capturing).not.toHaveBeenCalled();
+  expect(mocks.posthog.identify).not.toHaveBeenCalled();expect(mocks.recorderLoaded).not.toHaveBeenCalled();
 });

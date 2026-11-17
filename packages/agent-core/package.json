@@ -20,7 +20,8 @@
     "luxon": "^3.7.2",
     "openai": "^7.23.0",
     "ws": "^8.21.0",
-    "zod": "^4.6.5"
+    "zod": "^4.6.6",
+    "@lobbystack/contracts": "workspace:*"
   },
   "devDependencies": {
     "@types/luxon": "^3.7.1",

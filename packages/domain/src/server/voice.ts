@@ -92,12 +92,12 @@ export async function startCall(
     maxDurationMs?: number;
     billable?: boolean;
   },
-): Promise<{ callId: string; conversationId: string; contactId: string; duplicate: boolean; blocked: boolean; webCallMaxDurationMs?: number }> {
+): Promise<{ callId: string; conversationId: string; contactId: string; duplicate: boolean; blocked: boolean; ended: boolean; webCallMaxDurationMs?: number }> {
   const result = await withBusinessTransaction(context.db, { businessId: input.businessId, actorType: "worker" }, async (tx) => {
-    const existing = await tx.select({ id: calls.id, conversationId: calls.conversationId, contactId: calls.contactId, webCallMaxDurationMs: calls.webCallMaxDurationMs }).from(calls).where(and(eq(calls.provider, input.provider), eq(calls.providerCallId, input.providerCallId))).limit(1);
+    const existing = await tx.select({ id: calls.id, conversationId: calls.conversationId, contactId: calls.contactId, endedAt: calls.endedAt, webCallMaxDurationMs: calls.webCallMaxDurationMs }).from(calls).where(and(eq(calls.provider, input.provider), eq(calls.providerCallId, input.providerCallId))).limit(1);
     if (existing[0]?.conversationId && existing[0]?.contactId) {
       const contact = (await tx.select({ operatorBlockedAt: contacts.operatorBlockedAt }).from(contacts).where(and(eq(contacts.id, existing[0].contactId), eq(contacts.businessId, input.businessId))).limit(1))[0];
-      return { callId: existing[0].id, conversationId: existing[0].conversationId, contactId: existing[0].contactId, duplicate: true, blocked: Boolean(contact?.operatorBlockedAt), ...(existing[0].webCallMaxDurationMs !== null ? { webCallMaxDurationMs: existing[0].webCallMaxDurationMs } : {}) };
+      return { callId: existing[0].id, conversationId: existing[0].conversationId, contactId: existing[0].contactId, duplicate: true, blocked: Boolean(contact?.operatorBlockedAt), ended: existing[0].endedAt !== null, ...(existing[0].webCallMaxDurationMs !== null ? { webCallMaxDurationMs: existing[0].webCallMaxDurationMs } : {}) };
     }
     const anonymousWebCaller = input.from === "web";
     const existingContacts = anonymousWebCaller ? [] : await tx.select({ id: contacts.id, operatorBlockedAt: contacts.operatorBlockedAt }).from(contacts).where(and(eq(contacts.businessId, input.businessId), eq(contacts.phone, input.from))).limit(1);
@@ -170,7 +170,7 @@ export async function startCall(
       dedupeKey: `call:${callId}:started`,
       payload: { type: "call.started", entityId: callId, revision: 0 },
     });
-    return { callId, conversationId, contactId, duplicate: false, blocked, ...(webCallMaxDurationMs !== undefined ? { webCallMaxDurationMs } : {}) };
+    return { callId, conversationId, contactId, duplicate: false, blocked, ended: false, ...(webCallMaxDurationMs !== undefined ? { webCallMaxDurationMs } : {}) };
   });
   if (!result.duplicate) {
     await recordVoiceLifecycleEvent(context, {
@@ -530,9 +530,10 @@ export async function getCallDetail(
 
     const [transcript, appointmentRows, followUpTasks] = await Promise.all([
       tx.select({ id: transcripts.id, sequence: transcripts.sequence, speaker: transcripts.speaker, text: transcripts.text, confidence: transcripts.confidence, final: transcripts.final, createdAt: transcripts.createdAt }).from(transcripts).where(and(eq(transcripts.callId, input.callId), eq(transcripts.businessId, input.businessId))).orderBy(asc(transcripts.sequence)),
-      row.contactId
-        ? tx.select({ id: appointments.id, startsAt: appointments.startsAt, endsAt: appointments.endsAt, timezone: appointments.timezone, status: appointments.status, serviceName: services.name, staffName: staff.name }).from(appointments).innerJoin(services, eq(appointments.serviceId, services.id)).innerJoin(staff, eq(appointments.staffId, staff.id)).where(and(eq(appointments.businessId, input.businessId), eq(appointments.contactId, row.contactId))).orderBy(asc(appointments.startsAt))
-        : Promise.resolve([]),
+      tx.select({ id: appointments.id, startsAt: appointments.startsAt, endsAt: appointments.endsAt, timezone: appointments.timezone, status: appointments.status, serviceName: services.name, staffName: staff.name }).from(appointments).innerJoin(services, eq(appointments.serviceId, services.id)).innerJoin(staff, eq(appointments.staffId, staff.id)).where(and(
+        eq(appointments.businessId, input.businessId),
+        row.contactId ? or(eq(appointments.contactId, row.contactId), eq(appointments.originCallId, input.callId)) : eq(appointments.originCallId, input.callId),
+      )).orderBy(asc(appointments.startsAt)),
       tx.select({ id: inboxItems.id, title: visibleFollowUpTitle, body: visibleFollowUpBody, status: inboxItems.status, createdAt: inboxItems.createdAt, updatedAt: inboxItems.updatedAt })
         .from(inboxItems)
         .where(and(eq(inboxItems.businessId, input.businessId), eq(inboxItems.relatedCallId, input.callId), eq(inboxItems.kind, "voice_message")))
@@ -573,7 +574,7 @@ export async function getCallDetail(
 
 export async function createVoiceFollowUpTask(
   context: DomainContext,
-  input: { businessId: string; callId?: string; callerName?: string; callbackPhone?: string; urgency?: string; callbackWindow?: string; message: string; channel?: string },
+  input: { businessId: string; callId?: string; callerName?: string; callbackPhone?: string; urgency?: string; callbackWindow?: string; message: string; channel?: string; requestKind?: "appointment_request" },
 ): Promise<{ inboxItemId: string }> {
   return await withBusinessTransaction(context.db, { businessId: input.businessId, actorType: "worker" }, async (tx) => {
     if (input.callId) {
@@ -582,8 +583,9 @@ export async function createVoiceFollowUpTask(
       const [call] = await tx.select({ id: calls.id }).from(calls).where(and(eq(calls.id, input.callId), eq(calls.businessId, input.businessId))).limit(1).for("update");
       if (!call) throw new Error("Call not found in this business.");
     }
-    const title = `Voice message from ${input.callerName?.trim() || input.callbackPhone?.trim() || "unknown caller"}`;
+    const title = `${input.requestKind === "appointment_request" ? "Appointment follow-up" : "Voice message"} from ${input.callerName?.trim() || input.callbackPhone?.trim() || "unknown caller"}`;
     const body = [
+      input.requestKind === "appointment_request" ? "Follow-up type: Appointment request (not booked)" : null,
       input.callbackPhone?.trim() ? `Callback: ${input.callbackPhone.trim()}` : null,
       input.urgency?.trim() ? `Urgency: ${input.urgency.trim()}` : null,
       input.callbackWindow?.trim() ? `Preferred callback: ${input.callbackWindow.trim()}` : null,
@@ -591,7 +593,7 @@ export async function createVoiceFollowUpTask(
       input.message.trim(),
     ].filter((line): line is string => line !== null).join("\n");
     const retentionPlan = isContentRetentionEnabled() ? await resolveBusinessBillingPlan(tx, input.businessId) : null;
-    const metadata = Object.fromEntries(Object.entries({ callerName: input.callerName?.trim(), callbackPhone: input.callbackPhone?.trim(), urgency: input.urgency?.trim(), callbackWindow: input.callbackWindow?.trim(), channel: input.channel }).filter(([, value]) => value));
+    const metadata = Object.fromEntries(Object.entries({ callerName: input.callerName?.trim(), callbackPhone: input.callbackPhone?.trim(), urgency: input.urgency?.trim(), callbackWindow: input.callbackWindow?.trim(), channel: input.channel, requestKind: input.requestKind }).filter(([, value]) => value));
     const values = { businessId: input.businessId, kind: "voice_message", title, body, metadata, contentExpiresAt: retentionPlan ? contentExpiryForPlan(retentionPlan, "follow_ups") : null, ...(input.callId ? { relatedCallId: input.callId } : {}) };
     const existing = input.callId ? (await tx.select({ id: inboxItems.id }).from(inboxItems).where(and(eq(inboxItems.businessId, input.businessId), eq(inboxItems.relatedCallId, input.callId), eq(inboxItems.kind, "voice_message"), eq(inboxItems.status, "open"))).orderBy(desc(inboxItems.createdAt)).limit(1))[0] : null;
     const [item] = existing
@@ -624,7 +626,7 @@ export async function completeVoiceFollowUpTasks(
 export async function listOpenVoiceFollowUps(tx: DatabaseTransaction, businessId: string) {
   const group = sql`coalesce(${inboxItems.relatedCallId}, ${inboxItems.id})`;
   const latest = tx.selectDistinctOn([group], {
-    id: inboxItems.id, title: visibleFollowUpTitle, body: visibleFollowUpBody,
+    id: inboxItems.id, title: visibleFollowUpTitle, body: visibleFollowUpBody, metadata: inboxItems.metadata,
     relatedCallId: inboxItems.relatedCallId, createdAt: inboxItems.createdAt,
   }).from(inboxItems).where(and(eq(inboxItems.businessId, businessId), eq(inboxItems.kind, "voice_message"), eq(inboxItems.status, "open")))
     .orderBy(group, desc(inboxItems.createdAt), desc(inboxItems.id)).as("latest_voice_follow_ups");

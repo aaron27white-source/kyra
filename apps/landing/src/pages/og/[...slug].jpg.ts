@@ -109,7 +109,7 @@ const textOverlay = (entry: OgEntry) => {
 
   return Buffer.from(`<svg width="${OG_IMAGE_WIDTH}" height="${OG_IMAGE_HEIGHT}" viewBox="0 0 ${OG_IMAGE_WIDTH} ${OG_IMAGE_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
   <rect x="70" y="70" width="46" height="46" rx="12" fill="${light ? "#fafafa" : "#111827"}"/>
-  <text x="134" y="103" fill="${light ? "#fafafa" : "#111827"}" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700">LobbyStack</text>
+  <text x="134" y="103" fill="${light ? "#fafafa" : "#111827"}" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700">Lead My Company</text>
   <text x="70" y="382" fill="${light ? "#fafafa" : "#111827"}" font-family="Arial, Helvetica, sans-serif" font-size="${titleSize}" font-weight="700">
     ${titleLines
       .map(

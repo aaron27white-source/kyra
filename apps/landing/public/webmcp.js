@@ -24,14 +24,14 @@
     {
       name: "get-site-summary",
       description:
-        "Return a concise overview of LobbyStack and the most useful public links for agents.",
+        "Return a concise overview of Lead My Company and the most useful public links for agents.",
       inputSchema: {
         type: "object",
         properties: {},
         additionalProperties: false,
       },
       execute: async () => ({
-        name: "LobbyStack",
+        name: "Lead My Company",
         description:
           "Open-source AI receptionist for answering calls, qualifying leads, booking appointments, and transferring urgent calls.",
         urls,
@@ -40,7 +40,7 @@
     {
       name: "get-navigation-links",
       description:
-        "Return public LobbyStack navigation links grouped by features, pricing, documentation, or legal pages.",
+        "Return public Lead My Company navigation links grouped by features, pricing, documentation, or legal pages.",
       inputSchema: {
         type: "object",
         properties: {
@@ -87,7 +87,7 @@
     {
       name: "get-pricing",
       description:
-        "Return public LobbyStack pricing plan names, starting prices, included limits, overage rates, and the pricing page URL.",
+        "Return public Lead My Company pricing plan names, starting prices, included limits, overage rates, and the pricing page URL.",
       inputSchema: {
         type: "object",
         properties: {},
@@ -164,7 +164,7 @@
     {
       name: "get-features",
       description:
-        "Return key public LobbyStack features, including call answering, booking, workflows, transfers, dashboard, and reporting.",
+        "Return key public Lead My Company features, including call answering, booking, workflows, transfers, dashboard, and reporting.",
       inputSchema: {
         type: "object",
         properties: {},
@@ -227,6 +227,6 @@
       })
     }
   } catch (error) {
-    console.warn("Unable to register LobbyStack WebMCP tools", error)
+    console.warn("Unable to register Lead My Company WebMCP tools", error)
   }
 })()

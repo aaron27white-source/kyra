@@ -27,7 +27,7 @@ export function Hero() {
           </h1>
 
           <p className="animate-fade-up body-copy mx-auto mt-6 max-w-[65ch] stagger-2 md:text-lg">
-            LobbyStack answers calls, collects the details your team needs,
+            Lead My Company answers calls, collects the details your team needs,
             offers available times, books appointments, and sends confirmations
             before the caller moves on.
           </p>
@@ -170,7 +170,7 @@ export function Solution() {
               Let callers book while they are still on the phone
             </h2>
             <p className="section-intro text-left">
-              LobbyStack gives your business an AI appointment scheduler that
+              Lead My Company gives your business an AI appointment scheduler that
               can answer the call, understand what the caller needs, check your
               rules, offer times, and book the appointment in the same
               conversation.
@@ -200,7 +200,7 @@ export function Solution() {
                     <div>
                       <p className="text-sm font-medium">Booking Request</p>
                       <p className="text-xs text-muted-foreground">
-                        LobbyStack AI
+                        Lead My Company AI
                       </p>
                     </div>
                   </div>
@@ -271,7 +271,7 @@ export function UseCases() {
             Use AI scheduling where speed matters
           </h2>
           <p className="section-intro">
-            LobbyStack helps with the scheduling moments that usually create
+            Lead My Company helps with the scheduling moments that usually create
             delays, missed bookings, and extra admin work.
           </p>
         </div>
@@ -304,15 +304,15 @@ export function HowItWorks() {
   const steps = [
     {
       title: "Connect your phone and calendar",
-      copy: "Use a dedicated LobbyStack number or forward calls from your existing business number. Connect the Google Calendar your team already uses for appointments.",
+      copy: "Use a dedicated Lead My Company number or forward calls from your existing business number. Connect the Google Calendar your team already uses for appointments.",
     },
     {
       title: "Add your booking rules",
       copy: "Set your hours, services, appointment types, service areas, availability rules, required questions, and handoff instructions.",
     },
     {
-      title: "Let LobbyStack handle the call",
-      copy: "When someone calls to book, LobbyStack answers, asks the right questions, offers available times, and confirms the appointment.",
+      title: "Let Lead My Company handle the call",
+      copy: "When someone calls to book, Lead My Company answers, asks the right questions, offers available times, and confirms the appointment.",
     },
     {
       title: "Review the appointment details",
@@ -325,7 +325,7 @@ export function HowItWorks() {
       <div className="mx-auto max-w-7xl px-6">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="section-heading">
-            How LobbyStack schedules appointments
+            How Lead My Company schedules appointments
           </h2>
         </div>
         <div className="mx-auto mt-16 max-w-4xl">
@@ -407,7 +407,7 @@ export function Comparison() {
       limit: "Every routine booking takes time from your team.",
     },
     {
-      option: "LobbyStack",
+      option: "Lead My Company",
       what: "Answers the call, collects details, schedules, confirms, and hands off when needed.",
       bestFor: "Callers who want to talk, ask questions, and book instantly.",
       limit: "Complex scheduling situations should still go to a human.",
@@ -422,7 +422,7 @@ export function Comparison() {
             Faster booking without more scheduling work
           </h2>
           <p className="section-intro">
-            LobbyStack helps callers schedule in the moment, instead of forcing
+            Lead My Company helps callers schedule in the moment, instead of forcing
             them into voicemail, forms, or manual callbacks.
           </p>
         </div>

@@ -10,9 +10,9 @@ import { absoluteUrl } from "@/lib/seo"
 export const GET: APIRoute = async () => {
   const entries = await getChangelogEntries("fr")
 
-  const markdown = `# Quoi de neuf avec LobbyStack?
+  const markdown = `# Quoi de neuf avec Lead My Company?
 
-Mises à jour produit, intégrations et améliorations de l'équipe LobbyStack.
+Mises à jour produit, intégrations et améliorations de l'équipe Lead My Company.
 
 ## Mises à jour
 
@@ -27,8 +27,8 @@ ${entries
   return markdownResponse({
     markdown,
     canonical: absoluteUrl("/fr/changelog/"),
-    title: "Journal des changements LobbyStack",
+    title: "Journal des changements Lead My Company",
     description:
-      "Suivez les mises à jour produit, améliorations, intégrations et nouveautés de LobbyStack.",
+      "Suivez les mises à jour produit, améliorations, intégrations et nouveautés de Lead My Company.",
   })
 }

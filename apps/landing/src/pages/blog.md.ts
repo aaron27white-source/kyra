@@ -25,6 +25,6 @@ ${posts
     canonical: absoluteUrl("/blog/"),
     title: "AI Receptionist Blog and Product Updates",
     description:
-      "Read LobbyStack product updates and practical guides about AI receptionists, phone answering, appointment booking, and small-business call automation.",
+      "Read Lead My Company product updates and practical guides about AI receptionists, phone answering, appointment booking, and small-business call automation.",
   })
 }

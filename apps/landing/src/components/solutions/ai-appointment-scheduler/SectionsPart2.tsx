@@ -42,7 +42,7 @@ export function BusinessFit() {
             Built for businesses that book by phone
           </h2>
           <p className="section-intro">
-            LobbyStack is a good fit when appointments, service visits, consultations, or estimates are part of how your business makes money.
+            Lead My Company is a good fit when appointments, service visits, consultations, or estimates are part of how your business makes money.
           </p>
         </div>
 
@@ -59,7 +59,7 @@ export function BusinessFit() {
         </div>
 
         <p className="mt-12 text-center text-sm font-medium text-muted-foreground">
-          If a caller needs a time on the calendar before they become a customer, LobbyStack can help them book faster.
+          If a caller needs a time on the calendar before they become a customer, Lead My Company can help them book faster.
         </p>
       </div>
     </section>
@@ -204,7 +204,7 @@ export function OpenSource() {
               Scheduling automation you can inspect and control
             </h2>
             <p className="mt-6 text-lg leading-relaxed text-background/80">
-              LobbyStack is built for teams that want practical automation without giving up control. You can define how calls are handled, what questions are asked, when appointments can be booked, and when a person should step in.
+              Lead My Company is built for teams that want practical automation without giving up control. You can define how calls are handled, what questions are asked, when appointments can be booked, and when a person should step in.
             </p>
             <div className="mt-10 grid gap-6 sm:grid-cols-2">
               <div className="flex gap-3">

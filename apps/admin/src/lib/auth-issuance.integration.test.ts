@@ -1,3 +1,5 @@
+import type * as EmailVerificationPolicyModule from "./email-verification-policy";
+import type * as DbModule from "@lobbystack/db";
 import { createHash, randomUUID } from "node:crypto";
 import { runWithAdapter } from "@better-auth/core/context";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
@@ -6,8 +8,8 @@ import { createDatabaseClient, type DatabaseClient } from "@lobbystack/db";
 const state = vi.hoisted(() => ({ clients: {} as Record<string, DatabaseClient>, enqueue: vi.fn(), allowed: vi.fn() }));
 vi.mock("server-only", () => ({}));
 vi.mock("./databases", () => ({ getDatabase: (role: string) => state.clients[role] }));
-vi.mock("./email-verification-policy", async original => ({ ...await original<typeof import("./email-verification-policy")>(), assertEmailVerificationSendAllowed: state.allowed }));
-vi.mock("@lobbystack/db", async original => ({ ...await original<typeof import("@lobbystack/db")>(), enqueueOutbox: state.enqueue, withBusinessTransaction: async (_db: unknown, _scope: unknown, callback: (tx: unknown) => unknown) => callback({}) }));
+vi.mock("./email-verification-policy", async original => ({ ...await original<typeof EmailVerificationPolicyModule>(), assertEmailVerificationSendAllowed: state.allowed }));
+vi.mock("@lobbystack/db", async original => ({ ...await original<typeof DbModule>(), enqueueOutbox: state.enqueue, withBusinessTransaction: async (_db: unknown, _scope: unknown, callback: (tx: unknown) => unknown) => callback({}) }));
 
 // Dedicated local fixture: real PG roles, locks, transactions and Better Auth;
 // delivery and Redis quotas are isolated from external services.

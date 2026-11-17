@@ -1,3 +1,4 @@
+import type * as DbModule from "@lobbystack/db";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
@@ -8,7 +9,7 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("@lobbystack/db", async (original) => ({
-  ...(await original<typeof import("@lobbystack/db")>()),
+  ...(await original<typeof DbModule>()),
   withBusinessTransaction: vi.fn(async (_db, _actor, callback) => callback({
     select: () => ({ from: () => ({ where: () => ({ limit: async () => mocks.serviceRows }) }) }),
   })),
@@ -86,5 +87,11 @@ describe("bookForCaller telemetry", () => {
     await expect(bookForCaller(context, input)).resolves.toMatchObject({ ok: false, reason: "Service is not available." });
     expect(mocks.bookAppointment).not.toHaveBeenCalled();
     expect(mocks.recordProductEvent).toHaveBeenCalledWith(context, expect.objectContaining({ name: "appointment.booking_failed", properties: expect.objectContaining({ reason: "service_unavailable" }) }));
+  });
+
+  it("returns the exact invalid address field without logging customer address text", async () => {
+    mocks.bookAppointment.mockRejectedValue(Object.assign(new Error("invalid_service_address"), { code: "invalid_service_address", missingFields: ["serviceAddress"], validationIssues: [{ field: "country", code: "invalid_country_code" }] }));
+    await expect(bookForCaller(context, input)).resolves.toMatchObject({ ok: false, reasonCode: "invalid_service_address", validationIssues: [{ field: "country", code: "invalid_country_code" }] });
+    expect(mocks.recordProductEvent).not.toHaveBeenCalledWith(context, expect.objectContaining({ name: "appointment.booked" }));
   });
 });

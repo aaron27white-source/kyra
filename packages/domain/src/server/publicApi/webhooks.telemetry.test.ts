@@ -1,3 +1,4 @@
+import type * as NodeModule from "@lobbystack/telemetry/node";
 import { randomUUID } from "node:crypto";
 
 import { eq } from "drizzle-orm";
@@ -7,7 +8,7 @@ const metrics = vi.hoisted(() => ({ adds: [] as Array<{ meter: string; name: str
 
 // Record every counter the production code creates; other instruments are no-ops.
 vi.mock("@lobbystack/telemetry/node", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@lobbystack/telemetry/node")>()),
+  ...(await importOriginal<typeof NodeModule>()),
   getMeter: (meter = "lobbystack") => ({
     createCounter: (name: string) => ({ add: (value: number, attributes?: Record<string, unknown>) => metrics.adds.push({ meter, name, value, attributes }) }),
     createHistogram: () => ({ record: () => undefined }),

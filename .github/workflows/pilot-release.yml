@@ -1,0 +1,105 @@
+# Dedicated email-pilot gate; no deployment or provider credentials.
+name: Pilot release gate
+'on':
+  pull_request: {}
+  push:
+    branches:
+    - main
+    - lmc/v1
+  workflow_dispatch: {}
+permissions:
+  contents: read
+concurrency:
+  group: pilot-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+    - uses: pnpm/action-setup@v4
+      with:
+        version: 10.30.3
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22.22.1
+        cache: pnpm
+    - run: pnpm install --frozen-lockfile
+    - run: pnpm test:build-config
+    - run: pnpm telemetry:coverage
+    - run: pnpm build
+    - run: pnpm typecheck
+    - run: pnpm --filter @lobbystack/admin --filter @lobbystack/landing lint
+    - run: pnpm --filter @lobbystack/landing pilot:test
+    - run: git diff --exit-code -- apps/admin/public/embed/embed.js
+    - id: pilot-tests
+      env:
+        PILOT_CI_SUMMARY_FILE: ${{ runner.temp }}/pilot-ci-summary.json
+      name: All workspaces and PostgreSQL integration; exact file coverage, no skipped tests
+      run: node scripts/pilot-ci.mjs
+    - uses: actions/upload-artifact@v4
+      if: ${{ always() && steps.pilot-tests.outcome != 'skipped' }}
+      with:
+        name: pilot-ci-sanitized-summary
+        path: ${{ runner.temp }}/pilot-ci-summary.json
+        if-no-files-found: error
+        retention-days: 7
+  secret-scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        persist-credentials: false
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
+    - run: python scripts/security/install-gitleaks.py .tmp/pilot-security
+    - run: python scripts/security/verify-gitleaks-policy.py .tmp/pilot-security/gitleaks
+    - run: .tmp/pilot-security/gitleaks git --redact=100 --log-opts=--all
+  static-security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
+    - run: python -m pip install semgrep==1.182.1
+    - run: semgrep scan --config p/security-audit --metrics=off --disable-version-check --timeout 30 --strict --error
+  dependencies:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+    - uses: pnpm/action-setup@v4
+      with:
+        version: 10.30.3
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22.22.1
+        cache: pnpm
+    - run: pnpm install --frozen-lockfile
+    - run: pnpm audit --prod --audit-level high
+  pilot-release-gate:
+    if: ${{ always() }}
+    needs:
+    - verify
+    - secret-scan
+    - static-security
+    - dependencies
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+    - name: Require every hosted pilot gate to succeed
+      env:
+        RESULTS: ${{ toJSON(needs) }}
+      run: node -e 'const results = JSON.parse(process.env.RESULTS); if (Object.values(results).some(job => job.result !== "success")) process.exit(1);'

@@ -16,6 +16,13 @@
   },
   "home": {
     "title": "Accueil",
+    "overviewEyebrow": "Vue de l’espace",
+    "loadError": {
+      "title": "Les données du tableau de bord n'ont pas pu être chargées",
+      "description": "Votre activité est peut-être temporairement indisponible. Réessayez de la charger.",
+      "retry": "Réessayer",
+      "retrying": "Chargement du tableau de bord"
+    },
     "download": "Télécharger",
     "liveCalls": "En direct",
     "tabs": {
@@ -129,6 +136,7 @@
       },
       "kinds": {
         "voice_message": "Rappel",
+        "appointment_request": "Suivi de rendez-vous (non réservé)",
         "human_handoff": "Transfert",
         "other": "Ouvert"
       }

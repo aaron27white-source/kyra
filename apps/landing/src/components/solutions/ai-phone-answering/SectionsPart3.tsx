@@ -15,7 +15,7 @@ export function SolutionCta() {
           Start answering every call without hiring another receptionist
         </h2>
         <p className="section-intro mx-auto max-w-lg">
-          Try LobbyStack with included voice minutes, set your answering rules,
+          Try Lead My Company with included voice minutes, set your answering rules,
           and see how many calls it can turn into clear next steps.
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4">

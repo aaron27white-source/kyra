@@ -2,35 +2,35 @@
 import { ArrowDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-// Each option shows the path a call takes. The step where LobbyStack picks
+// Each option shows the path a call takes. The step where Lead My Company picks
 // up is dark; everything else is the caller or your own phone.
 const modes = [
   {
     title: "After hours",
-    body: "Your team answers while you're open. LobbyStack takes over when you close.",
+    body: "Your team answers while you're open. Lead My Company takes over when you close.",
     steps: [
       { text: "A call comes in at 7:40 p.m." },
       { text: "Your office is closed" },
-      { text: "LobbyStack answers", lobbystack: true },
+      { text: "Lead My Company answers", lobbystack: true },
     ],
     setting: "Turn on call forwarding when you close",
   },
   {
     title: "Overflow",
-    body: "Your phone rings first. LobbyStack only picks up the calls your team misses.",
+    body: "Your phone rings first. Lead My Company only picks up the calls your team misses.",
     steps: [
       { text: "A call comes in at 2:15 p.m." },
       { text: "Your line is busy or nobody answers" },
-      { text: "LobbyStack picks up", lobbystack: true },
+      { text: "Lead My Company picks up", lobbystack: true },
     ],
     setting: "Forward calls when busy or unanswered",
   },
   {
     title: "Every call",
-    body: "LobbyStack answers first and sends your team only the calls that need a person.",
+    body: "Lead My Company answers first and sends your team only the calls that need a person.",
     steps: [
       { text: "A call comes in" },
-      { text: "LobbyStack answers", lobbystack: true },
+      { text: "Lead My Company answers", lobbystack: true },
       { text: "Urgent calls go to your team" },
     ],
     setting: "Forward all calls",
@@ -41,7 +41,7 @@ const modes = [
 <section class="border-t border-border/40 py-20 md:py-28" id="coverage">
   <div class="mx-auto max-w-7xl px-6">
     <div class="max-w-3xl">
-      <h2 class="section-heading">Choose when LobbyStack answers</h2>
+      <h2 class="section-heading">Choose when Lead My Company answers</h2>
       <p class="section-intro">
         You keep your business number. Pick one of these setups with your phone
         provider, and change it whenever you want, including for holidays.

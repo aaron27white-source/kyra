@@ -1,9 +1,10 @@
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
 
 export default defineConfig({
   build: {
     lib: {
-      entry: new URL("./src/index.ts", import.meta.url).pathname,
+      entry: fileURLToPath(new URL("./src/index.ts", import.meta.url)),
       name: "LobbyStack",
       formats: ["iife"],
       fileName: () => "embed.js",

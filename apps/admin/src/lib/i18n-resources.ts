@@ -1,3 +1,5 @@
+import frLmc from "../../public/locales/fr/lmc.json";
+import enLmc from "../../public/locales/en/lmc.json";
 import type { SupportedLocale } from "./locale";
 
 import enAdmin from "../../public/locales/en/admin.json";
@@ -39,6 +41,7 @@ import frWidget from "../../public/locales/fr/widget.json";
  */
 export const localeResources: Record<SupportedLocale, Record<string, Record<string, unknown>>> = {
   en: {
+    lmc: enLmc,
     admin: enAdmin,
     affiliate: enAffiliate,
     agent: enAgent,
@@ -57,6 +60,7 @@ export const localeResources: Record<SupportedLocale, Record<string, Record<stri
     widget: enWidget,
   },
   fr: {
+    lmc: frLmc,
     admin: frAdmin,
     affiliate: frAffiliate,
     agent: frAgent,

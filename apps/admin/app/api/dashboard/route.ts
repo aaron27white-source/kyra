@@ -87,7 +87,7 @@ export async function GET(request: Request) {
         })),
         actionRequired: [...voiceFollowUps.map((item) => ({
           id: item.id,
-          kind: "voice_message",
+          kind: item.metadata?.requestKind === "appointment_request" ? "appointment_request" : "voice_message",
           title: item.title,
           body: item.body,
           createdAt: item.createdAt.toISOString(),

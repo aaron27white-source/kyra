@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import OpenAI from "openai";
 
 import { jsonError } from "./api-helpers";
@@ -29,12 +30,33 @@ function workerUrl(): string {
 export async function attachWorkerToLiveSession(input: WorkerAttachInput): Promise<void> {
   const token = process.env.INTERNAL_SERVICE_TOKEN;
   if (!token) throw new Error("INTERNAL_SERVICE_TOKEN is not set.");
-  const response = await fetch(`${workerUrl()}/internal/live/attach`, {
-    method: "POST",
-    headers: { "content-type": "application/json", "x-internal-service-token": token },
-    body: JSON.stringify(input),
-    // A sleeping staging worker needs a few seconds to wake.
-    signal: AbortSignal.timeout(10_000),
-  });
-  if (!response.ok) throw new Error(`Worker attach failed with status ${response.status}.`);
+  const requestId = randomUUID();
+  let response: Response;
+  try {
+    response = await fetch(`${workerUrl()}/internal/live/attach`, {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-internal-service-token": token, "x-request-id": requestId },
+      body: JSON.stringify(input),
+      // A sleeping staging worker needs a few seconds to wake.
+      signal: AbortSignal.timeout(10_000),
+    });
+  } catch (cause) {
+    const timedOut = cause instanceof Error && cause.name === "TimeoutError";
+    const error = new Error("Worker attach request did not complete.") as Error & { requestId: string; reason: string; code?: string };
+    error.requestId = requestId;
+    error.reason = "worker_attach_transport_failed";
+    if (timedOut) error.code = "worker_attach_timeout";
+    throw error;
+  }
+  if (!response.ok) {
+    const body = await response.json().catch(() => null) as { error?: unknown; reason?: unknown; errorCode?: unknown } | null;
+    const reason = typeof body?.reason === "string" && /^[a-z0-9_.-]{1,80}$/i.test(body.reason) ? body.reason : "worker_attach_rejected";
+    const error = new Error("Worker attach failed.") as Error & { status: number; requestId: string; reason: string };
+    error.status = response.status;
+    error.requestId = requestId;
+    error.reason = reason;
+    const code = typeof body?.errorCode === "string" && /^[a-z0-9_.-]{1,80}$/i.test(body.errorCode) ? body.errorCode : undefined;
+    if (code) Object.assign(error, { code });
+    throw error;
+  }
 }

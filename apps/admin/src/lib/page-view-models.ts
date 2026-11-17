@@ -61,6 +61,7 @@ export type CalendarConnectionViewModel = {
 
 export type IntegrationsViewModel = {
   calendarConnections: CalendarConnectionViewModel[];
+  calendarShareServiceAddress: boolean;
   staff: Array<{ id: string; name: string }>;
   calendarOptions: CalendarOptionViewModel[];
   discoveryError: string | null;

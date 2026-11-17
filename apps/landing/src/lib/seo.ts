@@ -1,12 +1,12 @@
-export const SITE_URL = "https://lobbystack.com"
+import { brand } from "@lobbystack/shared/brand"
 
-export const SITE_NAME = "LobbyStack"
+export const SITE_URL = brand.url
 
-export const DEFAULT_TITLE =
-  "AI Receptionist Software for Small Businesses | LobbyStack"
+export const SITE_NAME = brand.name
 
-export const DEFAULT_DESCRIPTION =
-  "LobbyStack answers your business calls 24/7, books appointments into your calendar, and transfers urgent calls to your team. Open source, with a free plan."
+export const DEFAULT_TITLE = `${brand.name} | Lead response and booking`
+
+export const DEFAULT_DESCRIPTION = brand.tagline
 
 export const DEFAULT_OG_IMAGE = "/og/index.jpg"
 
@@ -18,22 +18,9 @@ export const OG_IMAGE_HEIGHT = 675
 
 export const SEARCH_PATH = "/search/"
 
-const BRAND_ALIASES = [
-  "lobbystack",
-  "Lobby Stack",
-  "LobbyStack AI receptionist",
-  "LobbyStack open-source AI receptionist",
-]
+const BRAND_ALIASES = [brand.shortName]
 
-const BRAND_SAME_AS = [
-  "https://github.com/lobbystack",
-  "https://github.com/lobbystack/lobbystack",
-  "https://www.capterra.com/p/10046185/LobbyStack/",
-  "https://sourceforge.net/software/product/LobbyStack/",
-  "https://www.g2.com/products/lobbystack/reviews",
-  "https://alternativeto.net/software/lobbystack/about/",
-  "https://www.saashub.com/lobbystack",
-]
+const BRAND_SAME_AS: string[] = []
 
 export type JsonLd = Record<string, unknown>
 
@@ -132,18 +119,17 @@ export const organizationJsonLd = (): JsonLd => ({
   "@type": "Organization",
   "@id": absoluteUrl("/#organization"),
   name: SITE_NAME,
-  legalName: "Lobbystack Inc.",
   alternateName: BRAND_ALIASES,
   url: absoluteUrl("/"),
   logo: {
     "@type": "ImageObject",
     "@id": absoluteUrl("/#logo"),
-    url: absoluteUrl("/lobbystack-logo-long.webp"),
-    width: 1030,
-    height: 286,
+    url: absoluteUrl(brand.logoPath),
+    width: 64,
+    height: 64,
   },
   description:
-    "LobbyStack is an open-source AI receptionist platform for small businesses that answers calls, books appointments, captures caller details, and routes urgent requests.",
+    "Lead My Company is an open-source AI receptionist platform for small businesses that answers calls, books appointments, captures caller details, and routes urgent requests.",
   sameAs: BRAND_SAME_AS,
   knowsAbout: [
     "AI receptionist software",
@@ -155,7 +141,7 @@ export const organizationJsonLd = (): JsonLd => ({
   contactPoint: {
     "@type": "ContactPoint",
     contactType: "customer support",
-    email: "support@lobbystack.com",
+    email: `support@${brand.domain}`,
     url: "https://docs.lobbystack.com",
   },
 })
@@ -268,7 +254,7 @@ export const softwareApplicationJsonLd = (
   inLanguage: localeLanguage(options.locale),
   isAccessibleForFree: true,
   keywords:
-    "LobbyStack, lobbystack, AI receptionist, open-source AI receptionist, AI phone answering, appointment scheduler",
+    "Lead My Company, lobbystack, AI receptionist, open-source AI receptionist, AI phone answering, appointment scheduler",
   brand: {
     "@id": absoluteUrl("/#organization"),
   },
@@ -401,7 +387,7 @@ export const blogJsonLd = ({
 }: LocaleInput & { path?: string } = {}): JsonLd => {
   const name =
     locale === "fr"
-      ? "Blog et mises a jour produit LobbyStack"
+      ? "Blog et mises a jour produit Lead My Company"
       : "AI Receptionist Blog and Product Updates"
   const description =
     locale === "fr"

@@ -1,10 +1,11 @@
+import type * as DbModule from "@lobbystack/db";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { PgDialect } from "drizzle-orm/pg-core";
 import type { SQL } from "drizzle-orm";
 
 const mocks = vi.hoisted(() => ({ transaction: vi.fn(), enqueue: vi.fn() }));
 vi.mock("@lobbystack/db", async (original) => ({
-  ...(await original<typeof import("@lobbystack/db")>()),
+  ...(await original<typeof DbModule>()),
   withBusinessTransaction: mocks.transaction, enqueueOutbox: mocks.enqueue,
 }));
 vi.mock("./notifications", () => ({ queueOperatorAlertInTransaction: vi.fn() }));

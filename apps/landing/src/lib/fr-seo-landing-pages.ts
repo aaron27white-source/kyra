@@ -27,12 +27,12 @@ const standardFaqs = [
   {
     question: "Puis-je utiliser mon numéro professionnel actuel ?",
     answer:
-      "Oui. Vous pouvez transférer les appels de votre numéro actuel vers LobbyStack ou utiliser une ligne distincte pour le débordement et les appels hors horaires.",
+      "Oui. Vous pouvez transférer les appels de votre numéro actuel vers Lead My Company ou utiliser une ligne distincte pour le débordement et les appels hors horaires.",
   },
   {
     question: "Que puis-je consulter après un appel ?",
     answer:
-      "LobbyStack conserve le résultat, le résumé, la transcription et, selon votre configuration, l’enregistrement et les détails du rendez-vous dans le tableau de bord.",
+      "Lead My Company conserve le résultat, le résumé, la transcription et, selon votre configuration, l’enregistrement et les détails du rendez-vous dans le tableau de bord.",
   },
 ]
 
@@ -79,7 +79,7 @@ const tradePage = ({
       {
         title:
           "Ne laissez pas le travail en cours interrompre la prise d’appels",
-        body: `Pendant que votre équipe ${busyWork}, LobbyStack répond, explique la prochaine étape et garde la demande visible avant que l’appelant ne contacte une autre entreprise.`,
+        body: `Pendant que votre équipe ${busyWork}, Lead My Company répond, explique la prochaine étape et garde la demande visible avant que l’appelant ne contacte une autre entreprise.`,
         points: [
           "Réponse pendant les chantiers, les déplacements et les pics d’activité",
           `Prise de rendez-vous pour ${routineWork}`,
@@ -88,7 +88,7 @@ const tradePage = ({
       },
       {
         title: "Appliquez vos propres critères d’urgence",
-        body: `Une demande comme ${emergency} ne suit pas le même parcours qu’une demande courante. LobbyStack pose les questions que vous approuvez et transfère uniquement les situations qui correspondent à vos règles.`,
+        body: `Une demande comme ${emergency} ne suit pas le même parcours qu’une demande courante. Lead My Company pose les questions que vous approuvez et transfère uniquement les situations qui correspondent à vos règles.`,
         points: [
           "Critères d’escalade configurés par votre entreprise",
           "Transfert avec le contexte déjà recueilli",
@@ -97,7 +97,7 @@ const tradePage = ({
       },
       {
         title: "Recueillez les détails utiles avant la planification",
-        body: `LobbyStack peut demander ${intake.join(", ")}. Votre équipe reçoit ainsi un dossier exploitable au lieu d’un simple numéro à rappeler.`,
+        body: `Lead My Company peut demander ${intake.join(", ")}. Votre équipe reçoit ainsi un dossier exploitable au lieu d’un simple numéro à rappeler.`,
         points: [
           "Questions d’accueil adaptées à votre métier",
           "Données jointes au rendez-vous ou au message",
@@ -112,7 +112,7 @@ const tradePage = ({
       },
       {
         question: "Peut-il traiter les appels urgents hors horaires ?",
-        answer: `Oui. LobbyStack peut reconnaître les situations que vous définissez comme urgentes, notamment ${emergency}, puis transférer l’appel avec les détails déjà recueillis.`,
+        answer: `Oui. Lead My Company peut reconnaître les situations que vous définissez comme urgentes, notamment ${emergency}, puis transférer l’appel avec les détails déjà recueillis.`,
       },
       {
         question: "Quelles questions peut-il poser ?",
@@ -141,15 +141,15 @@ const tradePage = ({
 
 export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
   "/about/": frenchPage("/about/", {
-    title: "À propos de LobbyStack, réceptionniste IA open source",
+    title: "À propos de Lead My Company, réceptionniste IA open source",
     description:
-      "Découvrez LobbyStack, le réceptionniste IA open source qui aide les petites entreprises à répondre à leurs appels, planifier des rendez-vous et transférer les urgences.",
+      "Découvrez Lead My Company, le réceptionniste IA open source qui aide les petites entreprises à répondre à leurs appels, planifier des rendez-vous et transférer les urgences.",
     eyebrow: "À propos",
-    h1: "À propos de LobbyStack",
+    h1: "À propos de Lead My Company",
     intro:
-      "LobbyStack aide les petites entreprises à répondre aux appels et planifier des rendez-vous sans abandonner le contrôle de leurs flux téléphoniques ni de leurs données.",
+      "Lead My Company aide les petites entreprises à répondre aux appels et planifier des rendez-vous sans abandonner le contrôle de leurs flux téléphoniques ni de leurs données.",
     imageAlt:
-      "LobbyStack reliant les appelants, les équipes et les flux de travail d’une entreprise",
+      "Lead My Company reliant les appelants, les équipes et les flux de travail d’une entreprise",
     proofPoints: [
       "Réceptionniste IA open source pour petites entreprises",
       "Réponse, réservation, transfert et résumés d’appel dans un même produit",
@@ -157,7 +157,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
     ],
     sections: [
       {
-        title: "Pourquoi LobbyStack existe",
+        title: "Pourquoi Lead My Company existe",
         body: "Une petite entreprise ne manque pas un client par indifférence. Le téléphone sonne souvent pendant que l’équipe aide déjà quelqu’un, conduit ou travaille sur place.",
         points: [
           "Rendre chaque appel important visible",
@@ -175,8 +175,8 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
         ],
       },
       {
-        title: "À qui s’adresse LobbyStack",
-        body: "LobbyStack sert les propriétaires et petites équipes qui dépendent des appels entrants : services à domicile, métiers spécialisés, cabinets, salons et entreprises sur rendez-vous.",
+        title: "À qui s’adresse Lead My Company",
+        body: "Lead My Company sert les propriétaires et petites équipes qui dépendent des appels entrants : services à domicile, métiers spécialisés, cabinets, salons et entreprises sur rendez-vous.",
         points: [
           "Équipes qui manquent des appels pendant un chantier ou un rendez-vous",
           "Entreprises qui veulent prendre des rendez-vous par téléphone sans construire un serveur vocal complexe",
@@ -185,7 +185,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
       },
       {
         title: "Support, sécurité et contrôle",
-        body: "LobbyStack Cloud prend en charge l’hébergement, la surveillance et les mises à jour. Un déploiement auto-hébergé place l’infrastructure sous votre contrôle. Dans les deux cas, vous définissez ce que le réceptionniste peut dire, réserver et transférer.",
+        body: "Lead My Company Cloud prend en charge l’hébergement, la surveillance et les mises à jour. Un déploiement auto-hébergé place l’infrastructure sous votre contrôle. Dans les deux cas, vous définissez ce que le réceptionniste peut dire, réserver et transférer.",
         points: [
           "Consignes, règles de réservation et transferts configurables",
           "Résumés, transcriptions et résultats réunis dans le tableau de bord",
@@ -201,21 +201,21 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
     ],
     ctaHeading: "Répondez à chaque appel sans surcharger votre équipe",
     ctaBody:
-      "Essayez LobbyStack avec les minutes vocales incluses, puis configurez les réponses, les réservations et les transferts selon votre entreprise.",
+      "Essayez Lead My Company avec les minutes vocales incluses, puis configurez les réponses, les réservations et les transferts selon votre entreprise.",
   }),
 
   "/solutions/after-hours-answering-service/": frenchPage(
     "/solutions/after-hours-answering-service/",
     {
-      title: "Service de réponse téléphonique hors horaires | LobbyStack",
+      title: "Service de réponse téléphonique hors horaires | Lead My Company",
       description:
-        "LobbyStack répond le soir, la nuit et le week-end, prend les rendez-vous, recueille les détails et transfère les urgences selon vos propres règles.",
+        "Lead My Company répond le soir, la nuit et le week-end, prend les rendez-vous, recueille les détails et transfère les urgences selon vos propres règles.",
       eyebrow: "Réponse hors horaires",
       h1: "Un service de réponse IA pour les appels reçus hors horaires",
       intro:
-        "LobbyStack donne une réponse utile la nuit, le week-end, les jours fériés et chaque fois que votre équipe ne peut pas décrocher.",
+        "Lead My Company donne une réponse utile la nuit, le week-end, les jours fériés et chaque fois que votre équipe ne peut pas décrocher.",
       imageAlt:
-        "LobbyStack répondant à un appel hors horaires et transférant une urgence",
+        "Lead My Company répondant à un appel hors horaires et transférant une urgence",
       proofPoints: [
         "Répond la nuit, le week-end, les jours fériés et pendant les débordements",
         "Planifie les demandes courantes avant la reprise du travail",
@@ -224,7 +224,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
       sections: [
         {
           title: "Distinguez une urgence réelle d’une demande courante",
-          body: "Vous définissez ce qui mérite une intervention immédiate. LobbyStack pose les questions approuvées, recueille les coordonnées et applique vos règles avant de déranger la personne d’astreinte.",
+          body: "Vous définissez ce qui mérite une intervention immédiate. Lead My Company pose les questions approuvées, recueille les coordonnées et applique vos règles avant de déranger la personne d’astreinte.",
           points: [
             "Qualification selon le type de problème, l’emplacement et l’heure",
             "Transfert avec le contexte plutôt qu’un appel à froid",
@@ -242,7 +242,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
         },
         {
           title: "Utilisez vos connaissances et vos politiques",
-          body: "LobbyStack répond aux questions autorisées sur les services, les zones couvertes, les heures et la préparation du rendez-vous. Les demandes incertaines sont transmises pour examen.",
+          body: "Lead My Company répond aux questions autorisées sur les services, les zones couvertes, les heures et la préparation du rendez-vous. Les demandes incertaines sont transmises pour examen.",
           points: [
             "Réponses issues de votre base de connaissances",
             "Aucune estimation inventée lorsqu’un prix doit être confirmé",
@@ -268,12 +268,12 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
         {
           question: "Peut-il réellement réserver la nuit ou le week-end ?",
           answer:
-            "Oui. LobbyStack consulte les disponibilités, propose un créneau, crée le rendez-vous et envoie une confirmation lorsque vos règles permettent la réservation.",
+            "Oui. Lead My Company consulte les disponibilités, propose un créneau, crée le rendez-vous et envoie une confirmation lorsque vos règles permettent la réservation.",
         },
         {
           question: "Comment reconnaît-il une urgence ?",
           answer:
-            "Vous fournissez les critères et les questions. LobbyStack ne décide pas seul : il applique vos règles de qualification et de transfert.",
+            "Vous fournissez les critères et les questions. Lead My Company ne décide pas seul : il applique vos règles de qualification et de transfert.",
         },
         ...standardFaqs,
       ],
@@ -304,15 +304,15 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
   "/solutions/ai-receptionist-for-dental-offices/": frenchPage(
     "/solutions/ai-receptionist-for-dental-offices/",
     {
-      title: "Réceptionniste IA pour cabinets dentaires | LobbyStack",
+      title: "Réceptionniste IA pour cabinets dentaires | Lead My Company",
       description:
-        "LobbyStack répond aux patients, planifie les visites, traite les questions approuvées et transfère les urgences selon les règles du cabinet.",
+        "Lead My Company répond aux patients, planifie les visites, traite les questions approuvées et transfère les urgences selon les règles du cabinet.",
       eyebrow: "Cabinets dentaires",
       h1: "Un réceptionniste IA pour les cabinets dentaires occupés",
       intro:
-        "LobbyStack répond aux nouveaux patients, aide à planifier les rendez-vous et recueille les renseignements utiles sans interrompre les soins en cours.",
+        "Lead My Company répond aux nouveaux patients, aide à planifier les rendez-vous et recueille les renseignements utiles sans interrompre les soins en cours.",
       imageAlt:
-        "LobbyStack planifiant un rendez-vous dentaire et résumant l’appel",
+        "Lead My Company planifiant un rendez-vous dentaire et résumant l’appel",
       proofPoints: [
         "Planifie les visites courantes et les demandes de nouveaux patients",
         "Répond aux questions approuvées sur le cabinet et ses politiques",
@@ -321,7 +321,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
       sections: [
         {
           title: "Restez présent avec le patient au fauteuil",
-          body: "L’accueil ne devrait pas choisir entre le patient devant lui et le téléphone. LobbyStack prend les appels de débordement et conserve les renseignements nécessaires au suivi.",
+          body: "L’accueil ne devrait pas choisir entre le patient devant lui et le téléphone. Lead My Company prend les appels de débordement et conserve les renseignements nécessaires au suivi.",
           points: [
             "Réponse pendant les soins et les périodes d’accueil chargées",
             "Messages structurés plutôt qu’une simple boîte vocale",
@@ -330,7 +330,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
         },
         {
           title: "Planifiez les demandes de nouveaux patients",
-          body: "LobbyStack peut recueillir les coordonnées, le motif de la visite, les préférences de rendez-vous et les informations que votre cabinet autorise avant de proposer un créneau.",
+          body: "Lead My Company peut recueillir les coordonnées, le motif de la visite, les préférences de rendez-vous et les informations que votre cabinet autorise avant de proposer un créneau.",
           points: [
             "Disponibilités lues dans Google Calendar",
             "Confirmation et instructions envoyées après la réservation",
@@ -339,7 +339,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
         },
         {
           title: "Appliquez le protocole du cabinet aux urgences",
-          body: "Douleur, enflure, traumatisme et saignement peuvent demander un parcours différent d’un nettoyage. LobbyStack pose uniquement les questions approuvées et suit vos consignes d’escalade.",
+          body: "Douleur, enflure, traumatisme et saignement peuvent demander un parcours différent d’un nettoyage. Lead My Company pose uniquement les questions approuvées et suit vos consignes d’escalade.",
           points: [
             "Aucune décision clinique improvisée",
             "Transfert ou message détaillé selon le protocole",
@@ -365,7 +365,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
         {
           question: "Comment traite-t-il une urgence dentaire ?",
           answer:
-            "Le cabinet définit les questions et le protocole. LobbyStack peut transférer l’appel ou prendre un message détaillé, mais ne remplace pas un avis clinique.",
+            "Le cabinet définit les questions et le protocole. Lead My Company peut transférer l’appel ou prendre un message détaillé, mais ne remplace pas un avis clinique.",
         },
         {
           question: "Peut-il répondre aux questions d’assurance ?",
@@ -397,15 +397,15 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
   "/solutions/ai-receptionist-for-salons-and-spas/": frenchPage(
     "/solutions/ai-receptionist-for-salons-and-spas/",
     {
-      title: "Réceptionniste IA pour salons et spas | LobbyStack",
+      title: "Réceptionniste IA pour salons et spas | Lead My Company",
       description:
-        "LobbyStack répond aux appels de réservation, vérifie les disponibilités, traite les changements et explique les services pendant les rendez-vous.",
+        "Lead My Company répond aux appels de réservation, vérifie les disponibilités, traite les changements et explique les services pendant les rendez-vous.",
       eyebrow: "Salons et spas",
       h1: "Un réceptionniste IA qui continue à réserver pendant les soins",
       intro:
-        "LobbyStack répond pour les salons, spas, barbiers et studios de bien-être afin que les clients puissent réserver, modifier un rendez-vous et obtenir une réponse.",
+        "Lead My Company répond pour les salons, spas, barbiers et studios de bien-être afin que les clients puissent réserver, modifier un rendez-vous et obtenir une réponse.",
       imageAlt:
-        "LobbyStack planifiant par téléphone un rendez-vous de salon ou de spa",
+        "Lead My Company planifiant par téléphone un rendez-vous de salon ou de spa",
       proofPoints: [
         "Planifie pendant que les professionnels sont avec leurs clients",
         "Explique les services, durées, prix et disponibilités documentés",
@@ -414,7 +414,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
       sections: [
         {
           title: "Protégez le temps passé avec le client",
-          body: "Un appel ne devrait pas interrompre une coupe, une coloration, un massage ou un soin. LobbyStack répond et recueille le service, le professionnel souhaité et les préférences horaires.",
+          body: "Un appel ne devrait pas interrompre une coupe, une coloration, un massage ou un soin. Lead My Company répond et recueille le service, le professionnel souhaité et les préférences horaires.",
           points: [
             "Réponse pendant les traitements et les périodes chargées",
             "Durées et disponibilités respectées lors de la réservation",
@@ -423,7 +423,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
         },
         {
           title: "Gérez les changements selon vos politiques",
-          body: "Les annulations, reports, dépôts et délais varient selon l’établissement. LobbyStack explique la règle approuvée et transmet les exceptions à l’accueil.",
+          body: "Les annulations, reports, dépôts et délais varient selon l’établissement. Lead My Company explique la règle approuvée et transmet les exceptions à l’accueil.",
           points: [
             "Fenêtres de modification appliquées de façon cohérente",
             "Demandes le jour même transférées si nécessaire",
@@ -432,7 +432,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
         },
         {
           title: "Répondez avec votre menu de services",
-          body: "Les durées, tarifs, forfaits, préparations et professionnels peuvent être ajoutés à votre base de connaissances. LobbyStack répond à partir de ces données plutôt que d’improviser.",
+          body: "Les durées, tarifs, forfaits, préparations et professionnels peuvent être ajoutés à votre base de connaissances. Lead My Company répond à partir de ces données plutôt que d’improviser.",
           points: [
             "Questions sur les coupes, couleurs, soins et forfaits",
             "Orientation vers le bon professionnel",
@@ -441,7 +441,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
         },
         {
           title: "Traitez les appels reçus après la fermeture",
-          body: "Les clients réservent souvent après le travail. LobbyStack peut proposer les créneaux autorisés, prendre un message ou expliquer quand l’équipe répondra.",
+          body: "Les clients réservent souvent après le travail. Lead My Company peut proposer les créneaux autorisés, prendre un message ou expliquer quand l’équipe répondra.",
           points: [
             "Couverture le soir et le week-end",
             "Message pour l’équipe selon vos règles",
@@ -453,7 +453,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
         {
           question: "Peut-il réserver pendant qu’un styliste est occupé ?",
           answer:
-            "Oui. LobbyStack vérifie les disponibilités et les durées, propose un créneau compatible et confirme le rendez-vous.",
+            "Oui. Lead My Company vérifie les disponibilités et les durées, propose un créneau compatible et confirme le rendez-vous.",
         },
         {
           question: "Peut-il gérer une annulation ou un report ?",
@@ -490,15 +490,15 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
   "/solutions/self-hosted-ai-receptionist/": frenchPage(
     "/solutions/self-hosted-ai-receptionist/",
     {
-      title: "Réceptionniste IA auto-hébergé | LobbyStack",
+      title: "Réceptionniste IA auto-hébergé | Lead My Company",
       description:
-        "Déployez LobbyStack sur votre infrastructure pour contrôler les données d’appel, les fournisseurs, les règles et les mises à jour.",
+        "Déployez Lead My Company sur votre infrastructure pour contrôler les données d’appel, les fournisseurs, les règles et les mises à jour.",
       eyebrow: "Auto-hébergement",
       h1: "Un réceptionniste IA auto-hébergé sur l’infrastructure que vous contrôlez",
       intro:
-        "LobbyStack publie son code sous licence MIT et fournit un parcours auto-hébergé aux équipes qui veulent maîtriser le déploiement et les données.",
+        "Lead My Company publie son code sous licence MIT et fournit un parcours auto-hébergé aux équipes qui veulent maîtriser le déploiement et les données.",
       imageAlt:
-        "Architecture auto-hébergée de LobbyStack avec contrôles de déploiement",
+        "Architecture auto-hébergée de Lead My Company avec contrôles de déploiement",
       proofPoints: [
         "Code source public sous licence MIT",
         "Infrastructure, journaux, conservation et fournisseurs sous votre contrôle",
@@ -534,7 +534,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
         },
         {
           title: "Choisissez entre exploitation interne et cloud géré",
-          body: "L’auto-hébergement offre davantage de contrôle et demande davantage d’exploitation. LobbyStack Cloud convient aux équipes qui préfèrent déléguer l’hébergement et les mises à jour.",
+          body: "L’auto-hébergement offre davantage de contrôle et demande davantage d’exploitation. Lead My Company Cloud convient aux équipes qui préfèrent déléguer l’hébergement et les mises à jour.",
           points: [
             "Évaluer le coût d’exploitation, la sécurité et le support",
             "Tester le produit géré avant un déploiement interne",
@@ -544,7 +544,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
       ],
       faqs: [
         {
-          question: "Sous quelle licence LobbyStack est-il publié ?",
+          question: "Sous quelle licence Lead My Company est-il publié ?",
           answer:
             "Le dépôt est publié sous licence MIT. Conservez les avis de droit d’auteur et d’autorisation requis lorsque vous copiez ou redistribuez le logiciel.",
         },
@@ -560,7 +560,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
         },
         ...standardFaqs,
       ],
-      faqHeading: "Questions sur l’auto-hébergement de LobbyStack",
+      faqHeading: "Questions sur l’auto-hébergement de Lead My Company",
       relatedLinks: [
         {
           label: "Code source sur GitHub",
@@ -572,7 +572,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
           href: "/solutions/open-source-ai-receptionist/",
         },
       ],
-      ctaHeading: "Évaluez LobbyStack sur votre infrastructure",
+      ctaHeading: "Évaluez Lead My Company sur votre infrastructure",
       ctaBody:
         "Consultez le code, la licence et la documentation avant de choisir entre le cloud géré et l’auto-hébergement.",
       ctaPrimaryLabel: "Lire la documentation",
@@ -584,14 +584,14 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
 
   "/solutions/ai-receptionist-for-plumbers/": tradePage({
     path: "/solutions/ai-receptionist-for-plumbers/",
-    title: "Réceptionniste IA pour plombiers | LobbyStack",
+    title: "Réceptionniste IA pour plombiers | Lead My Company",
     description:
-      "LobbyStack répond aux appels de plomberie, qualifie les dégâts urgents, recueille les détails et planifie les visites pendant les chantiers.",
+      "Lead My Company répond aux appels de plomberie, qualifie les dégâts urgents, recueille les détails et planifie les visites pendant les chantiers.",
     eyebrow: "Plomberie",
     h1: "Un réceptionniste IA pour les plombiers qui ne peuvent pas manquer une urgence",
     intro:
-      "LobbyStack répond pendant que vous êtes sous un évier ou en déplacement, recueille les symptômes et planifie ou transfère selon vos règles.",
-    imageAlt: "LobbyStack répondant à un appel de plomberie urgent",
+      "Lead My Company répond pendant que vous êtes sous un évier ou en déplacement, recueille les symptômes et planifie ou transfère selon vos règles.",
+    imageAlt: "Lead My Company répondant à un appel de plomberie urgent",
     trade: "plomberie",
     busyWork: "répare une fuite, débouche une conduite ou se déplace",
     emergency: "une conduite éclatée, un refoulement ou une fuite active",
@@ -607,14 +607,14 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
 
   "/solutions/ai-receptionist-for-hvac/": tradePage({
     path: "/solutions/ai-receptionist-for-hvac/",
-    title: "Réceptionniste IA pour entreprises CVC | LobbyStack",
+    title: "Réceptionniste IA pour entreprises CVC | Lead My Company",
     description:
-      "LobbyStack répond aux appels de chauffage et climatisation, recueille les détails du système, planifie les visites et transfère les urgences selon vos règles.",
+      "Lead My Company répond aux appels de chauffage et climatisation, recueille les détails du système, planifie les visites et transfère les urgences selon vos règles.",
     eyebrow: "Chauffage et climatisation",
     h1: "Un réceptionniste IA pour les équipes CVC pendant les saisons chargées",
     intro:
-      "LobbyStack couvre les appels de chauffage et climatisation pendant les installations, les déplacements et les pics de demande.",
-    imageAlt: "LobbyStack qualifiant un appel de chauffage ou de climatisation",
+      "Lead My Company couvre les appels de chauffage et climatisation pendant les installations, les déplacements et les pics de demande.",
+    imageAlt: "Lead My Company qualifiant un appel de chauffage ou de climatisation",
     trade: "chauffage et climatisation",
     busyWork: "effectue une installation, un entretien ou un diagnostic",
     emergency:
@@ -631,14 +631,14 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
 
   "/solutions/ai-receptionist-for-electricians/": tradePage({
     path: "/solutions/ai-receptionist-for-electricians/",
-    title: "Réceptionniste IA pour électriciens | LobbyStack",
+    title: "Réceptionniste IA pour électriciens | Lead My Company",
     description:
-      "LobbyStack répond aux appels d’électricité, recueille le problème, l’adresse et le contexte, planifie les visites et transfère les risques urgents.",
+      "Lead My Company répond aux appels d’électricité, recueille le problème, l’adresse et le contexte, planifie les visites et transfère les risques urgents.",
     eyebrow: "Électricité",
     h1: "Un réceptionniste IA pour les électriciens occupés sur le terrain",
     intro:
-      "LobbyStack recueille le problème, l’adresse et le contexte pendant que votre équipe travaille sur une installation ou un dépannage.",
-    imageAlt: "LobbyStack recueillant les détails d’un appel d’électricité",
+      "Lead My Company recueille le problème, l’adresse et le contexte pendant que votre équipe travaille sur une installation ou un dépannage.",
+    imageAlt: "Lead My Company recueillant les détails d’un appel d’électricité",
     trade: "services électriques",
     busyWork: "installe un panneau, tire des câbles ou diagnostique un circuit",
     emergency:
@@ -655,14 +655,14 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
 
   "/solutions/ai-receptionist-for-garage-door-repair/": tradePage({
     path: "/solutions/ai-receptionist-for-garage-door-repair/",
-    title: "Réceptionniste IA pour portes de garage | LobbyStack",
+    title: "Réceptionniste IA pour portes de garage | Lead My Company",
     description:
-      "LobbyStack répond aux appels de portes de garage, recueille les symptômes, planifie les réparations et transfère les portes bloquées urgentes.",
+      "Lead My Company répond aux appels de portes de garage, recueille les symptômes, planifie les réparations et transfère les portes bloquées urgentes.",
     eyebrow: "Portes de garage",
     h1: "Un réceptionniste IA pour les entreprises de réparation de portes de garage",
     intro:
-      "LobbyStack répond aux clients dont la porte est bloquée, le ressort est cassé ou l’ouvre-porte ne fonctionne plus, puis prépare la prochaine étape.",
-    imageAlt: "LobbyStack planifiant une réparation de porte de garage",
+      "Lead My Company répond aux clients dont la porte est bloquée, le ressort est cassé ou l’ouvre-porte ne fonctionne plus, puis prépare la prochaine étape.",
+    imageAlt: "Lead My Company planifiant une réparation de porte de garage",
     trade: "réparation de portes de garage",
     busyWork: "remplace un ressort, règle une porte ou installe un ouvre-porte",
     emergency:
@@ -679,15 +679,15 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
 
   "/solutions/ai-receptionist-for-appliance-repair/": tradePage({
     path: "/solutions/ai-receptionist-for-appliance-repair/",
-    title: "Réceptionniste IA pour électroménagers | LobbyStack",
+    title: "Réceptionniste IA pour électroménagers | Lead My Company",
     description:
-      "LobbyStack répond aux appels de réparation, recueille l’appareil, la marque, le modèle et les symptômes, puis planifie une visite adaptée avec le bon contexte.",
+      "Lead My Company répond aux appels de réparation, recueille l’appareil, la marque, le modèle et les symptômes, puis planifie une visite adaptée avec le bon contexte.",
     eyebrow: "Réparation d’électroménagers",
     h1: "Un réceptionniste IA pour les équipes de réparation d’électroménagers",
     intro:
-      "LobbyStack recueille dès le premier appel les renseignements qui évitent un rappel inutile et aide le client à réserver une visite.",
+      "Lead My Company recueille dès le premier appel les renseignements qui évitent un rappel inutile et aide le client à réserver une visite.",
     imageAlt:
-      "LobbyStack recueillant le modèle d’un électroménager avant une visite",
+      "Lead My Company recueillant le modèle d’un électroménager avant une visite",
     trade: "réparation d’électroménagers",
     busyWork: "diagnostique une panne ou remplace une pièce",
     emergency:
@@ -704,15 +704,15 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
 
   "/solutions/ai-receptionist-for-restoration-companies/": tradePage({
     path: "/solutions/ai-receptionist-for-restoration-companies/",
-    title: "Réceptionniste IA après sinistre | LobbyStack",
+    title: "Réceptionniste IA après sinistre | Lead My Company",
     description:
-      "LobbyStack qualifie les appels de dégâts d’eau, d’incendie ou de moisissure, recueille l’étendue, planifie les évaluations et transfère les urgences.",
+      "Lead My Company qualifie les appels de dégâts d’eau, d’incendie ou de moisissure, recueille l’étendue, planifie les évaluations et transfère les urgences.",
     eyebrow: "Restauration après sinistre",
     h1: "Un réceptionniste IA pour les entreprises qui interviennent après un sinistre",
     intro:
-      "LobbyStack recueille le type de dommage, l’étendue, l’emplacement et l’urgence afin que votre équipe puisse prioriser les bons appels.",
+      "Lead My Company recueille le type de dommage, l’étendue, l’emplacement et l’urgence afin que votre équipe puisse prioriser les bons appels.",
     imageAlt:
-      "LobbyStack qualifiant un appel de restauration après un dégât d’eau",
+      "Lead My Company qualifiant un appel de restauration après un dégât d’eau",
     trade: "restauration après sinistre",
     busyWork:
       "assèche un bâtiment, traite des dommages ou prépare une reconstruction",
@@ -730,15 +730,15 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
 
   "/solutions/ai-receptionist-for-locksmiths/": tradePage({
     path: "/solutions/ai-receptionist-for-locksmiths/",
-    title: "Réceptionniste IA pour serruriers | LobbyStack",
+    title: "Réceptionniste IA pour serruriers | Lead My Company",
     description:
-      "LobbyStack répond aux appels de serrurerie, recueille le type de blocage, l’emplacement et le contexte, planifie les visites et transfère les urgences.",
+      "Lead My Company répond aux appels de serrurerie, recueille le type de blocage, l’emplacement et le contexte, planifie les visites et transfère les urgences.",
     eyebrow: "Serrurerie",
     h1: "Un réceptionniste IA pour les serruriers qui répondent aux urgences",
     intro:
-      "LobbyStack répond pendant une intervention, recueille le type de serrure et l’emplacement, puis planifie ou transfère selon vos règles.",
+      "Lead My Company répond pendant une intervention, recueille le type de serrure et l’emplacement, puis planifie ou transfère selon vos règles.",
     imageAlt:
-      "LobbyStack répondant à un appel de serrurerie et planifiant une visite",
+      "Lead My Company répondant à un appel de serrurerie et planifiant une visite",
     trade: "serrurerie",
     busyWork:
       "reprogramme une serrure, installe du matériel ou répond à un blocage",
@@ -756,14 +756,14 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
   "/solutions/after-hours-answering-service-for-contractors/": frenchPage(
     "/solutions/after-hours-answering-service-for-contractors/",
     {
-      title: "Réponse hors horaires pour entrepreneurs | LobbyStack",
+      title: "Réponse hors horaires pour entrepreneurs | Lead My Company",
       description:
-        "LobbyStack répond aux appels d’entrepreneurs le soir et le week-end, filtre les urgences, planifie le lendemain et transfère la personne d’astreinte.",
+        "Lead My Company répond aux appels d’entrepreneurs le soir et le week-end, filtre les urgences, planifie le lendemain et transfère la personne d’astreinte.",
       eyebrow: "Entrepreneurs hors horaires",
       h1: "Un service de réponse hors horaires qui protège les appels urgents",
       intro:
-        "LobbyStack répond la nuit, le week-end et les jours fériés, distingue les urgences des demandes courantes et prépare la prochaine étape.",
-      imageAlt: "LobbyStack répondant à un appel d’entrepreneur hors horaires",
+        "Lead My Company répond la nuit, le week-end et les jours fériés, distingue les urgences des demandes courantes et prépare la prochaine étape.",
+      imageAlt: "Lead My Company répondant à un appel d’entrepreneur hors horaires",
       proofPoints: [
         "Filtre les urgences selon les critères de l’entreprise",
         "Planifie les rendez-vous du prochain jour ouvrable",
@@ -772,7 +772,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
       sections: [
         {
           title: "Ne perdez pas une urgence au profit d’une messagerie",
-          body: "Un propriétaire qui appelle tard avec un problème actif cherche une réponse immédiate. LobbyStack applique vos critères avant de transférer la demande à la personne d’astreinte.",
+          body: "Un propriétaire qui appelle tard avec un problème actif cherche une réponse immédiate. Lead My Company applique vos critères avant de transférer la demande à la personne d’astreinte.",
           points: [
             "Problème, adresse, coordonnées et heure recueillis",
             "Urgences transférées avec le contexte",
@@ -781,7 +781,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
         },
         {
           title: "Planifiez automatiquement le prochain jour ouvrable",
-          body: "Les demandes non urgentes peuvent avancer sans attendre un rappel. LobbyStack vérifie les créneaux autorisés, réserve et confirme la prochaine étape.",
+          body: "Les demandes non urgentes peuvent avancer sans attendre un rappel. Lead My Company vérifie les créneaux autorisés, réserve et confirme la prochaine étape.",
           points: [
             "Disponibilités réelles du calendrier",
             "Rendez-vous créés avec le motif de l’appel",
@@ -809,9 +809,9 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
       ],
       faqs: [
         {
-          question: "Comment LobbyStack décide-t-il qu’un appel est urgent ?",
+          question: "Comment Lead My Company décide-t-il qu’un appel est urgent ?",
           answer:
-            "L’entrepreneur définit les critères et les questions. LobbyStack applique ces règles et ne transfère que les situations prévues.",
+            "L’entrepreneur définit les critères et les questions. Lead My Company applique ces règles et ne transfère que les situations prévues.",
         },
         {
           question: "Peut-il réserver pour le prochain jour ouvrable ?",
@@ -851,15 +851,15 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
   "/solutions/property-management-answering-service/": frenchPage(
     "/solutions/property-management-answering-service/",
     {
-      title: "Prise d’appels IA pour la gestion immobilière | LobbyStack",
+      title: "Prise d’appels IA pour la gestion immobilière | Lead My Company",
       description:
-        "LobbyStack répond aux locataires après les heures d’ouverture, trie les urgences d’entretien, répond aux questions de location et planifie les visites.",
+        "Lead My Company répond aux locataires après les heures d’ouverture, trie les urgences d’entretien, répond aux questions de location et planifie les visites.",
       eyebrow: "Gestion immobilière",
       h1: "Prise d’appels pour la gestion immobilière, même en pleine nuit",
       intro:
-        "Un locataire appelle à 2 h pour une fuite, une porte verrouillée ou une panne de chauffage. Un futur locataire appelle le midi pour savoir si les animaux sont acceptés. LobbyStack répond aux deux, transfère les vraies urgences à votre technicien de garde et planifie les visites pour votre équipe de location.",
+        "Un locataire appelle à 2 h pour une fuite, une porte verrouillée ou une panne de chauffage. Un futur locataire appelle le midi pour savoir si les animaux sont acceptés. Lead My Company répond aux deux, transfère les vraies urgences à votre technicien de garde et planifie les visites pour votre équipe de location.",
       imageAlt:
-        "Sources de connaissances LobbyStack, dont les FAQ, les politiques et les heures d’ouverture, prêtes à répondre aux locataires",
+        "Sources de connaissances Lead My Company, dont les FAQ, les politiques et les heures d’ouverture, prêtes à répondre aux locataires",
       proofPoints: [
         "Distingue les urgences d’entretien des demandes qui peuvent attendre",
         "Répond aux questions de location à partir de vos politiques",
@@ -868,7 +868,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
       sections: [
         {
           title: "Triez les appels d’entretien avec votre liste d’urgences",
-          body: "Vous avez sans doute déjà une liste écrite : dégât d’eau, panne de chauffage en hiver, odeur de gaz, porte verrouillée, refoulement d’égout. Ajoutez-la à LobbyStack. Il demande au locataire son numéro de logement et ce qu’il constate, transfère les urgences à votre technicien de garde et consigne le robinet qui fuit pour le lendemain matin.",
+          body: "Vous avez sans doute déjà une liste écrite : dégât d’eau, panne de chauffage en hiver, odeur de gaz, porte verrouillée, refoulement d’égout. Ajoutez-la à Lead My Company. Il demande au locataire son numéro de logement et ce qu’il constate, transfère les urgences à votre technicien de garde et consigne le robinet qui fuit pour le lendemain matin.",
           points: [
             "Recueille le numéro de logement, le numéro de rappel et la description du problème",
             "Transfère les urgences à votre technicien de garde",
@@ -877,7 +877,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
         },
         {
           title: "Répondez aux questions de location et planifiez les visites",
-          body: "Les futurs locataires demandent le loyer, les services inclus, la politique sur les animaux, le stationnement et les logements libres. Ajoutez ces détails à la base de connaissances de LobbyStack et il y répond. Quand quelqu’un veut visiter, il réserve la visite dans le calendrier de votre agent et envoie la confirmation par texto.",
+          body: "Les futurs locataires demandent le loyer, les services inclus, la politique sur les animaux, le stationnement et les logements libres. Ajoutez ces détails à la base de connaissances de Lead My Company et il y répond. Quand quelqu’un veut visiter, il réserve la visite dans le calendrier de votre agent et envoie la confirmation par texto.",
           points: [
             "Répond à partir des détails de vos immeubles",
             "Réserve les visites dans le calendrier de votre agent",
@@ -886,7 +886,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
         },
         {
           title: "Gardez les questions courantes loin du téléphone de garde",
-          body: "Un locataire qui demande à 23 h quand le loyer est dû ne devrait pas réveiller votre technicien. LobbyStack répond aux questions sur le loyer, les heures du bureau et le portail à partir de vos politiques, et enregistre un résumé de l’appel. Votre téléphone de garde sonne seulement pour les urgences de votre liste.",
+          body: "Un locataire qui demande à 23 h quand le loyer est dû ne devrait pas réveiller votre technicien. Lead My Company répond aux questions sur le loyer, les heures du bureau et le portail à partir de vos politiques, et enregistre un résumé de l’appel. Votre téléphone de garde sonne seulement pour les urgences de votre liste.",
           points: [
             "Répond aux questions sur le loyer, les heures et le portail",
             "Enregistre un résumé et une transcription de chaque appel",
@@ -908,22 +908,22 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
           question:
             "Peut-il distinguer une urgence d’entretien d’une demande courante ?",
           answer:
-            "Oui. Vous donnez à LobbyStack votre liste d’urgences en langage courant, par exemple un dégât d’eau, une panne de chauffage sous une certaine température, une odeur de gaz ou une porte verrouillée. Il pose les questions de suivi, transfère les appels correspondants à votre technicien de garde et envoie le reste à la file du matin.",
+            "Oui. Vous donnez à Lead My Company votre liste d’urgences en langage courant, par exemple un dégât d’eau, une panne de chauffage sous une certaine température, une odeur de gaz ou une porte verrouillée. Il pose les questions de suivi, transfère les appels correspondants à votre technicien de garde et envoie le reste à la file du matin.",
         },
         {
           question: "Peut-il répondre aux questions sur mes immeubles ?",
           answer:
-            "Oui. Ajoutez le loyer, la politique sur les animaux, le stationnement et les logements libres à la base de connaissances. LobbyStack répond à partir de ces détails et signale à votre bureau ce qu’il ne peut pas traiter.",
+            "Oui. Ajoutez le loyer, la politique sur les animaux, le stationnement et les logements libres à la base de connaissances. Lead My Company répond à partir de ces détails et signale à votre bureau ce qu’il ne peut pas traiter.",
         },
         {
           question: "Peut-il planifier des visites ?",
           answer:
-            "Oui. LobbyStack consulte le calendrier de votre agent de location, propose des plages libres, réserve la visite et envoie une confirmation par texto.",
+            "Oui. Lead My Company consulte le calendrier de votre agent de location, propose des plages libres, réserve la visite et envoie une confirmation par texto.",
         },
         {
           question: "Fonctionne-t-il avec mon numéro de bureau actuel ?",
           answer:
-            "Oui. Transférez votre ligne vers LobbyStack après les heures d’ouverture ou toute la journée. Les locataires continuent d’appeler le numéro qu’ils connaissent.",
+            "Oui. Transférez votre ligne vers Lead My Company après les heures d’ouverture ou toute la journée. Les locataires continuent d’appeler le numéro qu’ils connaissent.",
         },
         {
           question: "Combien coûte ce service ?",
@@ -945,7 +945,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
       ],
       ctaHeading: "Répondez aux locataires après les heures",
       ctaBody:
-        "Ajoutez votre liste d’urgences, transférez votre ligne hors heures et testez LobbyStack avec le forfait gratuit.",
+        "Ajoutez votre liste d’urgences, transférez votre ligne hors heures et testez Lead My Company avec le forfait gratuit.",
       ctaPrimaryLabel: "Essayer gratuitement",
       ctaSecondaryLabel: "Voir les tarifs",
     }
@@ -954,15 +954,15 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
   "/solutions/roofing-answering-service/": frenchPage(
     "/solutions/roofing-answering-service/",
     {
-      title: "Prise d’appels IA pour couvreurs | LobbyStack",
+      title: "Prise d’appels IA pour couvreurs | Lead My Company",
       description:
-        "LobbyStack répond aux appels des couvreurs après une tempête, transfère les fuites actives à votre équipe de garde et planifie les inspections et les estimations.",
+        "Lead My Company répond aux appels des couvreurs après une tempête, transfère les fuites actives à votre équipe de garde et planifie les inspections et les estimations.",
       eyebrow: "Toiture",
       h1: "Prise d’appels pour couvreurs qui suit le rythme après une tempête",
       intro:
-        "Après une tempête de grêle, les propriétaires appellent toute la journée pour obtenir une inspection avant la visite de l’expert en sinistre. LobbyStack prend ces appels en même temps, planifie les inspections dans votre calendrier et transfère les fuites actives à votre équipe.",
+        "Après une tempête de grêle, les propriétaires appellent toute la journée pour obtenir une inspection avant la visite de l’expert en sinistre. Lead My Company prend ces appels en même temps, planifie les inspections dans votre calendrier et transfère les fuites actives à votre équipe.",
       imageAlt:
-        "Acheminement d’appel qui fait sonner votre équipe d’abord, puis confie l’appel à LobbyStack si personne n’est disponible",
+        "Acheminement d’appel qui fait sonner votre équipe d’abord, puis confie l’appel à Lead My Company si personne n’est disponible",
       proofPoints: [
         "Prend plusieurs appels à la fois après une tempête, sans signal occupé",
         "Planifie les inspections et les estimations dans votre calendrier",
@@ -971,7 +971,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
       sections: [
         {
           title: "Gérez la semaine qui suit une tempête",
-          body: "La grêle et le vent peuvent amener un mois d’appels en deux jours. LobbyStack prend autant d’appels simultanés qu’il en arrive, recueille l’adresse, l’âge de la toiture et les dommages visibles, puis réserve la première plage d’inspection libre. Votre bureau commence la journée avec une liste d’inspections réservées.",
+          body: "La grêle et le vent peuvent amener un mois d’appels en deux jours. Lead My Company prend autant d’appels simultanés qu’il en arrive, recueille l’adresse, l’âge de la toiture et les dommages visibles, puis réserve la première plage d’inspection libre. Votre bureau commence la journée avec une liste d’inspections réservées.",
           points: [
             "Répond aux appels simultanés",
             "Recueille l’adresse, l’âge de la toiture et les dommages visibles",
@@ -980,7 +980,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
         },
         {
           title: "Envoyez les fuites actives à votre équipe",
-          body: "De l’eau qui coule par un plafond demande une bâche ce soir. Vous définissez ce qui est urgent, et LobbyStack transfère ces appels à votre équipe de garde avec l’adresse et la description du propriétaire. Quelques bardeaux arrachés sans fuite obtiennent une inspection.",
+          body: "De l’eau qui coule par un plafond demande une bâche ce soir. Vous définissez ce qui est urgent, et Lead My Company transfère ces appels à votre équipe de garde avec l’adresse et la description du propriétaire. Quelques bardeaux arrachés sans fuite obtiennent une inspection.",
           points: [
             "Transfère les fuites actives avec l’adresse et la description",
             "Planifie une inspection pour les dommages non urgents",
@@ -989,7 +989,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
         },
         {
           title: "Répondez aux questions d’assurance avec votre script",
-          body: "Les propriétaires demandent si vous travaillez avec leur assureur, si vous rencontrez l’expert en sinistre et combien coûte une inspection. Écrivez vos réponses une fois. LobbyStack les donne pendant l’appel et signale à votre bureau toute question hors script.",
+          body: "Les propriétaires demandent si vous travaillez avec leur assureur, si vous rencontrez l’expert en sinistre et combien coûte une inspection. Écrivez vos réponses une fois. Lead My Company les donne pendant l’appel et signale à votre bureau toute question hors script.",
           points: [
             "Répond aux questions d’assurance et d’inspection que vous approuvez",
             "Signale les questions inhabituelles pour un rappel",
@@ -1010,7 +1010,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
         {
           question: "Peut-il gérer une vague d’appels après une tempête ?",
           answer:
-            "Oui. LobbyStack répond aux appels simultanés, alors les propriétaires ne tombent ni sur un signal occupé ni sur la boîte vocale. Il réserve les inspections dans vos plages libres et garde le reste pour votre bureau.",
+            "Oui. Lead My Company répond aux appels simultanés, alors les propriétaires ne tombent ni sur un signal occupé ni sur la boîte vocale. Il réserve les inspections dans vos plages libres et garde le reste pour votre bureau.",
         },
         {
           question: "Que fait-il en cas de fuite active ?",
@@ -1021,7 +1021,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
           question:
             "Peut-il répondre aux questions de réclamation d’assurance ?",
           answer:
-            "Oui, à partir des réponses que vous écrivez, par exemple si vous rencontrez les experts en sinistre et avec quels assureurs vous travaillez. LobbyStack signale toute question hors script pour un rappel.",
+            "Oui, à partir des réponses que vous écrivez, par exemple si vous rencontrez les experts en sinistre et avec quels assureurs vous travaillez. Lead My Company signale toute question hors script pour un rappel.",
         },
         {
           question:
@@ -1032,7 +1032,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
         {
           question: "Fonctionne-t-il avec mon numéro actuel ?",
           answer:
-            "Oui. Transférez votre numéro actuel vers LobbyStack, ou envoyez-lui seulement les appels en débordement et hors heures.",
+            "Oui. Transférez votre numéro actuel vers Lead My Company, ou envoyez-lui seulement les appels en débordement et hors heures.",
         },
         {
           question: "Combien coûte ce service ?",
@@ -1054,7 +1054,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
       ],
       ctaHeading: "Soyez prêt pour la prochaine tempête",
       ctaBody:
-        "Configurez LobbyStack avant la saison des tempêtes pour qu’il prenne le débordement quand vos lignes sont pleines.",
+        "Configurez Lead My Company avant la saison des tempêtes pour qu’il prenne le débordement quand vos lignes sont pleines.",
       ctaPrimaryLabel: "Essayer gratuitement",
       ctaSecondaryLabel: "Voir les tarifs",
     }
@@ -1063,15 +1063,15 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
   "/solutions/open-source-ai-receptionist/": frenchPage(
     "/solutions/open-source-ai-receptionist/",
     {
-      title: "Réceptionniste IA open source | LobbyStack",
+      title: "Réceptionniste IA open source | Lead My Company",
       description:
-        "Inspectez, adaptez et auto-hébergez LobbyStack, un réceptionniste IA open source sous licence MIT pour répondre, réserver et transférer les appels.",
+        "Inspectez, adaptez et auto-hébergez Lead My Company, un réceptionniste IA open source sous licence MIT pour répondre, réserver et transférer les appels.",
       eyebrow: "Open source",
       h1: "Un réceptionniste IA open source que vous pouvez inspecter et auto-héberger",
       intro:
-        "LobbyStack publie le code de sa pile de réception téléphonique afin que votre équipe puisse examiner la logique, adapter les flux et choisir son déploiement.",
+        "Lead My Company publie le code de sa pile de réception téléphonique afin que votre équipe puisse examiner la logique, adapter les flux et choisir son déploiement.",
       imageAlt:
-        "Code et contrôles de déploiement du réceptionniste IA open source LobbyStack",
+        "Code et contrôles de déploiement du réceptionniste IA open source Lead My Company",
       proofPoints: [
         "Dépôt public sous licence MIT",
         "Consignes, accueil et transferts adaptables",
@@ -1108,7 +1108,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
         {
           title:
             "Utilisez le cloud géré si vous ne voulez pas exploiter la pile",
-          body: "Le code ouvert n’impose pas l’auto-hébergement. LobbyStack Cloud fournit le produit géré, tandis que le dépôt reste disponible pour inspection et déploiement interne.",
+          body: "Le code ouvert n’impose pas l’auto-hébergement. Lead My Company Cloud fournit le produit géré, tandis que le dépôt reste disponible pour inspection et déploiement interne.",
           points: [
             "Démarrage rapide avec le service géré",
             "Parcours auto-hébergé pour les équipes techniques",
@@ -1118,12 +1118,12 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
       ],
       faqs: [
         {
-          question: "Quelle est la licence de LobbyStack ?",
+          question: "Quelle est la licence de Lead My Company ?",
           answer:
-            "LobbyStack est publié sous licence MIT. Conservez les avis de droit d’auteur et d’autorisation requis lorsque vous copiez ou distribuez le logiciel.",
+            "Lead My Company est publié sous licence MIT. Conservez les avis de droit d’auteur et d’autorisation requis lorsque vous copiez ou distribuez le logiciel.",
         },
         {
-          question: "Puis-je auto-héberger LobbyStack ?",
+          question: "Puis-je auto-héberger Lead My Company ?",
           answer:
             "Oui. Le dépôt et la documentation décrivent le parcours de déploiement. Votre équipe reste responsable de l’infrastructure et des fournisseurs.",
         },
@@ -1152,7 +1152,7 @@ export const restoredFrenchSeoPages: Record<string, SeoLandingPage> = {
       ],
       ctaHeading: "Examinez le code avant de confier vos appels au système",
       ctaBody:
-        "Consultez le dépôt sous licence MIT, la documentation et les options de déploiement de LobbyStack.",
+        "Consultez le dépôt sous licence MIT, la documentation et les options de déploiement de Lead My Company.",
       ctaPrimaryLabel: "Voir sur GitHub",
       ctaPrimaryHref: "https://github.com/lobbystack/lobbystack",
       ctaSecondaryLabel: "Lire la documentation",

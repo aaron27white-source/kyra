@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { businesses, enqueueOutbox, receptionistProfiles } from "@lobbystack/db";
-import { defaultAppointmentChangePolicy, type AppointmentChangePolicy, type BookingMode } from "@lobbystack/shared";
+import { defaultAppointmentChangePolicy, serviceIntakePolicySchema, type AppointmentChangePolicy, type BookingMode, type ServiceIntakePolicy } from "@lobbystack/shared";
 import { asApiResponse, jsonError, readJson, withOperatorTransaction } from "@/lib/api-helpers";
 
 export const dynamic = "force-dynamic";
@@ -23,6 +23,8 @@ type ProfileField = (typeof profileFields)[number];
 type ProfilePatch = Partial<Record<"greeting" | "tone" | "summary" | "bookingPolicy" | "transferMode", string>> &
   Partial<Record<"voiceInstructions" | "smsInstructions" | "chatInstructions" | "transferNumber", string | null>> &
   { appointmentChangePolicy?: AppointmentChangePolicy; bookingMode?: BookingMode };
+  // Business-wide default intake policy; service policies override individual fields.
+type ProfileIntakePatch = ProfilePatch & { intakePolicy?: ServiceIntakePolicy | null };
 
 function appointmentPolicy(value: unknown): AppointmentChangePolicy | undefined {
   if (value === undefined) return undefined;
@@ -41,7 +43,7 @@ function optionalText(value: unknown, field: string, maxLength: number): string 
   return normalized;
 }
 
-function readProfilePatch(body: Record<string, unknown>): ProfilePatch {
+function readProfilePatch(body: Record<string, unknown>): ProfileIntakePatch {
   const patch: Partial<Record<ProfileField, string | null | undefined>> = {};
   for (const field of profileFields) {
     if (!(field in body)) continue;
@@ -59,7 +61,8 @@ function readProfilePatch(body: Record<string, unknown>): ProfilePatch {
   const policy = appointmentPolicy(body.appointmentChangePolicy);
   const bookingMode = body.bookingMode;
   if (bookingMode !== undefined && bookingMode !== "off" && bookingMode !== "request" && bookingMode !== "instant") throw jsonError("bookingMode is invalid.");
-  return { ...patch, ...(policy !== undefined ? { appointmentChangePolicy: policy } : {}), ...(bookingMode !== undefined ? { bookingMode } : {}) } as ProfilePatch;
+  const intakePolicy = body.intakePolicy === undefined ? undefined : body.intakePolicy === null ? null : serviceIntakePolicySchema.parse(body.intakePolicy) as unknown as ServiceIntakePolicy;
+  return { ...patch, ...(policy !== undefined ? { appointmentChangePolicy: policy } : {}), ...(bookingMode !== undefined ? { bookingMode } : {}), ...(intakePolicy !== undefined ? { intakePolicy } : {}) } as ProfileIntakePatch;
 }
 
 export async function GET(request: Request) {
@@ -70,7 +73,7 @@ export async function GET(request: Request) {
         tx.select().from(receptionistProfiles).where(eq(receptionistProfiles.businessId, businessId)).limit(1),
       ]);
       return { business: business[0] ?? null, profile: profile[0] ?? null };
-    }));
+    }, { pilotCapability: "voice" }));
   } catch (error) {
     return asApiResponse(error);
   }
@@ -125,7 +128,7 @@ export async function PATCH(request: Request) {
         payload: { businessId },
       });
       return { profile };
-    }, { minimumRole: "business_admin" }));
+    }, { minimumRole: "business_admin", pilotCapability: "voice" }));
   } catch (error) {
     return asApiResponse(error);
   }

@@ -15,7 +15,7 @@ export function Hero() {
             </span>
           </h1>
           <p className="animate-fade-up mx-auto mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground stagger-2 md:text-lg">
-            LobbyStack answers calls for HVAC, plumbing, electrical, roofing,
+            Lead My Company answers calls for HVAC, plumbing, electrical, roofing,
             and landscaping businesses. It captures emergency calls, books
             appointments, and routes urgent jobs to your team while you are busy
             doing the work.
@@ -144,7 +144,7 @@ export function Solution() {
               A receptionist that works while your crew works
             </h2>
             <p className="section-intro text-left">
-              LobbyStack gives your home services business a phone answering
+              Lead My Company gives your home services business a phone answering
               layer that captures leads, books jobs, and handles emergencies
               around the clock.
             </p>
@@ -173,7 +173,7 @@ export function Solution() {
                     <div>
                       <p className="text-sm font-medium">Incoming Call</p>
                       <p className="text-xs text-muted-foreground">
-                        LobbyStack AI
+                        Lead My Company AI
                       </p>
                     </div>
                   </div>
@@ -228,7 +228,7 @@ export function UseCases() {
     },
     {
       title: "Spam and robocalls",
-      copy: "LobbyStack filters spam calls, and they don't count against your voice minutes.",
+      copy: "Lead My Company filters spam calls, and they don't count against your voice minutes.",
     },
   ]
 
@@ -240,7 +240,7 @@ export function UseCases() {
             Use AI phone answering where missed calls hurt most
           </h2>
           <p className="section-intro">
-            Set LobbyStack up for the parts of your phone workflow that cost
+            Set Lead My Company up for the parts of your phone workflow that cost
             time, revenue, or callbacks.
           </p>
         </div>
@@ -268,11 +268,11 @@ export function HowItWorks() {
   const steps = [
     {
       title: "Connect your phone",
-      copy: "Use a dedicated LobbyStack number or forward calls from the business line your customers already know.",
+      copy: "Use a dedicated Lead My Company number or forward calls from the business line your customers already know.",
     },
     {
       title: "Add your services and coverage areas",
-      copy: "Give LobbyStack your service list, pricing, hours, service areas, emergency policies, and booking rules.",
+      copy: "Give Lead My Company your service list, pricing, hours, service areas, emergency policies, and booking rules.",
     },
     {
       title: "Choose when it should answer",
@@ -288,7 +288,7 @@ export function HowItWorks() {
     <section className="section-spacing" id="how-it-works">
       <div className="mx-auto max-w-7xl px-6">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="section-heading">How LobbyStack answers your calls</h2>
+          <h2 className="section-heading">How Lead My Company answers your calls</h2>
         </div>
         <div className="mx-auto mt-16 max-w-4xl">
           <div className="relative ml-4 border-l border-border/70 md:ml-0 md:border-l-0">
@@ -362,7 +362,7 @@ export function Comparison() {
       limit: "Costs scale with volume. Messages still need callback.",
     },
     {
-      option: "LobbyStack",
+      option: "Lead My Company",
       what: "AI answers, asks questions, books appointments, and routes emergencies.",
       bestFor:
         "Trades and home services that want 24/7 coverage without adding headcount.",
@@ -378,7 +378,7 @@ export function Comparison() {
             Better phone coverage without another full-time hire
           </h2>
           <p className="section-intro">
-            LobbyStack handles the call while the homeowner is still interested.
+            Lead My Company handles the call while the homeowner is still interested.
           </p>
         </div>
         <div className="mt-16 overflow-x-auto pb-4">

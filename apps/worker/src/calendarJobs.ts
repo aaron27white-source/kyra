@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { and, asc, eq, isNull, ne, or, sql } from "drizzle-orm";
-import { appointments, calendarConnections, contacts, services, withBusinessTransaction, type DatabaseTransaction } from "@lobbystack/db";
+import { appointments, businesses, calendarConnections, contacts, services, withBusinessTransaction, type DatabaseTransaction } from "@lobbystack/db";
+import { serviceAddressSchema } from "@lobbystack/shared";
 import { CALENDAR_SYNC_HORIZON_MS, markCalendarConnectionSync, queueUnsyncedAppointmentSyncs, recordProductEvent, resolveCalendarAccessToken, updateAppointmentSyncState, updateAppointmentSyncStateInTransaction, upsertBusyBlocks, type DomainContext } from "@lobbystack/domain";
 import { getPostHogDistinctIdForBusinessSystem } from "@lobbystack/telemetry";
 import { redactOtelExceptionText } from "@lobbystack/telemetry/node";
@@ -9,6 +10,14 @@ import type { JobResult } from "./handlers";
 
 export type CalendarOperations = Pick<GoogleCalendarProvider, "getBusyBlocks" | "upsertEvent" | "deleteEvent" | "refreshAccessToken">;
 type Dependencies = { domain: DomainContext; calendar?: CalendarOperations };
+
+function calendarLocation(value: Record<string, unknown> | null | undefined): string | null {
+  if (!value) return null;
+  const parsed = serviceAddressSchema.safeParse(value);
+  if (!parsed.success) throw new Error("Stored service location is invalid.");
+  const address = parsed.data;
+  return [address.line1, address.unit, address.city, address.region, address.postalCode, address.country].filter(Boolean).join(", ");
+}
 
 async function accessToken(dependencies: Dependencies, businessId: string, connectionId: string, forceRefresh = false): Promise<string> {
   const key = process.env.ENCRYPTION_KEY;
@@ -29,9 +38,11 @@ export async function syncAppointmentCalendar(dependencies: Dependencies, input:
   const load = async (tx: DatabaseTransaction) => (await tx.select({
     id: appointments.id, status: appointments.status, startsAt: appointments.startsAt, endsAt: appointments.endsAt,
     externalEventId: appointments.calendarExternalId, serviceName: services.name, contactName: contacts.name,
+    serviceLocation: appointments.serviceLocation, shareServiceAddress: businesses.calendarShareServiceAddress,
     connectionId: calendarConnections.id, calendarId: calendarConnections.selectedCalendarId, connectionStatus: calendarConnections.status,
     provider: calendarConnections.provider,
   }).from(appointments)
+    .innerJoin(businesses, eq(businesses.id, appointments.businessId))
     .innerJoin(services, and(eq(services.id, appointments.serviceId), eq(services.businessId, businessId)))
     .leftJoin(contacts, and(eq(contacts.id, appointments.contactId), eq(contacts.businessId, businessId)))
     .innerJoin(calendarConnections, and(eq(calendarConnections.businessId, businessId), ne(calendarConnections.status, "disconnected"), or(isNull(calendarConnections.staffId), eq(calendarConnections.staffId, appointments.staffId))))
@@ -57,7 +68,7 @@ export async function syncAppointmentCalendar(dependencies: Dependencies, input:
         await provider.deleteEvent({ accessToken: token, calendarId: current.calendarId, eventId: current.externalEventId ?? clientEventId });
         await updateAppointmentSyncStateInTransaction(tx, { businessId, appointmentId, state: "synced" });
       } else {
-        const external = await provider.upsertEvent({ accessToken: token, calendarId: current.calendarId, clientEventId, ...(current.externalEventId ? { eventId: current.externalEventId } : {}), title: current.serviceName, startsAt: current.startsAt.toISOString(), endsAt: current.endsAt.toISOString(), ...(current.contactName ? { description: `Appointment for ${current.contactName}` } : {}) });
+        const external = await provider.upsertEvent({ accessToken: token, calendarId: current.calendarId, clientEventId, ...(current.externalEventId ? { eventId: current.externalEventId } : {}), title: current.serviceName, startsAt: current.startsAt.toISOString(), endsAt: current.endsAt.toISOString(), ...(current.contactName ? { description: `Appointment for ${current.contactName}` } : {}), location: current.shareServiceAddress === true ? calendarLocation(current.serviceLocation) : null });
         await updateAppointmentSyncStateInTransaction(tx, { businessId, appointmentId, state: "synced", externalEventId: external.externalEventId });
       }
       return { status: "completed", entityId: appointmentId };
@@ -65,7 +76,7 @@ export async function syncAppointmentCalendar(dependencies: Dependencies, input:
   } catch (error) {
     const message = error instanceof Error ? redactOtelExceptionText(error.message) : "Calendar synchronization failed.";
     await updateAppointmentSyncState(dependencies.domain, { businessId, appointmentId, state: "failed", error: message });
-    if (message !== "Calendar selection changed during synchronization.") {
+    if (message !== "Calendar selection changed during synchronization." && message !== "Stored service location is invalid." && message !== "Calendar event recipients must be private before sharing a service address.") {
       await markCalendarConnectionSync(dependencies.domain, { businessId, connectionId: initial.connectionId, error: message });
       try {
         await recordProductEvent(dependencies.domain, {
@@ -85,14 +96,14 @@ export async function syncAppointmentCalendar(dependencies: Dependencies, input:
 
 export async function reconcileBusinessCalendar(dependencies: Dependencies, businessId: string): Promise<JobResult> {
   if (!dependencies.calendar) return { status: "skipped", entityId: businessId };
-  const connections = await withBusinessTransaction(dependencies.domain.db, { businessId, actorType: "worker" }, async (tx) => tx.select({ id: calendarConnections.id, calendarId: calendarConnections.selectedCalendarId, staffId: calendarConnections.staffId, status: calendarConnections.status }).from(calendarConnections).where(and(eq(calendarConnections.businessId, businessId), ne(calendarConnections.status, "disconnected"))));
+  const connections = await withBusinessTransaction(dependencies.domain.db, { businessId, actorType: "worker" }, async (tx) => tx.select({ id: calendarConnections.id, calendarId: calendarConnections.selectedCalendarId, staffId: calendarConnections.staffId, status: calendarConnections.status, lastSyncError: calendarConnections.lastSyncError }).from(calendarConnections).where(and(eq(calendarConnections.businessId, businessId), ne(calendarConnections.status, "disconnected"))));
   let synced = 0;
   let failures = 0;
   for (const connection of connections) {
     // Connecting OAuth does not authorize writes to the implicit primary calendar.
     if (!connection.calendarId) continue;
     try {
-      const token = await accessToken(dependencies, businessId, connection.id, connection.status === "error");
+      const token = await accessToken(dependencies, businessId, connection.id, connection.status === "error" || Boolean(connection.lastSyncError));
       const startsAt = new Date();
       const endsAt = new Date(startsAt.getTime() + CALENDAR_SYNC_HORIZON_MS);
       const blocks = await dependencies.calendar.getBusyBlocks({ accessToken: token, calendarId: connection.calendarId, startsAt: startsAt.toISOString(), endsAt: endsAt.toISOString() });

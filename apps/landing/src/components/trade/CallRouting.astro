@@ -17,7 +17,7 @@ interface Props {
 const { details } = Astro.props
 const article = /^(?:[aeiou]|HVAC)/i.test(details.noun) ? "an" : "a"
 const {
-  intro = `You decide what LobbyStack does with each kind of call. A typical setup for ${article} ${details.noun} business looks like this.`,
+  intro = `You decide what Lead My Company does with each kind of call. A typical setup for ${article} ${details.noun} business looks like this.`,
   callHeading = "When a caller has",
 } = Astro.props
 
@@ -39,7 +39,7 @@ const actionIcons: Record<CallAction, typeof PhoneForwarded> = {
   <div
     class="mt-12 overflow-hidden rounded-[1.35rem] border border-border/70"
     role="region"
-    aria-label={`How LobbyStack handles ${details.noun} calls`}
+    aria-label={`How Lead My Company handles ${details.noun} calls`}
   >
     <table class="w-full border-collapse text-left text-sm">
       <thead class="hidden bg-muted/50 md:table-header-group">
@@ -48,7 +48,7 @@ const actionIcons: Record<CallAction, typeof PhoneForwarded> = {
             {callHeading}
           </th>
           <th scope="col" class="w-[20%] px-6 py-4 font-medium text-foreground">
-            LobbyStack
+            Lead My Company
           </th>
           <th scope="col" class="px-6 py-4 font-medium text-foreground">
             What happens

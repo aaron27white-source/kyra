@@ -10,7 +10,7 @@ vi.mock("next/navigation", () => ({ useRouter: () => spies }));
 vi.mock("react-i18next", () => ({ useTranslation: () => ({ i18n: { language: "en", resolvedLanguage: "en" }, t: (key: string) => key }) }));
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); vi.clearAllMocks(); window.history.replaceState({}, "", "/"); });
 
-it("preserves main's success toast and navigates to team settings after accepting", async () => {
+it("preserves the success toast and re-enters through the pilot workspace guard", async () => {
   window.history.replaceState({}, "", "/accept-invite?token=fixture-token");
   vi.stubGlobal("fetch", vi.fn(async (url: string, init?: RequestInit) => {
     if (url.includes("get-session")) return Response.json({ user: { id: "fixture" } });
@@ -22,7 +22,7 @@ it("preserves main's success toast and navigates to team settings after acceptin
   await waitFor(() => expect(submit.hasAttribute("disabled")).toBe(false));
   await userEvent.click(submit);
   await waitFor(() => expect(spies.success).toHaveBeenCalledWith("acceptInvite.success"));
-  expect(spies.replace).toHaveBeenCalledWith("/settings/team");
+  expect(spies.replace).toHaveBeenCalledWith("/");
   expect(screen.queryByText("acceptInvite.success")).toBeNull();
 });
 

@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest"
 import { onRequest } from "./_middleware.js"
 
 describe("canonical host redirects", () => {
-  it.each(["www.lobbystack.com", "lobbystack-landing.pages.dev"])(
+  it.each(["www.leadmycompany.com", "leadmycompany-landing.pages.dev"])(
     "redirects %s to the canonical host",
     async (hostname) => {
       const next = vi.fn()
@@ -18,7 +18,7 @@ describe("canonical host redirects", () => {
 
       expect(response.status).toBe(301)
       expect(response.headers.get("Location")).toBe(
-        "https://lobbystack.com/solutions/self-hosted-ai-receptionist/?utm_source=test"
+        "https://leadmycompany.com/solutions/self-hosted-ai-receptionist/?utm_source=test"
       )
       expect(next).not.toHaveBeenCalled()
     }
@@ -28,14 +28,14 @@ describe("canonical host redirects", () => {
 describe("canonical host path normalisation", () => {
   it("adds the trailing slash in the same redirect", async () => {
     const response = await onRequest({
-      request: new Request("https://www.lobbystack.com/pricing"),
+      request: new Request("https://www.leadmycompany.com/pricing"),
       env: {},
       next: vi.fn(),
     })
 
     expect(response.status).toBe(301)
     expect(response.headers.get("Location")).toBe(
-      "https://lobbystack.com/pricing/"
+      "https://leadmycompany.com/pricing/"
     )
   })
 
@@ -43,13 +43,13 @@ describe("canonical host path normalisation", () => {
     "leaves %s untouched",
     async (pathname) => {
       const response = await onRequest({
-        request: new Request(`https://www.lobbystack.com${pathname}`),
+        request: new Request(`https://www.leadmycompany.com${pathname}`),
         env: {},
         next: vi.fn(),
       })
 
       expect(response.headers.get("Location")).toBe(
-        `https://lobbystack.com${pathname}`
+        `https://leadmycompany.com${pathname}`
       )
     }
   )
@@ -59,11 +59,11 @@ describe("homepage Markdown content negotiation", () => {
   it.each(["/fr/", "/fr/index.html"])(
     "serves the French Markdown sidecar for %s",
     async (pathname) => {
-      const assetFetch = vi.fn(async () => new Response("# LobbyStack en français"))
+      const assetFetch = vi.fn(async () => new Response("# Lead My Company en français"))
       const next = vi.fn()
 
       const response = await onRequest({
-        request: new Request(`https://lobbystack.com${pathname}`, {
+        request: new Request(`https://leadmycompany.com${pathname}`, {
           headers: { Accept: "text/markdown" },
         }),
         env: { ASSETS: { fetch: assetFetch } },
@@ -79,7 +79,7 @@ describe("homepage Markdown content negotiation", () => {
         "text/markdown; charset=utf-8"
       )
       expect(response.headers.get("Vary")).toBe("Accept")
-      expect(await response.text()).toBe("# LobbyStack en français")
+      expect(await response.text()).toBe("# Lead My Company en français")
     }
   )
 })

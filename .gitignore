@@ -34,3 +34,7 @@ security_best_practices_report.md
 mintlify/.atlas-analysis.json
 
 apps/web/vite.tailscale.config.ts
+
+# Local Python security-tool bytecode
+__pycache__/
+*.py[cod]

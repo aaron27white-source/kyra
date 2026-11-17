@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { assertCertificationCalendar } from "@lobbystack/shared";
 import { DateTime } from "luxon";
 
@@ -68,9 +69,9 @@ export class GoogleCalendarProvider {
     return (payload.items ?? []).flatMap((calendar) => calendar.id && calendar.summary ? [{ id: calendar.id, summary: calendar.summary, primary: calendar.primary === true, ...(calendar.accessRole ? { accessRole: calendar.accessRole } : {}) }] : []);
   }
 
-  async getBusyBlocks(input: { accessToken: string; calendarId: string; startsAt: string; endsAt: string }): Promise<Array<{ startsAt: string; endsAt: string }>> {
+  async getBusyBlocks(input: { accessToken: string; calendarId: string; startsAt: string; endsAt: string }): Promise<Array<{ startsAt: string; endsAt: string; externalEventId?:string }>> {
     assertCertificationCalendar(input.calendarId);
-    const blocks: Array<{ startsAt: string; endsAt: string }> = [];
+    const blocks: Array<{ startsAt: string; endsAt: string; externalEventId?:string }> = [];
     const seenPageTokens = new Set<string>();
     let pageToken: string | undefined;
     // An incomplete mirror must fail closed rather than advertising open slots.
@@ -80,14 +81,14 @@ export class GoogleCalendarProvider {
       url.searchParams.set("timeMax", input.endsAt);
       url.searchParams.set("singleEvents", "true");
       url.searchParams.set("maxResults", "2500");
-      url.searchParams.set("fields", "timeZone,nextPageToken,items(start,end,status,transparency,attendees(self,responseStatus))");
+      url.searchParams.set("fields", "timeZone,nextPageToken,items(id,start,end,status,transparency,attendees(self,responseStatus))");
       if (pageToken) url.searchParams.set("pageToken", pageToken);
       const response = await fetch(url, { headers: { authorization: `Bearer ${input.accessToken}` } });
       if (!response.ok) throw new Error(`Google Calendar availability request failed with status ${response.status}.`);
       const payload = (await response.json()) as {
         timeZone?: string;
         nextPageToken?: string;
-        items?: Array<{ start?: { dateTime?: string; date?: string; timeZone?: string }; end?: { dateTime?: string; date?: string; timeZone?: string }; status?: string; transparency?: string; attendees?: Array<{ self?: boolean; responseStatus?: string }> }>;
+        items?: Array<{ id?:string; start?: { dateTime?: string; date?: string; timeZone?: string }; end?: { dateTime?: string; date?: string; timeZone?: string }; status?: string; transparency?: string; attendees?: Array<{ self?: boolean; responseStatus?: string }> }>;
       };
       if (!Array.isArray(payload.items)) throw new Error("Google Calendar availability could not be verified.");
       for (const event of payload.items) {
@@ -98,7 +99,7 @@ export class GoogleCalendarProvider {
         const start = eventTime(event.start);
         const end = eventTime(event.end);
         if (!start?.isValid || !end?.isValid || end <= start) throw new Error("Google Calendar returned an invalid busy interval.");
-        blocks.push({ startsAt: start.toUTC().toISO()!, endsAt: end.toUTC().toISO()! });
+        blocks.push({ startsAt: start.toUTC().toISO()!, endsAt: end.toUTC().toISO()!, ...(event.id?{externalEventId:event.id}:{}) });
       }
       if (!payload.nextPageToken) return blocks;
       if (seenPageTokens.has(payload.nextPageToken)) throw new Error("Google Calendar availability pagination did not advance.");
@@ -108,11 +109,28 @@ export class GoogleCalendarProvider {
     throw new Error("Google Calendar availability exceeded the page limit.");
   }
 
-  async upsertEvent(input: { accessToken: string; calendarId: string; eventId?: string; clientEventId?: string; title: string; startsAt: string; endsAt: string; description?: string }): Promise<{ externalEventId: string }> {
+  async upsertEvent(input: { accessToken: string; calendarId: string; eventId?: string; clientEventId?: string; title: string; startsAt: string; endsAt: string; description?: string; location?: string | null }): Promise<{ externalEventId: string }> {
     assertCertificationCalendar(input.calendarId);
-    const method = input.eventId ? "PUT" : "POST";
+    const method = input.eventId ? "PATCH" : "POST";
     const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(input.calendarId)}/events${input.eventId ? `/${encodeURIComponent(input.eventId)}` : ""}`;
-    const response = await fetch(url, { method, headers: { authorization: `Bearer ${input.accessToken}`, "content-type": "application/json" }, body: JSON.stringify({ ...(input.clientEventId && !input.eventId ? { id: input.clientEventId } : {}), summary: input.title, description: input.description, start: { dateTime: input.startsAt }, end: { dateTime: input.endsAt } }) });
+    const headers = { authorization: `Bearer ${input.accessToken}`, "content-type": "application/json" };
+    let existing: { location?: string; visibility?: string; attendees?: unknown[]; extendedProperties?: { private?: Record<string, string> } } | undefined;
+    if (input.eventId) {
+      const read = await fetch(url, { headers });
+      if (!read.ok) throw new Error(`Google Calendar event read failed with status ${read.status}.`);
+      existing = await read.json() as typeof existing;
+    }
+    if (typeof input.location === "string" && input.location.trim() && (existing?.attendees?.length || existing?.visibility === "public")) {
+      throw new Error("Calendar event recipients must be private before sharing a service address.");
+    }
+    const privateProperties = existing?.extendedProperties?.private ?? {};
+    const addressHash = (value: string) => createHash("sha256").update(value).digest("hex");
+    const clearManaged = input.location === null && Boolean(privateProperties.kyraLocationHash);
+    const clearLocation = clearManaged && existing?.location && addressHash(existing.location) === privateProperties.kyraLocationHash;
+    const locationFields = typeof input.location === "string" && input.location.trim()
+      ? { location: input.location, extendedProperties: { private: { ...privateProperties, kyraLocationHash: addressHash(input.location) } } }
+      : clearManaged ? { ...(clearLocation ? { location: null } : {}), extendedProperties: { private: { ...privateProperties, kyraLocationHash: null } } } : {};
+    const response = await fetch(url, { method, headers, body: JSON.stringify({ ...(input.clientEventId && !input.eventId ? { id: input.clientEventId } : {}), summary: input.title, ...(!input.eventId && input.description !== undefined ? { description: input.description } : {}), start: { dateTime: input.startsAt }, end: { dateTime: input.endsAt }, ...(typeof input.location === "string" && input.location.trim() && !input.eventId ? { visibility: "private" } : {}), ...locationFields }) });
     if (!response.ok) {
       if (!input.eventId && input.clientEventId && response.status === 409) return await this.upsertEvent({ ...input, eventId: input.clientEventId });
       throw new Error(`Google Calendar event write failed with status ${response.status}.`);

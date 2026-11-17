@@ -1,8 +1,10 @@
+import { brand } from "@lobbystack/shared/brand"
+
 const MARKDOWN_TOKEN_COUNT = "120"
 const CONTENT_SIGNAL = "ai-train=yes, search=yes, ai-input=yes"
-const CANONICAL_HOST = "lobbystack.com"
-const WWW_HOST = "www.lobbystack.com"
-const PAGES_HOST = "lobbystack-landing.pages.dev"
+const CANONICAL_HOST = brand.domain
+const WWW_HOST = `www.${brand.domain}`
+const PAGES_HOST = `${brand.domain.split(".")[0]}-landing.pages.dev`
 const DEFAULT_LOCALE = "en"
 const TRANSLATED_PATHS = new Set([
   "/",

@@ -9,9 +9,9 @@ vi.mock("./theme-provider", () => ({ useTheme: () => theme }));
 vi.mock("react-i18next", () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
 beforeEach(() => { window.innerWidth = 1440; theme.resolvedTheme = "light"; vi.stubGlobal("matchMedia", vi.fn(query => ({ matches: false, media: query, addEventListener: vi.fn(), removeEventListener: vi.fn() }))); });
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); vi.clearAllMocks(); });
-async function setup(upgrade = false) {
+async function setup(upgrade = false, showAccount = true) {
   const onUpgrade = vi.fn(); const onSignOut = vi.fn();
-  render(<SidebarProvider><NavUser user={{ email: "operator@example.invalid", name: "Operator", avatar: "" }} onSignOut={onSignOut} showUpgradeToPro={upgrade} onUpgradeToPro={onUpgrade} /></SidebarProvider>);
+  render(<SidebarProvider><NavUser showAccount={showAccount} user={{ email: "operator@example.invalid", name: "Operator", avatar: "" }} onSignOut={onSignOut} showUpgradeToPro={upgrade} onUpgradeToPro={onUpgrade} /></SidebarProvider>);
   await userEvent.click(screen.getByRole("button", { name: /operator@example.invalid/ }));
   await screen.findByRole("menu");
   return { onUpgrade, onSignOut };
@@ -32,4 +32,12 @@ describe("original account menu interactions", () => {
     expect(screen.getByRole("menuitem", { name: "sidebar.account" }).getAttribute("href")).toBe("/settings/account");
     await userEvent.click(screen.getByRole("menuitem", { name: "sidebar.signOut" })); expect(onSignOut).toHaveBeenCalledOnce();
   });
+});
+
+it("keeps theme and sign-out without linking to the closed account page in the pilot",async()=>{
+  const {onSignOut}=await setup(false,false);
+  expect(screen.queryByRole("menuitem",{name:"sidebar.account"})).toBeNull();
+  expect(screen.getByRole("menuitem",{name:"sidebar.toggleTheme"})).toBeTruthy();
+  await userEvent.click(screen.getByRole("menuitem",{name:"sidebar.signOut"}));
+  expect(onSignOut).toHaveBeenCalledOnce();
 });

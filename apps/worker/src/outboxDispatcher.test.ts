@@ -1,3 +1,5 @@
+import type * as DbModule from "@lobbystack/db";
+import type * as JobsModule from "@lobbystack/jobs";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { Database } from "@lobbystack/db";
@@ -20,14 +22,14 @@ vi.mock("@lobbystack/telemetry/node", () => ({
 }));
 
 vi.mock("@lobbystack/db", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@lobbystack/db")>()),
+  ...(await importOriginal<typeof DbModule>()),
   claimOutboxBatch: mocks.claimOutboxBatch,
   markOutboxPublished: mocks.markOutboxPublished,
   markOutboxFailed: mocks.markOutboxFailed,
 }));
 
 vi.mock("@lobbystack/jobs", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@lobbystack/jobs")>()),
+  ...(await importOriginal<typeof JobsModule>()),
   enqueueJob: mocks.enqueueJob,
 }));
 

@@ -16,6 +16,13 @@
   },
   "home": {
     "title": "Home",
+    "overviewEyebrow": "Workspace overview",
+    "loadError": {
+      "title": "Dashboard data couldn't load",
+      "description": "Your activity may be temporarily unavailable. Try loading it again.",
+      "retry": "Try again",
+      "retrying": "Loading dashboard"
+    },
     "download": "Download",
     "liveCalls": "Live",
     "tabs": {
@@ -129,6 +136,7 @@
       },
       "kinds": {
         "voice_message": "Callback",
+        "appointment_request": "Appointment follow-up (not booked)",
         "human_handoff": "Handoff",
         "other": "Open"
       }

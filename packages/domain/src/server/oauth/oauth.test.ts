@@ -106,6 +106,8 @@ describe("CIMD metadata fetch", () => {
   it("refuses non-HTTPS and private hosts before any network call", async () => {
     const fake = fakeRequest({ status: 200 });
     const fetch = createCimdFetch({ request: fake.request });
+    // Intentionally insecure negative fixture: rejected before any network call.
+    // nosemgrep: typescript.react.security.react-insecure-request.react-insecure-request
     await expect(fetch("http://client.example.com/metadata.json")).rejects.toThrow(/HTTPS/);
     await expect(fetch("https://127.0.0.1/metadata.json")).rejects.toThrow(/public host/);
     await expect(fetch(url, { method: "POST", body: "{}" })).rejects.toThrow(/GET or HEAD/);

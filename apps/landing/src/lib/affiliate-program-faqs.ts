@@ -14,7 +14,7 @@ const EN_FAQS: AffiliateProgramFaq[] = [
   {
     question: "What do referred businesses save?",
     answer:
-      "They get 5% off hosted LobbyStack plans when they sign up through your link.",
+      "They get 5% off hosted Lead My Company plans when they sign up through your link.",
   },
   {
     question: "When do I get paid?",
@@ -34,7 +34,7 @@ const EN_FAQS: AffiliateProgramFaq[] = [
   {
     question: "Do self-hosted signups count?",
     answer:
-      "No. You earn commission on hosted LobbyStack plan payments only. If someone self-hosts without a paid LobbyStack subscription, that referral does not pay commission.",
+      "No. You earn commission on hosted Lead My Company plan payments only. If someone self-hosts without a paid Lead My Company subscription, that referral does not pay commission.",
   },
 ]
 
@@ -47,7 +47,7 @@ const FR_FAQS: AffiliateProgramFaq[] = [
   {
     question: "Quelle réduction obtiennent les entreprises parrainées ?",
     answer:
-      "Elles obtiennent 5 % de rabais sur les forfaits hébergés LobbyStack lorsqu'elles s'inscrivent via votre lien.",
+      "Elles obtiennent 5 % de rabais sur les forfaits hébergés Lead My Company lorsqu'elles s'inscrivent via votre lien.",
   },
   {
     question: "Quand est-ce que je suis payé ?",
@@ -67,7 +67,7 @@ const FR_FAQS: AffiliateProgramFaq[] = [
   {
     question: "Les inscriptions auto-hébergées comptent-elles ?",
     answer:
-      "Non. Vous touchez une commission uniquement sur les paiements de forfaits hébergés LobbyStack. Si quelqu'un s'auto-héberge sans abonnement LobbyStack payant, ce parrainage ne paie pas de commission.",
+      "Non. Vous touchez une commission uniquement sur les paiements de forfaits hébergés Lead My Company. Si quelqu'un s'auto-héberge sans abonnement Lead My Company payant, ce parrainage ne paie pas de commission.",
   },
 ]
 

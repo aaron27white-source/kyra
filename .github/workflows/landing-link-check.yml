@@ -3,10 +3,17 @@ name: Landing link check
 on:
   push:
     paths:
-      - "apps/landing/src/**"
-      - "apps/landing/functions/**"
-      - "apps/landing/public/**"
-      - "apps/landing/astro.config.mjs"
+      - "apps/landing/**"
+      - "LICENSE"
+      - "NOTICE"
+      - "THIRD_PARTY_NOTICES.md"
+      - ".github/workflows/landing-link-check.yml"
+  pull_request:
+    paths:
+      - "apps/landing/**"
+      - "LICENSE"
+      - "NOTICE"
+      - "THIRD_PARTY_NOTICES.md"
       - ".github/workflows/landing-link-check.yml"
   schedule:
     - cron: "17 10 * * 1"
@@ -20,7 +27,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lychee:
+  static-artifact:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -30,36 +37,26 @@ jobs:
           version: 10.30.3
       - uses: actions/setup-node@v4
         with:
-          node-version: 22.12.0
+          node-version: 22.22.1
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter @lobbystack/landing build
-      - run: pnpm --filter @lobbystack/landing seo:validate
-      - name: Start landing preview server
+      - name: Build and verify the complete static publication directory
+        run: pnpm --filter @lobbystack/landing build
+      - name: Prove content, script, font and attribution regressions are rejected
+        run: pnpm --filter @lobbystack/landing pilot:test
+      - name: Verify GET and HEAD serve the exact artifact and retired routes return 404
+        shell: bash
         run: |
-          npx --yes serve apps/landing/dist -l 4173 &
-          for _ in $(seq 1 30); do
-            curl -sf http://127.0.0.1:4173/ > /dev/null && exit 0
+          mkdir -p .tmp
+          pnpm --filter @lobbystack/landing preview --host 127.0.0.1 --port 4173 > .tmp/pilot-landing-preview.log 2>&1 &
+          preview_pid=$!
+          trap 'pnpm --filter @lobbystack/landing exec astro preview stop >/dev/null 2>&1 || true; kill "$preview_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl -sf http://127.0.0.1:4173/ > /dev/null; then
+              pnpm --filter @lobbystack/landing pilot:http http://127.0.0.1:4173
+              exit 0
+            fi
             sleep 1
           done
-          echo "Landing preview server failed to start"
+          echo "Pilot static preview did not become ready"
           exit 1
-      - uses: lycheeverse/lychee-action@v2
-        with:
-          args: >-
-            --verbose
-            --no-progress
-            --base-url http://127.0.0.1:4173
-            --remap '^https://lobbystack\.com(.*) http://127.0.0.1:4173$1'
-            --exclude '^https://app\.lobbystack\.com/'
-            --exclude '^http://localhost:3000/api/voice/live/'
-            --exclude '^https://theresanaiforthat\.com/ai/lobbystack/'
-            --exclude '^https://www\.bls\.gov/ooh/Office-and-Administrative-Support/Receptionists\.htm$'
-            --exclude '^https://www\.hhs\.gov/hipaa/for-professionals/special-topics/health-information-technology/cloud-computing/$'
-            --exclude '^https://openai\.com/api/pricing/$'
-            --exclude '^https://www\.twilio\.com/'
-            './apps/landing/src/**/*.astro'
-            './apps/landing/src/**/*.tsx'
-            './apps/landing/src/content/**/*.md'
-            './apps/landing/public/llms.txt'
-          fail: true

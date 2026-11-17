@@ -2,9 +2,9 @@ import type { APIRoute } from "astro"
 import { markdownResponse } from "@/lib/markdown-response"
 import { absoluteUrl } from "@/lib/seo"
 
-const markdown = `# Documentation API publique LobbyStack
+const markdown = `# Documentation API publique Lead My Company
 
-LobbyStack expose des ressources publiques de découverte pour les agents et intégrateurs.
+Lead My Company expose des ressources publiques de découverte pour les agents et intégrateurs.
 
 ## Ressources
 
@@ -22,7 +22,7 @@ export const GET: APIRoute = () =>
   markdownResponse({
     markdown,
     canonical: absoluteUrl("/fr/docs/api/"),
-    title: "Documentation API publique LobbyStack",
+    title: "Documentation API publique Lead My Company",
     description:
-      "Ressources de découverte lisibles par machine pour les agents et intégrateurs qui visitent LobbyStack.",
+      "Ressources de découverte lisibles par machine pour les agents et intégrateurs qui visitent Lead My Company.",
   })

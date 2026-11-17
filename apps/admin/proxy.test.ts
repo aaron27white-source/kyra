@@ -5,9 +5,9 @@ import { config, proxy } from "./proxy";
 
 afterEach(() => vi.unstubAllEnvs());
 
-it("skips known assets but retains proxy checks for application paths with extensions", () => {
+it("covers known assets and application paths with extensions", () => {
   for (const url of ["/locales/en/auth.json", "/brand/logo-icon.svg", "/_next/static/chunk.js", "/favicon.ico"]) {
-    expect(unstable_doesMiddlewareMatch({ config, nextConfig: {}, url })).toBe(false);
+    expect(unstable_doesMiddlewareMatch({ config, nextConfig: {}, url })).toBe(true);
   }
   for (const url of ["/api/contacts/contact.svg", "/embed.js", "/embed/key.svg", "/en/reset-password/token.txt", "/en/login"]) {
     expect(unstable_doesMiddlewareMatch({ config, nextConfig: {}, url })).toBe(true);
@@ -88,4 +88,14 @@ it("rejects webhooks before their handlers can acknowledge events during mainten
   const response = proxy(new NextRequest("http://localhost:3210/api/webhooks/twilio/sms", { method: "POST" }));
   expect(response.status).toBe(503);
   expect(response.headers.get("retry-after")).toBe("60");
+});
+
+it("permits capability-protected LMC intake and opt-out without exempting operator actions",()=>{
+  for(const path of ["/api/lmc/capture/opaque","/api/lmc/unsubscribe/opaque"]){
+    const response=proxy(new NextRequest(`http://localhost:3210${path}`,{method:"POST",headers:{origin:"https://contractor.invalid"}}));
+    expect(response.status).toBe(200);
+  }
+  for(const path of ["/api/leads/lead/reply","/api/lmc/settings","/api/lmc/capture-settings"]){
+    expect(proxy(new NextRequest(`http://localhost:3210${path}`,{method:"POST",headers:{origin:"https://untrusted.invalid"}})).status).toBe(403);
+  }
 });

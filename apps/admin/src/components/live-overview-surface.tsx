@@ -13,11 +13,13 @@ import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { AlertCircle, ChevronRight, PhoneCall, UserRound } from "lucide-react";
+import { AlertCircle, ArrowUpRight, CalendarDays, ChevronRight, Clock3, PhoneCall, UserRound } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/page-header";
 import { DashboardActivationCard } from "@/components/dashboard-activation-card";
 import { ChartBlockSkeleton, MetricCardGridSkeleton } from "@/components/loading-skeletons";
@@ -64,9 +66,11 @@ function initials(value: string | null): string {
 
 export function LiveOverviewSurface() {
   const { i18n, t } = useTranslation("dashboard");
+  const { t: tNav } = useTranslation("nav");
   const queryClient = useQueryClient();
   const summary = useQuery({ queryKey: ["dashboard"], queryFn: getSummary });
   const businessId = summary.data?.businessId;
+  const loadFailed = summary.isError && !summary.data;
 
   useEffect(() => {
     if (!businessId) return;
@@ -74,34 +78,70 @@ export function LiveOverviewSurface() {
   }, [businessId, queryClient]);
 
   const metrics = summary.data ? [
-    { key: "calls", value: summary.data.kpis.calls.total.toLocaleString(i18n.language), description: formatDelta(summary.data.kpis.calls.deltaPercent, t) },
-    { key: "appointments", value: summary.data.kpis.appointments.total.toLocaleString(i18n.language), description: formatDelta(summary.data.kpis.appointments.deltaPercent, t) },
-    { key: "averageDuration", value: formatDuration(summary.data.kpis.averageDuration.totalSeconds), description: formatDurationDelta(summary.data.kpis.averageDuration.deltaSeconds, t) },
+    { key: "calls", value: summary.data.kpis.calls.total.toLocaleString(i18n.language), description: formatDelta(summary.data.kpis.calls.deltaPercent, t), icon: PhoneCall },
+    { key: "appointments", value: summary.data.kpis.appointments.total.toLocaleString(i18n.language), description: formatDelta(summary.data.kpis.appointments.deltaPercent, t), icon: CalendarDays },
+    { key: "averageDuration", value: formatDuration(summary.data.kpis.averageDuration.totalSeconds), description: formatDurationDelta(summary.data.kpis.averageDuration.deltaSeconds, t), icon: Clock3 },
   ] as const : [];
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title={t("home.title")} />
+      <PageHeader
+        actions={(
+          <>
+            <Button className="rounded-xl" nativeButton={false} render={<Link href="/appointments" />} variant="outline">
+              <CalendarDays data-icon="inline-start" />
+              {tNav("items.appointments")}
+            </Button>
+            <Button className="rounded-xl" nativeButton={false} render={<Link href="/calls" />}>
+              <PhoneCall data-icon="inline-start" />
+              {tNav("items.calls")}
+              <ArrowUpRight data-icon="inline-end" />
+            </Button>
+          </>
+        )}
+        description={t("headers.dashboardDescription")}
+        eyebrow={t("home.overviewEyebrow")}
+        title={t("home.title")}
+      />
       <div className="flex flex-col gap-6">
         <DashboardActivationCard businessId={businessId} />
+        {loadFailed ? (
+          <Alert variant="destructive">
+            <AlertCircle />
+            <AlertTitle>{t("home.loadError.title")}</AlertTitle>
+            <AlertDescription className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <span>{t("home.loadError.description")}</span>
+              <Button variant="outline" onClick={() => { void summary.refetch(); }} loading={summary.isFetching} loadingLabel={t("home.loadError.retrying")}>
+                {t("home.loadError.retry")}
+              </Button>
+            </AlertDescription>
+          </Alert>
+        ) : null}
+        {!loadFailed ? <>
         {summary.isLoading ? <MetricCardGridSkeleton count={3} /> : (
-          <Surface className="grid sm:grid-cols-2 md:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
             {metrics.map((metric) => (
-              <section className="border-b p-5 last:border-b-0 sm:odd:border-r sm:[&:nth-last-child(-n+2)]:border-b-0 md:border-b-0 md:border-r md:last:border-r-0" key={metric.key}>
-                <div className="flex flex-col gap-4">
-                  <div className="flex flex-col gap-2">
-                    <h2 className="type-card-title text-foreground">{t(`home.metrics.${metric.key}.title`)}</h2>
-                    <p className="text-4xl font-normal tracking-normal text-foreground tabular-nums">{metric.value}</p>
-                  </div>
-                  <p className="type-meta">{metric.description}</p>
-                </div>
-              </section>
+              <Card className="group relative gap-5 overflow-hidden rounded-2xl border-border/70 py-0 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-border hover:shadow-lg hover:shadow-foreground/[0.04]" key={metric.key}>
+                <div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-12 size-36 rounded-full bg-primary/[0.035] blur-2xl transition-colors group-hover:bg-primary/[0.07]" />
+                <CardHeader className="relative flex grid-cols-none flex-row items-center justify-between px-5 pt-5 pb-0 sm:px-6 sm:pt-6">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">{t(`home.metrics.${metric.key}.title`)}</CardTitle>
+                  <span className="flex size-10 items-center justify-center rounded-xl border border-border/70 bg-background text-foreground shadow-sm">
+                    <metric.icon aria-hidden="true" className="size-[18px]" />
+                  </span>
+                </CardHeader>
+                <CardContent className="relative flex flex-col gap-4 px-5 pb-5 sm:px-6 sm:pb-6">
+                  <p className="text-[2.35rem] font-semibold leading-none tracking-[-0.055em] text-foreground tabular-nums">{metric.value}</p>
+                  <p className="flex min-h-7 items-center gap-2 text-xs text-muted-foreground">
+                    <span className="inline-flex items-center rounded-full border border-border/70 bg-muted/60 px-2.5 py-1 font-medium text-foreground/80">{metric.description}</span>
+                  </p>
+                </CardContent>
+              </Card>
             ))}
-          </Surface>
+          </div>
         )}
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
           <motion.section animate={{ opacity: 1, y: 0 }} initial={{ opacity: 0, y: 10 }} transition={{ delay: 0.05, duration: 0.2, ease: "easeOut" }} className="flex flex-col gap-3 xl:h-full">
-            <div className="flex items-center justify-between gap-4 px-1"><h2 className="type-section-title">{t("home.actionRequired.title")}</h2>{summary.isLoading ? <Skeleton className="h-6 w-12 rounded-full" /> : <Badge variant="outline">{(summary.data?.actionRequired.length ?? 0).toLocaleString(i18n.language)}</Badge>}</div>
+            <div className="flex items-center justify-between gap-4 px-1"><h2 className="type-section-title">{t("home.actionRequired.title")}</h2>{summary.isLoading ? <Skeleton className="h-6 w-12 rounded-full" /> : <Badge className="rounded-full px-2.5" variant="outline">{(summary.data?.actionRequired.length ?? 0).toLocaleString(i18n.language)}</Badge>}</div>
             {summary.isLoading ? <ActionRequiredSkeleton /> : summary.data?.actionRequired.length ? <Card className="border-border/70">
                   <CardContent>
                     <ItemGroup>
@@ -116,7 +156,7 @@ export function LiveOverviewSurface() {
                             const details = parseFollowUpTaskBody(item.body);
                             const displayTitle = getActionDisplayTitle(item, t);
                             const destination =
-                              item.kind === "voice_message" && item.callId
+                              (item.kind === "voice_message" || item.kind === "appointment_request") && item.callId
                                 ? {
                                     pathname: `/calls/${encodeURIComponent(String(item.callId))}`,
                                   }
@@ -192,7 +232,7 @@ export function LiveOverviewSurface() {
               </Card> : <div className="rounded-xl border border-dashed p-12 text-center xl:flex xl:flex-1 xl:flex-col xl:items-center xl:justify-center"><p className="type-empty-title">{t("home.actionRequired.emptyTitle")}</p><p className="type-empty-description mt-2">{t("home.actionRequired.emptyDescription")}</p></div>}
           </motion.section>
           <motion.section animate={{ opacity: 1, y: 0 }} initial={{ opacity: 0, y: 12 }} transition={{ delay: 0.1, duration: 0.22, ease: "easeOut" }} className="flex flex-col gap-3 xl:h-full">
-            <div className="flex items-center justify-between gap-4 px-1"><h2 className="type-section-title">{t("home.upcoming.title")}</h2>{summary.isLoading ? <Skeleton className="h-6 w-12 rounded-full" /> : <Badge variant="outline">{(summary.data?.upcoming.length ?? 0).toLocaleString(i18n.language)}</Badge>}</div>
+            <div className="flex items-center justify-between gap-4 px-1"><h2 className="type-section-title">{t("home.upcoming.title")}</h2>{summary.isLoading ? <Skeleton className="h-6 w-12 rounded-full" /> : <Badge className="rounded-full px-2.5" variant="outline">{(summary.data?.upcoming.length ?? 0).toLocaleString(i18n.language)}</Badge>}</div>
             {summary.isLoading ? <UpcomingSkeleton /> : summary.data?.upcoming.length ? (
               <Card className="border-border/70"><CardContent className="flex flex-col gap-4">
                 {summary.data.upcoming.map((appointment, index) => <motion.div animate={{ opacity: 1, y: 0 }} initial={{ opacity: 0, y: 8 }} transition={{ delay: 0.12 + index * 0.03, duration: 0.18, ease: "easeOut" }} key={appointment.id}>
@@ -208,8 +248,9 @@ export function LiveOverviewSurface() {
         </div>
         {summary.isLoading ? <OverviewChartSkeleton /> : <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
           <Card className="col-span-1 lg:col-span-4"><CardHeader><CardTitle>{t("home.chart.title")}</CardTitle></CardHeader><CardContent className="ps-2"><OverviewCallChart data={(summary.data?.monthlyCalls ?? []).map((item) => ({ name: formatDateTime(item.monthStart, i18n.language, { month: "short", timeZone: "UTC" }), total: item.total }))} /></CardContent></Card>
-          <Card className="col-span-1 lg:col-span-3"><CardHeader><CardTitle>{t("home.recentCalls.title")}</CardTitle><CardDescription>{t("home.recentCalls.description", { count: summary.data?.recentCalls.length ?? 0 })}</CardDescription></CardHeader><CardContent><div className="flex flex-col gap-6">{(summary.data?.recentCalls ?? []).map((call) => <div className="flex items-center gap-4" key={call.id}><Avatar className="h-9 w-9"><AvatarFallback>{initials(call.contactName)}</AvatarFallback></Avatar><div className="flex flex-1 flex-wrap items-center justify-between"><div className="flex flex-col gap-1"><p className="type-item-title leading-none">{call.contactName ?? t("home.recentCalls.unknownCaller")}</p><p className="type-body-muted">{(call.contactPhone ? formatPhoneNumberDisplay(call.contactPhone, i18n.language) : null) ?? formatDateTime(call.startedAt, i18n.language, { dateStyle: "medium", timeStyle: "short" })}</p></div><div className="type-item-title">{call.durationSeconds ? t("home.recentCalls.durationValue", { value: call.durationSeconds }) : call.status}</div></div></div>)}</div></CardContent></Card>
+          <Card className="col-span-1 lg:col-span-3"><CardHeader><CardTitle>{t("home.recentCalls.title")}</CardTitle><CardDescription>{t("home.recentCalls.description", { count: summary.data?.recentCalls.length ?? 0 })}</CardDescription></CardHeader><CardContent><div className="flex flex-col">{(summary.data?.recentCalls ?? []).map((call) => <Link className="group flex items-center gap-4 rounded-xl px-2 py-3 transition-colors hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&+a]:border-t [&+a]:border-border/60" href={`/calls/${encodeURIComponent(call.id)}`} key={call.id}><Avatar className="h-10 w-10 border border-border/70 shadow-sm"><AvatarFallback>{initials(call.contactName)}</AvatarFallback></Avatar><div className="flex min-w-0 flex-1 flex-wrap items-center justify-between gap-3"><div className="flex min-w-0 flex-col gap-1"><p className="type-item-title truncate leading-none">{call.contactName ?? t("home.recentCalls.unknownCaller")}</p><p className="type-body-muted truncate">{(call.contactPhone ? formatPhoneNumberDisplay(call.contactPhone, i18n.language) : null) ?? formatDateTime(call.startedAt, i18n.language, { dateStyle: "medium", timeStyle: "short" })}</p></div><div className="flex shrink-0 items-center gap-2"><span className="type-item-title">{call.durationSeconds ? t("home.recentCalls.durationValue", { value: call.durationSeconds }) : call.status}</span><ChevronRight aria-hidden="true" className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" /></div></div></Link>)}</div></CardContent></Card>
         </div>}
+        </> : null}
       </div>
     </div>
   );
@@ -311,6 +352,10 @@ function getActionKindLabel(
     return t("home.actionRequired.kinds.voice_message");
   }
 
+  if (kind === "appointment_request") {
+    return t("home.actionRequired.kinds.appointment_request");
+  }
+
   if (kind === "human_handoff") {
     return t("home.actionRequired.kinds.human_handoff");
   }
@@ -319,7 +364,7 @@ function getActionKindLabel(
 }
 
 function getActionKindIcon(kind: DashboardSummary["actionRequired"][number]["kind"]): ReactNode {
-  if (kind === "voice_message") {
+  if (kind === "voice_message" || kind === "appointment_request") {
     return <PhoneCall className="size-4 text-muted-foreground" />;
   }
 

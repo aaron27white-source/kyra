@@ -6,13 +6,13 @@ const homeSectionsCopy = {
   en: {
     extension: {
       heading: "Turn missed calls into booked work",
-      body: "LobbyStack captures what callers need, books appointments when they are ready, and routes urgent calls with context.",
+      body: "Lead My Company captures what callers need, books appointments when they are ready, and routes urgent calls with context.",
     },
     extensionCards: [
       {
         title: "Turn unanswered calls into booked work",
         description:
-          "LobbyStack answers when your team cannot, captures what the caller needs, and helps them book or request a callback.",
+          "Lead My Company answers when your team cannot, captures what the caller needs, and helps them book or request a callback.",
         cta: "See how it works",
         href: "#how-it-works",
         image: "/illustrations/missed-calls-booked-work.webp",
@@ -23,7 +23,7 @@ const homeSectionsCopy = {
       {
         title: "Send the right calls to your team",
         description:
-          "LobbyStack can answer routine calls, take a message, or route urgent conversations to your team with the caller's details and reason attached.",
+          "Lead My Company can answer routine calls, take a message, or route urgent conversations to your team with the caller's details and reason attached.",
         cta: "Set routing rules",
         href: "#control",
         image: "/illustrations/call-routing-team.webp",
@@ -34,9 +34,9 @@ const homeSectionsCopy = {
     ],
     connected: {
       imageAlt:
-        "Business knowledge sources connected to LobbyStack answer routing",
+        "Business knowledge sources connected to Lead My Company answer routing",
       heading: "Answers from everything your business knows",
-      body: "Import your website, PDFs, documents, spreadsheets, service lists, policies, and FAQs so LobbyStack can answer with the same context your team uses every day.",
+      body: "Import your website, PDFs, documents, spreadsheets, service lists, policies, and FAQs so Lead My Company can answer with the same context your team uses every day.",
     },
     quality: {
       heading: "AI receptionist for teams who care about response quality",
@@ -47,9 +47,9 @@ const homeSectionsCopy = {
         {
           title: "A receptionist that picks up when you need it to",
           description:
-            "Let LobbyStack answer every call, or only step in when your team is busy, after hours, or unable to pick up.",
+            "Let Lead My Company answer every call, or only step in when your team is busy, after hours, or unable to pick up.",
           image: "/illustrations/call-capture.webp",
-          alt: "Incoming call routing to team members or LobbyStack when the team is unavailable",
+          alt: "Incoming call routing to team members or Lead My Company when the team is unavailable",
           imageContainerClass: "bg-[#F4F4F2] aspect-[4/3]",
           imageClassName: "h-full w-full object-cover object-center",
           imageWidth: 2048,
@@ -60,7 +60,7 @@ const homeSectionsCopy = {
           description:
             "Offer available times, confirm appointments, and send follow-up details without manual back-and-forth.",
           image: "/illustrations/booking-flow.webp",
-          alt: "LobbyStack offering available appointment times and confirming a booking with caller confirmation",
+          alt: "Lead My Company offering available appointment times and confirming a booking with caller confirmation",
           imageContainerClass: "bg-[#F4F4F2] aspect-[4/3]",
           imageClassName: "h-full w-full object-cover object-center",
           imageWidth: 2048,
@@ -98,20 +98,20 @@ const homeSectionsCopy = {
         {
           title: "Set the rules",
           description:
-            "Decide when LobbyStack should answer, book appointments, take a message, or hand the call to a person.",
+            "Decide when Lead My Company should answer, book appointments, take a message, or hand the call to a person.",
         },
         {
           title: "Go live",
           description:
-            "LobbyStack starts answering calls, helping customers, and sending confirmations and summaries automatically.",
+            "Lead My Company starts answering calls, helping customers, and sending confirmations and summaries automatically.",
         },
       ],
     },
     control: {
       heading: "Keep control of every call",
-      body: "LobbyStack handles routine conversations, but your team decides what it knows, what it can do, and when the call should come back to a person.",
+      body: "Lead My Company handles routine conversations, but your team decides what it knows, what it can do, and when the call should come back to a person.",
       imageAlt:
-        "LobbyStack dashboard with call metrics, action required, upcoming appointments, and recent calls",
+        "Lead My Company dashboard with call metrics, action required, upcoming appointments, and recent calls",
       cards: [
         {
           title: "Control what your AI receptionist can say",
@@ -129,7 +129,7 @@ const homeSectionsCopy = {
     },
     pricing: {
       heading: "Start free. Upgrade when calls grow.",
-      body: "Try LobbyStack with included usage, then move to Starter or Pro when you are ready for production call coverage.",
+      body: "Try Lead My Company with included usage, then move to Starter or Pro when you are ready for production call coverage.",
       badge: "Most Popular",
       viewDetails: "View pricing details",
       note: "No credit card required to start.",
@@ -162,7 +162,7 @@ const homeSectionsCopy = {
     },
     openSource: {
       heading: "Proudly open-source, self-hosted",
-      body: "Run LobbyStack on your own servers and keep call recordings and customer data in your own infrastructure.",
+      body: "Run Lead My Company on your own servers and keep call recordings and customer data in your own infrastructure.",
       cta: "View on GitHub",
       selfHostedCta: "Self-Hosting Overview",
     },
@@ -170,13 +170,13 @@ const homeSectionsCopy = {
   fr: {
     extension: {
       heading: "Transformez les appels manqués en rendez‑vous",
-      body: "LobbyStack comprend le besoin de l'appelant, réserve quand la personne est prête et transfère les urgences avec le bon contexte.",
+      body: "Lead My Company comprend le besoin de l'appelant, réserve quand la personne est prête et transfère les urgences avec le bon contexte.",
     },
     extensionCards: [
       {
         title: "Transformez les appels sans réponse en rendez‑vous",
         description:
-          "LobbyStack répond quand votre équipe ne peut pas décrocher, comprend le besoin de l’appelant et l’aide à réserver ou à demander un rappel.",
+          "Lead My Company répond quand votre équipe ne peut pas décrocher, comprend le besoin de l’appelant et l’aide à réserver ou à demander un rappel.",
         cta: "Voir le fonctionnement",
         href: "#how-it-works",
         image: "/illustrations/missed-calls-booked-work.webp",
@@ -187,7 +187,7 @@ const homeSectionsCopy = {
       {
         title: "Envoyez les bons appels à la bonne personne",
         description:
-          "LobbyStack traite les appels courants, prend un message ou transfère les conversations urgentes avec les détails et le motif de l’appel.",
+          "Lead My Company traite les appels courants, prend un message ou transfère les conversations urgentes avec les détails et le motif de l’appel.",
         cta: "Définir les règles",
         href: "#control",
         image: "/illustrations/call-routing-team.webp",
@@ -198,9 +198,9 @@ const homeSectionsCopy = {
     ],
     connected: {
       imageAlt:
-        "Sources de connaissances métier connectées à la réception téléphonique LobbyStack",
+        "Sources de connaissances métier connectées à la réception téléphonique Lead My Company",
       heading: "Des réponses fondées sur ce que votre entreprise sait déjà",
-      body: "Importez votre site, vos PDF, documents, feuilles de calcul, services, politiques et FAQ pour que LobbyStack réponde avec le même contexte que votre équipe.",
+      body: "Importez votre site, vos PDF, documents, feuilles de calcul, services, politiques et FAQ pour que Lead My Company réponde avec le même contexte que votre équipe.",
     },
     quality: {
       heading:
@@ -212,9 +212,9 @@ const homeSectionsCopy = {
         {
           title: "Une réceptionniste qui décroche quand vous en avez besoin",
           description:
-            "Laissez LobbyStack répondre à chaque appel, ou seulement prendre le relais quand votre équipe est occupée, fermée ou indisponible.",
+            "Laissez Lead My Company répondre à chaque appel, ou seulement prendre le relais quand votre équipe est occupée, fermée ou indisponible.",
           image: "/illustrations/call-capture.webp",
-          alt: "Routage d’appel entrant vers l’équipe ou LobbyStack quand l’équipe est indisponible",
+          alt: "Routage d’appel entrant vers l’équipe ou Lead My Company quand l’équipe est indisponible",
           imageContainerClass: "bg-[#F4F4F2] aspect-[4/3]",
           imageClassName: "h-full w-full object-cover object-center",
           imageWidth: 2048,
@@ -225,7 +225,7 @@ const homeSectionsCopy = {
           description:
             "Proposez des créneaux disponibles, confirmez les rendez‑vous et envoyez les informations de suivi sans échanges manuels.",
           image: "/illustrations/booking-flow.webp",
-          alt: "LobbyStack propose des créneaux disponibles et confirme un rendez‑vous avec envoi de confirmation à l’appelant",
+          alt: "Lead My Company propose des créneaux disponibles et confirme un rendez‑vous avec envoi de confirmation à l’appelant",
           imageContainerClass: "bg-[#F4F4F2] aspect-[4/3]",
           imageClassName: "h-full w-full object-cover object-center",
           imageWidth: 2048,
@@ -263,20 +263,20 @@ const homeSectionsCopy = {
         {
           title: "Définissez les règles",
           description:
-            "Décidez quand LobbyStack doit répondre, réserver, prendre un message ou passer l’appel à une personne.",
+            "Décidez quand Lead My Company doit répondre, réserver, prendre un message ou passer l’appel à une personne.",
         },
         {
           title: "Passez en production",
           description:
-            "LobbyStack commence à répondre, aider les clients et envoyer confirmations et résumés automatiquement.",
+            "Lead My Company commence à répondre, aider les clients et envoyer confirmations et résumés automatiquement.",
         },
       ],
     },
     control: {
       heading: "Gardez le contrôle de chaque appel",
-      body: "LobbyStack gère les conversations courantes, mais votre équipe décide ce qu’il sait, ce qu’il peut faire et quand l’appel doit revenir à une personne.",
+      body: "Lead My Company gère les conversations courantes, mais votre équipe décide ce qu’il sait, ce qu’il peut faire et quand l’appel doit revenir à une personne.",
       imageAlt:
-        "Tableau de bord LobbyStack avec indicateurs d’appels, actions requises, rendez‑vous à venir et appels récents",
+        "Tableau de bord Lead My Company avec indicateurs d’appels, actions requises, rendez‑vous à venir et appels récents",
       cards: [
         {
           title: "Contrôlez ce que votre réceptionniste IA peut dire",
@@ -295,7 +295,7 @@ const homeSectionsCopy = {
     pricing: {
       heading:
         "Commencez gratuitement. Passez au forfait supérieur quand les appels augmentent.",
-      body: "Essayez LobbyStack avec l’usage inclus, puis passez à Starter ou Pro quand vous êtes prêt à couvrir vos appels en production.",
+      body: "Essayez Lead My Company avec l’usage inclus, puis passez à Starter ou Pro quand vous êtes prêt à couvrir vos appels en production.",
       badge: "Le plus populaire",
       viewDetails: "Voir le détail des tarifs",
       note: "Aucune carte bancaire requise pour commencer.",
@@ -328,7 +328,7 @@ const homeSectionsCopy = {
     },
     openSource: {
       heading: "Open source, prêt pour l'auto-hébergement",
-      body: "Hébergez LobbyStack sur vos propres serveurs et gardez les enregistrements d’appels et les données client dans votre infrastructure.",
+      body: "Hébergez Lead My Company sur vos propres serveurs et gardez les enregistrements d’appels et les données client dans votre infrastructure.",
       cta: "Voir sur GitHub",
       selfHostedCta: "Aperçu de l'auto-hébergement",
     },

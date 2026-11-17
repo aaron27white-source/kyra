@@ -24,6 +24,7 @@ describe("admin startup database role assertion", () => {
   it("covers every runtime role the admin process connects with", () => {
     expect([...ADMIN_RUNTIME_DATABASE_ROLES]).toEqual([
       "lobbystack_app",
+      "lobbystack_system",
       "lobbystack_auth",
       "lobbystack_worker",
       "lobbystack_dispatcher",

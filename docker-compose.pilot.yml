@@ -1,0 +1,225 @@
+# Email pilot only. Use --profile prod and a private env file; see docs/PILOT_STAGING.md.
+services:
+  postgres:
+    profiles:
+    - prod
+    image: pgvector/pgvector:pg16@sha256:7b822b0aac60967beb1ea5e576b8602c94c300a157d187f385ae3e0da199b90a
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: lobbystack
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      LOBBYSTACK_MIGRATOR_PASSWORD: ${LOBBYSTACK_MIGRATOR_PASSWORD:?LOBBYSTACK_MIGRATOR_PASSWORD is required}
+      LOBBYSTACK_AUTH_PASSWORD: ${LOBBYSTACK_AUTH_PASSWORD:?LOBBYSTACK_AUTH_PASSWORD is required}
+      LOBBYSTACK_APP_PASSWORD: ${LOBBYSTACK_APP_PASSWORD:?LOBBYSTACK_APP_PASSWORD is required}
+      LOBBYSTACK_SYSTEM_PASSWORD: ${LOBBYSTACK_SYSTEM_PASSWORD:?LOBBYSTACK_SYSTEM_PASSWORD is required}
+      LOBBYSTACK_WORKER_PASSWORD: ${LOBBYSTACK_WORKER_PASSWORD:?LOBBYSTACK_WORKER_PASSWORD is required}
+      LOBBYSTACK_DISPATCHER_PASSWORD: ${LOBBYSTACK_DISPATCHER_PASSWORD:?LOBBYSTACK_DISPATCHER_PASSWORD is required}
+      LOBBYSTACK_READONLY_PASSWORD: ${LOBBYSTACK_READONLY_PASSWORD:?LOBBYSTACK_READONLY_PASSWORD is required}
+    volumes:
+    - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - pg_isready -U postgres -d lobbystack
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  redis:
+    profiles:
+    - prod
+    image: redis:7.4-alpine@sha256:57e4255cc971b1c8d6f8a6ca283ac01bc3ecdd914273ef6bfaede87aaecd6541
+    restart: unless-stopped
+    command:
+    - redis-server
+    - --appendonly
+    - 'yes'
+    - --appendfsync
+    - everysec
+    - --maxmemory-policy
+    - noeviction
+    volumes:
+    - redis_data:/data
+    healthcheck:
+      test:
+      - CMD
+      - redis-cli
+      - ping
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  migrator:
+    profiles:
+    - prod
+    image: lmc-pilot-migrator:${SERVICE_VERSION:-pilot-local}
+    build:
+      context: .
+      dockerfile: Dockerfile.migrator
+      args:
+        SERVICE_VERSION: ${SERVICE_VERSION:-pilot-local}
+    environment:
+      NODE_ENV: production
+      LOBBYSTACK_SKIP_ENV_FILES: 'true'
+      OTEL_SDK_DISABLED: 'true'
+      DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}@postgres:5432/lobbystack
+      LOBBYSTACK_MIGRATOR_PASSWORD: ${LOBBYSTACK_MIGRATOR_PASSWORD:?LOBBYSTACK_MIGRATOR_PASSWORD is required}
+      LOBBYSTACK_AUTH_PASSWORD: ${LOBBYSTACK_AUTH_PASSWORD:?LOBBYSTACK_AUTH_PASSWORD is required}
+      LOBBYSTACK_APP_PASSWORD: ${LOBBYSTACK_APP_PASSWORD:?LOBBYSTACK_APP_PASSWORD is required}
+      LOBBYSTACK_SYSTEM_PASSWORD: ${LOBBYSTACK_SYSTEM_PASSWORD:?LOBBYSTACK_SYSTEM_PASSWORD is required}
+      LOBBYSTACK_WORKER_PASSWORD: ${LOBBYSTACK_WORKER_PASSWORD:?LOBBYSTACK_WORKER_PASSWORD is required}
+      LOBBYSTACK_DISPATCHER_PASSWORD: ${LOBBYSTACK_DISPATCHER_PASSWORD:?LOBBYSTACK_DISPATCHER_PASSWORD is required}
+      LOBBYSTACK_READONLY_PASSWORD: ${LOBBYSTACK_READONLY_PASSWORD:?LOBBYSTACK_READONLY_PASSWORD is required}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command:
+    - /bin/sh
+    - -ec
+    - node_modules/.bin/tsx dist/cli.js migrate && node_modules/.bin/tsx dist/cli.js bootstrap
+  admin:
+    profiles:
+    - prod
+    image: lmc-pilot-admin:${SERVICE_VERSION:-pilot-local}
+    build:
+      context: .
+      dockerfile: Dockerfile.admin
+      args:
+        SERVICE_VERSION: ${SERVICE_VERSION:-pilot-local}
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      LOBBYSTACK_SKIP_ENV_FILES: 'true'
+      LMC_PILOT_MODE: 'true'
+      LMC_PROVIDER_MODE: real
+      LMC_EMAIL_WORKER_ENABLED: 'true'
+      LIVE_PROTOTYPE_ENABLED: 'false'
+      REQUIRE_EMAIL_VERIFICATION: 'true'
+      OTEL_SDK_DISABLED: 'true'
+      APP_BASE_URL: ${APP_BASE_URL:?APP_BASE_URL is required}
+      LMC_PUBLIC_BASE_URL: ${LMC_PUBLIC_BASE_URL:?LMC_PUBLIC_BASE_URL is required}
+      LMC_SIGNING_SECRET: ${LMC_SIGNING_SECRET:?LMC_SIGNING_SECRET is required}
+      LMC_EMAIL_FROM: ${LMC_EMAIL_FROM:-}
+      LMC_RECEIVING_DOMAIN: ${LMC_RECEIVING_DOMAIN:-}
+      STORAGE_PROVIDER: local
+      LOCAL_STORAGE_PATH: /var/lib/lobbystack/storage
+      LOCAL_STORAGE_SIGNING_SECRET: ${LOCAL_STORAGE_SIGNING_SECRET:?LOCAL_STORAGE_SIGNING_SECRET is required}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:?ENCRYPTION_KEY is required}
+      OTP_HASH_SECRET: ${OTP_HASH_SECRET:?OTP_HASH_SECRET is required}
+      REDIS_URL: redis://redis:6379
+      SMTP_HOST: smtp.resend.com
+      SMTP_PORT: '465'
+      SMTP_SECURE: 'true'
+      SMTP_USERNAME: resend
+      SMTP_PASSWORD: ${RESEND_API_KEY:-}
+      EMAIL_FROM: ${LMC_EMAIL_FROM:-}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      RESEND_WEBHOOK_SECRET: ${RESEND_WEBHOOK_SECRET:-}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI:-}
+      AI_CHAT_API_KEY: ${AI_CHAT_API_KEY:-}
+      AI_CHAT_MODEL: ${AI_CHAT_MODEL:-}
+      AI_CHAT_BASE_URL: https://api.openai.com/v1
+      AI_CHAT_PROVIDER_NAME: openai
+      PORT: '3000'
+      AUTH_TRUSTED_ORIGINS: ${APP_BASE_URL:?APP_BASE_URL is required}
+      WORKER_INTERNAL_URL: http://worker:3002
+      DATABASE_URL: postgres://lobbystack_app:${LOBBYSTACK_APP_PASSWORD:?LOBBYSTACK_APP_PASSWORD is required}@postgres:5432/lobbystack
+      LOBBYSTACK_AUTH_PASSWORD: ${LOBBYSTACK_AUTH_PASSWORD:?LOBBYSTACK_AUTH_PASSWORD is required}
+      LOBBYSTACK_APP_PASSWORD: ${LOBBYSTACK_APP_PASSWORD:?LOBBYSTACK_APP_PASSWORD is required}
+      LOBBYSTACK_SYSTEM_PASSWORD: ${LOBBYSTACK_SYSTEM_PASSWORD:?LOBBYSTACK_SYSTEM_PASSWORD is required}
+      LOBBYSTACK_WORKER_PASSWORD: ${LOBBYSTACK_WORKER_PASSWORD:?LOBBYSTACK_WORKER_PASSWORD is required}
+      LOBBYSTACK_DISPATCHER_PASSWORD: ${LOBBYSTACK_DISPATCHER_PASSWORD:?LOBBYSTACK_DISPATCHER_PASSWORD is required}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?BETTER_AUTH_SECRET is required}
+      INTERNAL_SERVICE_SECRET: ${INTERNAL_SERVICE_SECRET:?INTERNAL_SERVICE_SECRET is required}
+      INTERNAL_SERVICE_TOKEN: ${INTERNAL_SERVICE_TOKEN:?INTERNAL_SERVICE_TOKEN is required}
+      WIDGET_SESSION_SECRET: ${WIDGET_SESSION_SECRET:?WIDGET_SESSION_SECRET is required}
+    volumes:
+    - storage_data:/var/lib/lobbystack/storage
+    ports:
+    - 127.0.0.1:${ADMIN_PORT:-3000}:3000
+    depends_on:
+      migrator:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - node
+      - -e
+      - fetch('http://127.0.0.1:3000/readyz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))
+      interval: 10s
+      timeout: 5s
+      start_period: 20s
+      retries: 12
+  worker:
+    profiles:
+    - prod
+    image: lmc-pilot-worker:${SERVICE_VERSION:-pilot-local}
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+      args:
+        SERVICE_VERSION: ${SERVICE_VERSION:-pilot-local}
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      LOBBYSTACK_SKIP_ENV_FILES: 'true'
+      LMC_PILOT_MODE: 'true'
+      LMC_PROVIDER_MODE: real
+      LMC_EMAIL_WORKER_ENABLED: 'true'
+      LIVE_PROTOTYPE_ENABLED: 'false'
+      REQUIRE_EMAIL_VERIFICATION: 'true'
+      OTEL_SDK_DISABLED: 'true'
+      APP_BASE_URL: ${APP_BASE_URL:?APP_BASE_URL is required}
+      LMC_PUBLIC_BASE_URL: ${LMC_PUBLIC_BASE_URL:?LMC_PUBLIC_BASE_URL is required}
+      LMC_SIGNING_SECRET: ${LMC_SIGNING_SECRET:?LMC_SIGNING_SECRET is required}
+      LMC_EMAIL_FROM: ${LMC_EMAIL_FROM:-}
+      LMC_RECEIVING_DOMAIN: ${LMC_RECEIVING_DOMAIN:-}
+      STORAGE_PROVIDER: local
+      LOCAL_STORAGE_PATH: /var/lib/lobbystack/storage
+      LOCAL_STORAGE_SIGNING_SECRET: ${LOCAL_STORAGE_SIGNING_SECRET:?LOCAL_STORAGE_SIGNING_SECRET is required}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:?ENCRYPTION_KEY is required}
+      OTP_HASH_SECRET: ${OTP_HASH_SECRET:?OTP_HASH_SECRET is required}
+      REDIS_URL: redis://redis:6379
+      SMTP_HOST: smtp.resend.com
+      SMTP_PORT: '465'
+      SMTP_SECURE: 'true'
+      SMTP_USERNAME: resend
+      SMTP_PASSWORD: ${RESEND_API_KEY:-}
+      EMAIL_FROM: ${LMC_EMAIL_FROM:-}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      RESEND_WEBHOOK_SECRET: ${RESEND_WEBHOOK_SECRET:-}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI:-}
+      AI_CHAT_API_KEY: ${AI_CHAT_API_KEY:-}
+      AI_CHAT_MODEL: ${AI_CHAT_MODEL:-}
+      AI_CHAT_BASE_URL: https://api.openai.com/v1
+      AI_CHAT_PROVIDER_NAME: openai
+      PORT: '3002'
+      INTERNAL_SERVICE_TOKEN: ${INTERNAL_SERVICE_TOKEN:?INTERNAL_SERVICE_TOKEN is required}
+      DATABASE_URL: postgres://lobbystack_worker:${LOBBYSTACK_WORKER_PASSWORD:?LOBBYSTACK_WORKER_PASSWORD is required}@postgres:5432/lobbystack
+      LOBBYSTACK_DISPATCHER_PASSWORD: ${LOBBYSTACK_DISPATCHER_PASSWORD:?LOBBYSTACK_DISPATCHER_PASSWORD is required}
+    volumes:
+    - storage_data:/var/lib/lobbystack/storage
+    depends_on:
+      migrator:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - node
+      - -e
+      - fetch('http://127.0.0.1:3002/readyz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))
+      interval: 10s
+      timeout: 5s
+      start_period: 20s
+      retries: 12
+volumes:
+  postgres_data: {}
+  redis_data: {}
+  storage_data: {}

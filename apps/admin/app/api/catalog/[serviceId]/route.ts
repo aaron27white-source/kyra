@@ -1,17 +1,17 @@
 import { NextResponse } from "next/server";
 
 import { assignStaffToService, deleteService, unassignStaffFromService, updateService } from "@lobbystack/domain";
-import { asApiResponse, businessIdFromRequest, readJson, requireApiSession } from "@/lib/api-helpers";
+import { serviceIntakePolicySchema } from "@lobbystack/shared";
+import { asApiResponse, readJson, requireOperatorBusiness } from "@/lib/api-helpers";
 import { createDomainContext } from "@/lib/domain-context";
 
 export const dynamic = "force-dynamic";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ serviceId: string }> }) {
   try {
-    const session = await requireApiSession(request);
-    const businessId = businessIdFromRequest(request);
-    if (!businessId) return NextResponse.json({ error: "A businessId is required." }, { status: 400 });
-    const body = await readJson(request) as { name?: string; slug?: string; durationMinutes?: number; description?: string | null; active?: boolean; staffId?: string; assigned?: boolean };
+    const { session, businessId } = await requireOperatorBusiness(request, { pilotCapability: "services" });
+    const input = await readJson(request) as Record<string, unknown>;
+    const body = { ...input, ...(input.intakePolicy !== undefined && input.intakePolicy !== null ? { intakePolicy: serviceIntakePolicySchema.parse(input.intakePolicy) } : {}) } as { name?: string; slug?: string; durationMinutes?: number; description?: string | null; active?: boolean; staffId?: string; assigned?: boolean; intakePolicy?: import("@lobbystack/shared").ServiceIntakePolicy | null };
     const { serviceId } = await params;
     if (body.staffId && body.assigned !== undefined) {
       if (body.assigned) await assignStaffToService(createDomainContext(), { userId: session.user.id, businessId, serviceId, staffId: body.staffId });
@@ -26,9 +26,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ se
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ serviceId: string }> }) {
   try {
-    const session = await requireApiSession(request);
-    const businessId = businessIdFromRequest(request);
-    if (!businessId) return NextResponse.json({ error: "A businessId is required." }, { status: 400 });
+    const { session, businessId } = await requireOperatorBusiness(request, { pilotCapability: "services" });
     const { serviceId } = await params;
     await deleteService(createDomainContext(), { userId: session.user.id, businessId, serviceId });
     return NextResponse.json({ ok: true });

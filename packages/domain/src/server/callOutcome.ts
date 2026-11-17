@@ -4,7 +4,7 @@ import { calls, contacts, conversations, conversationSessions, withBusinessTrans
 import type { DomainContext } from "./context";
 
 export type CallOutcome =
-  | { kind: "booked"; serviceName: string | null; startsAt: string }
+  | { kind: "booked"; serviceName: string | null; startsAt: string; appointmentId?: string }
   | { kind: "booking_in_progress"; serviceName: string | null; startsAt: string | null }
   | { kind: "message_taking"; summary?: string }
   | { kind: "summary"; summary: string }
@@ -13,7 +13,7 @@ export type CallOutcome =
 
 export function resolveCallOutcome(input: { persisted?: Record<string, unknown> | null | undefined; currentIntent?: string | null; summary?: string | null; disposition?: string | null }): CallOutcome {
   const persisted = input.persisted;
-  if (persisted?.kind === "booked" && typeof persisted.startsAt === "string" && Number.isFinite(Date.parse(persisted.startsAt))) return { kind: "booked", serviceName: typeof persisted.serviceName === "string" ? persisted.serviceName : null, startsAt: persisted.startsAt };
+  if (persisted?.kind === "booked" && typeof persisted.startsAt === "string" && Number.isFinite(Date.parse(persisted.startsAt))) return { kind: "booked", serviceName: typeof persisted.serviceName === "string" ? persisted.serviceName : null, startsAt: persisted.startsAt, ...(typeof persisted.appointmentId === "string" ? { appointmentId: persisted.appointmentId } : {}) };
   if (persisted?.kind === "booking_in_progress") return { kind: "booking_in_progress", serviceName: typeof persisted.serviceName === "string" ? persisted.serviceName : null, startsAt: typeof persisted.startsAt === "string" && Number.isFinite(Date.parse(persisted.startsAt)) ? persisted.startsAt : null };
   if (persisted?.kind === "message_taking" || input.currentIntent === "message_taking") return { kind: "message_taking" };
   const summary = (persisted?.kind === "summary" && typeof persisted.summary === "string" ? persisted.summary : input.summary)?.trim();

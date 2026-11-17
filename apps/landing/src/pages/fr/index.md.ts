@@ -3,16 +3,16 @@ import { markdownResponse } from "@/lib/markdown-response"
 import { absoluteUrl } from "@/lib/seo"
 
 const markdown = `---
-title: LobbyStack | Réceptionniste IA open source
-description: LobbyStack est le réceptionniste IA open source qui répond aux appels, qualifie les demandes, planifie des rendez‑vous et transfère les urgences 24/7.
+title: Lead My Company | Réceptionniste IA open source
+description: Lead My Company est le réceptionniste IA open source qui répond aux appels, qualifie les demandes, planifie des rendez‑vous et transfère les urgences 24/7.
 url: ${absoluteUrl("/fr/")}
 ---
 
-# LobbyStack
+# Lead My Company
 
-LobbyStack est un réceptionniste IA open source pour les petites entreprises qui dépendent des appels, des rendez‑vous et d’une réponse rapide.
+Lead My Company est un réceptionniste IA open source pour les petites entreprises qui dépendent des appels, des rendez‑vous et d’une réponse rapide.
 
-## Ce que fait LobbyStack
+## Ce que fait Lead My Company
 
 - Répond aux appels entrants 24/7.
 - Utilise vos connaissances d’entreprise pour répondre aux questions courantes.
@@ -33,7 +33,7 @@ export const GET: APIRoute = () =>
   markdownResponse({
     markdown,
     canonical: absoluteUrl("/fr/"),
-    title: "LobbyStack | Réceptionniste IA open source",
+    title: "Lead My Company | Réceptionniste IA open source",
     description:
-      "LobbyStack est le réceptionniste IA open source qui répond aux appels, qualifie les demandes, planifie des rendez‑vous et transfère les urgences 24/7.",
+      "Lead My Company est le réceptionniste IA open source qui répond aux appels, qualifie les demandes, planifie des rendez‑vous et transfère les urgences 24/7.",
   })

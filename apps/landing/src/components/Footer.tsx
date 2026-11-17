@@ -1,3 +1,4 @@
+import { brand } from "@lobbystack/shared/brand"
 import { Separator } from "@/components/ui/separator"
 import { localizeHref, localizePath, type Locale } from "@/lib/i18n"
 
@@ -83,7 +84,7 @@ const footerSections = (locale: Locale) => {
       title: copy.company,
       links: [
         { label: copy.about, href: "/about/" },
-        { label: copy.contact, href: "mailto:support@lobbystack.com" },
+        { label: copy.contact, href: "mailto:support@leadmycompany.com" },
         { label: copy.privacy, href: "/privacy/" },
         { label: copy.cookiePolicy, href: "/cookie-policy/" },
         { label: copy.terms, href: "/terms/" },
@@ -108,13 +109,14 @@ export function Footer({ locale = "en" }: FooterProps) {
             className="flex items-center rounded-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
           >
             <img
-              src="/lobbystack-logo.svg"
-              alt="LobbyStack"
-              width={155}
-              height={43}
+              src={brand.logoPath}
+              alt={brand.name}
+              width={32}
+              height={32}
               decoding="async"
               className="h-7 w-auto"
             />
+            <span className="ml-2 font-semibold">{brand.name}</span>
           </a>
 
           <div className="flex items-center gap-4">
@@ -165,7 +167,7 @@ export function Footer({ locale = "en" }: FooterProps) {
       <div className="mx-auto max-w-7xl px-6 pb-8">
         <div className="flex flex-col items-center justify-between gap-4 text-xs text-muted-foreground md:flex-row">
           <p>
-            © {new Date().getFullYear()} LobbyStack. {copy.rights}
+            © {new Date().getFullYear()} Lead My Company. {copy.rights}
           </p>
           <div className="flex flex-wrap justify-center gap-6">
             <button

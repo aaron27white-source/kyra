@@ -1,0 +1,61 @@
+---
+import "@/styles/global.css"
+import { brand } from "@lobbystack/shared/brand"
+
+interface Props { title: string; description: string }
+const { title, description } = Astro.props
+const canonicalPath = Astro.url.pathname === "/404/" ? "/404.html" : Astro.url.pathname
+const csp = "default-src 'self'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'"
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta http-equiv="Content-Security-Policy" content={csp} />
+    <link rel="canonical" href={new URL(canonicalPath, brand.url).toString()} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/geist-latin-wght-normal.woff2" crossorigin="anonymous" />
+    <title>{title} | {brand.name}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <header class="site-header">
+      <a class="wordmark" href="/" aria-label="Lead My Company home"><img src={brand.logoPath} width="32" height="32" alt="" /><span>{brand.name}</span></a>
+      <nav aria-label="Main navigation"><a href="/contact/">Contact</a><a class="sign-in" href="https://app.leadmycompany.com/en/login">Sign in <span aria-hidden="true">↗</span></a></nav>
+    </header>
+    <main id="main-content"><slot /></main>
+    <footer class="site-footer">
+      <p>{brand.name} · Pilot</p>
+      <nav aria-label="Footer navigation"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/cookie-policy/">Cookies</a><a href="/attributions/NOTICE.txt">Software notices</a></nav>
+    </footer>
+  </body>
+</html>
+<style>
+  @font-face { font-family: "Geist"; src: url("/fonts/geist-latin-wght-normal.woff2") format("woff2"); font-style: normal; font-weight: 100 900; font-display: swap; }
+  :global(:root) { --font-geist: "Geist"; }
+  :global(html) { color-scheme: light; scroll-behavior: smooth; }
+  :global(body) { margin: 0; color: var(--foreground); background: var(--background); font-family: var(--font-sans); }
+  :global(a:focus-visible) { outline: 2px solid currentColor; outline-offset: 4px; }
+  .site-header, .site-footer { max-width: 1120px; margin-inline: auto; padding: 24px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+  .site-header { border-bottom: 1px solid var(--border); }
+  .wordmark { display: inline-flex; align-items: center; gap: 12px; color: inherit; text-decoration: none; font-weight: 500; }
+  .wordmark img { display: block; width: 32px; height: 32px; }
+  nav { display: flex; flex-wrap: wrap; align-items: center; gap: 24px; }
+  nav a { color: inherit; font-size: 14px; text-decoration: none; }
+  nav a:hover { text-decoration: underline; text-underline-offset: 4px; }
+  .sign-in { padding: 12px 16px; border: 1px solid var(--border); border-radius: var(--radius-xl); }
+  main { max-width: 1120px; min-height: 60vh; margin-inline: auto; padding: 64px 24px 96px; }
+  .site-footer { border-top: 1px solid var(--border); color: var(--muted-foreground); font-size: 14px; }
+  .skip-link { position: absolute; left: 24px; top: -100px; padding: 12px 16px; background: white; z-index: 10; }
+  .skip-link:focus { top: 12px; }
+  :global(.document) { max-width: 720px; }
+  :global(h1) { font-size: clamp(32px, 5vw, 48px); font-weight: 600; letter-spacing: -0.04em; line-height: 1.1; margin: 0 0 24px; }
+  :global(.document h2) { margin: 48px 0 16px; font-size: 20px; font-weight: 600; }
+  :global(.document p), :global(.document dd) { color: var(--muted-foreground); line-height: 1.7; }
+  :global(.document dt) { margin-top: 24px; font-weight: 500; }
+  :global(.document dd) { margin: 8px 0 0; }
+  @media (max-width: 640px) { .site-header, .site-footer { align-items: flex-start; flex-direction: column; } main { padding-top: 48px; padding-bottom: 64px; } nav { gap: 16px; } }
+</style>

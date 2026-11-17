@@ -1,3 +1,5 @@
+import type * as DbModule from "@lobbystack/db";
+import type * as VoiceModule from "./voice";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
@@ -13,12 +15,12 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("@lobbystack/db", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@lobbystack/db")>()),
+  ...(await importOriginal<typeof DbModule>()),
   withBusinessTransaction: mocks.withBusinessTransaction,
 }));
 
 vi.mock("./voice", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("./voice")>()),
+  ...(await importOriginal<typeof VoiceModule>()),
   completeCall: mocks.completeCall,
 }));
 

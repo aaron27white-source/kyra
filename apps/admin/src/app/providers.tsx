@@ -18,13 +18,14 @@ import type { LocaleSource } from "@/lib/locale-request";
 import { routeNamespaces } from "@/lib/route-namespaces";
 
 type ProvidersProps = {
+  pilotMode?: boolean;
   children: React.ReactNode;
   initialLocale: SupportedLocale;
   initialLocaleSource: LocaleSource;
   initialResources: I18nNamespaceResources;
 };
 
-export function Providers({ children, initialLocale, initialLocaleSource, initialResources }: ProvidersProps) {
+export function Providers({ children, initialLocale, initialLocaleSource, initialResources, pilotMode = false }: ProvidersProps) {
   const [queryClient] = useState(() => new QueryClient({ defaultOptions: { queries: { staleTime: 10_000, refetchOnWindowFocus: false } } }));
   const [i18n] = useState(() => createI18nInstance({ locale: initialLocale, resources: initialResources }));
   const pathname = usePathname() ?? "/";
@@ -72,8 +73,8 @@ export function Providers({ children, initialLocale, initialLocaleSource, initia
       <I18nextProvider i18n={i18n}>
         <ThemeProvider>
           <AppearanceProvider>
-            <LocaleProvider initialLocale={initialLocale} initialLocaleSource={initialLocaleSource}>
-              <ProductAnalytics>
+            <LocaleProvider persistAccountPreferences={!pilotMode} initialLocale={initialLocale} initialLocaleSource={initialLocaleSource}>
+              <ProductAnalytics disabled={pilotMode}>
               {/* Mount before children so toasts fired from their mount effects reach a subscribed Toaster. */}
               <Toaster richColors />
               {loadingKey !== null ? (

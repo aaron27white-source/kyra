@@ -22,8 +22,25 @@ it("keeps the chrome strings the root providers need in every locale", () => {
 });
 
 it("selects only the requested namespaces and skips unknown ones", () => {
-  const selected = resourcesForRoute("fr", ["common", "auth", "not-a-namespace"]);
+  const selected = resourcesForRoute("fr", [
+    "common",
+    "auth",
+    "not-a-namespace",
+  ]);
   expect(Object.keys(selected).sort()).toEqual(["auth", "common"]);
   expect(selected.auth).toBe(localeResources.fr.auth);
   expect(resourcesForRoute("fr", ["not-a-namespace"])).toEqual({});
+});
+
+it("keeps email workspace translation keys aligned across locales", () => {
+  function keys(value: Record<string, unknown>, prefix = ""): string[] {
+    return Object.entries(value)
+      .flatMap(([key, entry]) =>
+        entry && typeof entry === "object"
+          ? keys(entry as Record<string, unknown>, `${prefix}${key}.`)
+          : [`${prefix}${key}`],
+      )
+      .sort();
+  }
+  expect(keys(localeResources.fr.lmc!)).toEqual(keys(localeResources.en.lmc!));
 });

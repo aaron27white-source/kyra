@@ -15,17 +15,17 @@ vi.mock("react-i18next", () => ({ useTranslation: () => ({ i18n: { language: "en
 const clients: QueryClient[] = [];
 beforeEach(() => { route.search = new URLSearchParams(); telemetryRef.current = createRecordedBrowserTelemetry(); });
 afterEach(() => { cleanup(); clients.forEach(client => client.clear()); clients.length = 0; vi.unstubAllGlobals(); vi.clearAllMocks(); });
-function setup(role: string, data: Partial<IntegrationsViewModel> = {}) {
+function setup(role: string, data: Partial<IntegrationsViewModel> = {}, showWebhooks = true) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false, staleTime: Infinity } } }); clients.push(client);
   client.setQueryData(["businesses"], { businesses: [{ businessId: "business", active: true, role }] });
   const fetchMock = vi.fn(async () => Response.json({ calendarConnections: [], calendarOptions: [], staff: [], discoveryError: null, ...data })); vi.stubGlobal("fetch", fetchMock);
-  render(<QueryClientProvider client={client}><LiveIntegrationsSurface /></QueryClientProvider>);
+  render(<QueryClientProvider client={client}><LiveIntegrationsSurface showWebhooks={showWebhooks} /></QueryClientProvider>);
   return fetchMock;
 }
 describe("original integration permissions and setup navigation", () => {
   it("shows errored connections and discovery failures instead of hiding them", async () => {
     setup("business_admin", { calendarConnections: [{ id: "connection", provider: "google", externalAccountId: "account", status: "error", staffId: null, selectedCalendarId: "calendar", lastSyncError: "provider failure" }], discoveryError: "discovery unavailable" });
-    expect((await screen.findByRole("alert")).textContent).toContain("integrations.google.discoveryFailed");
+    expect((await screen.findByRole("alert")).textContent).toContain("provider failure");
     fireEvent.click(screen.getByRole("button", { name: "integrations.google.reconnect" }));
     expect(await screen.findByRole("dialog")).toBeTruthy();
     expect(screen.getByText("integrations.status.reconnectRequired")).toBeTruthy();
@@ -49,10 +49,22 @@ describe("original integration permissions and setup navigation", () => {
     fireEvent.click(await screen.findByRole("button", { name: "integrations.google.disconnect" }));
     await waitFor(() => telemetryRef.current!.expectEvent("web.integration.calendar_disconnect_completed", { businessId: "business", provider: "google", scope: "business" }));
   });
+  it("starts an explicit calendar sync from the connection controls", async () => {
+    const fetchMock = setup("business_admin", { calendarConnections: [{ id: "connection", provider: "google", externalAccountId: "account", status: "connected", staffId: null, selectedCalendarId: "calendar", lastSyncError: null }], calendarOptions: [{ id: "calendar", summary: "Primary", primary: true, accessRole: "owner", selected: true }] });
+    fireEvent.click(await screen.findByRole("button", { name: "integrations.actions.connected" }));
+    fireEvent.click(screen.getByRole("button", { name: "integrations.google.syncNow" }));
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining("/api/integrations?businessId=business"), expect.objectContaining({ method: "POST" })));
+    await waitFor(() => expect(notify.success).toHaveBeenCalledWith("integrations.google.syncStarted"));
+  });
   it("does not request administrator calendar connections for viewers", () => {
     const fetchMock = setup("viewer");
     expect(fetchMock).not.toHaveBeenCalled();
     expect(screen.getByRole("button", { name: "integrations.actions.connect" }).hasAttribute("disabled")).toBe(true);
+  });
+  it("hides the webhook controls when the webhook route is not enabled in the pilot", async () => {
+    setup("business_admin", {}, false);
+    expect(screen.queryByRole("link", { name: "integrations.actions.manage" })).toBeNull();
+    expect(await screen.findByRole("button", { name: "integrations.actions.connect" })).toBeTruthy();
   });
   it("opens the calendar dialog and consumes only the setup parameter", async () => {
     route.search = new URLSearchParams("setup=calendar&keep=value");

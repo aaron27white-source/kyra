@@ -3319,23 +3319,22 @@
         "additionalProperties": false
       },
       "Me": {
-        "description": "The API key making the request and the business it belongs to.",
         "type": "object",
         "properties": {
           "api_key": {
             "type": "object",
             "properties": {
               "id": {
-                "description": "Stable identifier (UUID).",
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "description": "Stable identifier (UUID)."
               },
               "name": {
                 "type": "string"
               },
               "prefix": {
-                "description": "The visible start of the key, for example lsk_1a2b3c4d.",
-                "type": "string"
+                "type": "string",
+                "description": "The visible start of the key, for example lsk_1a2b3c4d."
               },
               "scopes": {
                 "type": "array",
@@ -3356,9 +3355,9 @@
                 }
               },
               "created_at": {
-                "description": "ISO 8601 timestamp in UTC.",
                 "type": "string",
-                "format": "date-time"
+                "format": "date-time",
+                "description": "ISO 8601 timestamp in UTC."
               }
             },
             "required": [
@@ -3374,9 +3373,9 @@
             "type": "object",
             "properties": {
               "id": {
-                "description": "Stable identifier (UUID).",
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "description": "Stable identifier (UUID)."
               },
               "name": {
                 "type": "string"
@@ -3393,50 +3392,46 @@
           "api_key",
           "business"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "The API key making the request and the business it belongs to."
       },
       "Business": {
         "type": "object",
         "properties": {
           "id": {
-            "description": "Stable identifier (UUID).",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Stable identifier (UUID)."
           },
           "name": {
             "type": "string"
           },
           "timezone": {
-            "description": "IANA time zone, for example America/Toronto.",
-            "type": "string"
+            "type": "string",
+            "description": "IANA time zone, for example America/Toronto."
           },
           "locale": {
-            "description": "Default language for callers: en or fr.",
-            "type": "string"
+            "type": "string",
+            "description": "Default language for callers: en or fr."
           },
           "website_url": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
+            "type": [
+              "string",
+              "null"
             ]
           },
           "booking_mode": {
-            "description": "instant: appointments are booked directly. request: the receptionist takes a request and the team confirms it. off: no booking.",
             "type": "string",
             "enum": [
               "instant",
               "request",
               "off"
-            ]
+            ],
+            "description": "instant: appointments are booked directly. request: the receptionist takes a request and the team confirms it. off: no booking."
           },
           "hours": {
             "type": "array",
             "items": {
-              "description": "Opening hours for one day. Days that are not listed are closed.",
               "type": "object",
               "properties": {
                 "day": {
@@ -3452,14 +3447,14 @@
                   ]
                 },
                 "open": {
-                  "description": "Local time as 24-hour HH:MM.",
                   "type": "string",
-                  "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$|^24:00$"
+                  "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$|^24:00$",
+                  "description": "Local time as 24-hour HH:MM."
                 },
                 "close": {
-                  "description": "Local time as 24-hour HH:MM.",
                   "type": "string",
-                  "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$|^24:00$"
+                  "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$|^24:00$",
+                  "description": "Local time as 24-hour HH:MM."
                 }
               },
               "required": [
@@ -3467,18 +3462,19 @@
                 "open",
                 "close"
               ],
-              "additionalProperties": false
+              "additionalProperties": false,
+              "description": "Opening hours for one day. Days that are not listed are closed."
             }
           },
           "created_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           },
           "updated_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           }
         },
         "required": [
@@ -3531,7 +3527,6 @@
             "maxItems": 7,
             "type": "array",
             "items": {
-              "description": "Opening hours for one day. Days that are not listed are closed.",
               "type": "object",
               "properties": {
                 "day": {
@@ -3547,21 +3542,22 @@
                   ]
                 },
                 "open": {
-                  "description": "Local time as 24-hour HH:MM.",
                   "type": "string",
-                  "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$|^24:00$"
+                  "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$|^24:00$",
+                  "description": "Local time as 24-hour HH:MM."
                 },
                 "close": {
-                  "description": "Local time as 24-hour HH:MM.",
                   "type": "string",
-                  "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$|^24:00$"
+                  "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$|^24:00$",
+                  "description": "Local time as 24-hour HH:MM."
                 }
               },
               "required": [
                 "day",
                 "open",
                 "close"
-              ]
+              ],
+              "description": "Opening hours for one day. Days that are not listed are closed."
             }
           }
         },
@@ -3571,21 +3567,17 @@
         "type": "object",
         "properties": {
           "id": {
-            "description": "Stable identifier (UUID).",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Stable identifier (UUID)."
           },
           "name": {
             "type": "string"
           },
           "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
+            "type": [
+              "string",
+              "null"
             ]
           },
           "duration_minutes": {
@@ -3594,14 +3586,14 @@
             "maximum": 9007199254740991
           },
           "created_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           },
           "updated_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           }
         },
         "required": [
@@ -3615,42 +3607,41 @@
         "additionalProperties": false
       },
       "Staff": {
-        "description": "A person who takes appointments. A business that never set up staff has one active staff member named after the business.",
         "type": "object",
         "properties": {
           "id": {
-            "description": "Stable identifier (UUID).",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Stable identifier (UUID)."
           },
           "name": {
             "type": "string"
           },
           "active": {
-            "description": "Only active staff members take bookings.",
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Only active staff members take bookings."
           },
           "timezone": {
             "type": "string"
           },
           "service_ids": {
-            "description": "Active services this person can be booked for. A service with no staff assigned is open to every active staff member.",
             "type": "array",
             "items": {
-              "description": "Stable identifier (UUID).",
               "type": "string",
-              "format": "uuid"
-            }
+              "format": "uuid",
+              "description": "Stable identifier (UUID)."
+            },
+            "description": "Active services this person can be booked for. A service with no staff assigned is open to every active staff member."
           },
           "created_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           },
           "updated_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           }
         },
         "required": [
@@ -3662,23 +3653,24 @@
           "created_at",
           "updated_at"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "A person who takes appointments. A business that never set up staff has one active staff member named after the business."
       },
       "Call": {
         "type": "object",
         "properties": {
           "id": {
-            "description": "Stable identifier (UUID).",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Stable identifier (UUID)."
           },
           "channel": {
-            "description": "phone: a phone call. web: a browser call from the website or dashboard.",
             "type": "string",
             "enum": [
               "phone",
               "web"
-            ]
+            ],
+            "description": "phone: a phone call. web: a browser call from the website or dashboard."
           },
           "status": {
             "type": "string",
@@ -3699,32 +3691,24 @@
           },
           "summary": {
             "description": "Short summary of the call, when one is available.",
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
+            "type": [
+              "string",
+              "null"
             ]
           },
           "end_reason": {
             "description": "Why the call ended, as reported by the call provider or receptionist.",
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
+            "type": [
+              "string",
+              "null"
             ]
           },
           "contact_id": {
             "anyOf": [
               {
-                "description": "Stable identifier (UUID).",
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "description": "Stable identifier (UUID)."
               },
               {
                 "type": "null"
@@ -3732,23 +3716,15 @@
             ]
           },
           "caller_name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
+            "type": [
+              "string",
+              "null"
             ]
           },
           "caller_phone": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
+            "type": [
+              "string",
+              "null"
             ]
           },
           "duration_seconds": {
@@ -3767,16 +3743,16 @@
             "type": "boolean"
           },
           "started_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           },
           "ended_at": {
             "anyOf": [
               {
-                "description": "ISO 8601 timestamp in UTC.",
                 "type": "string",
-                "format": "date-time"
+                "format": "date-time",
+                "description": "ISO 8601 timestamp in UTC."
               },
               {
                 "type": "null"
@@ -3784,9 +3760,9 @@
             ]
           },
           "created_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           }
         },
         "required": [
@@ -3811,17 +3787,17 @@
         "type": "object",
         "properties": {
           "id": {
-            "description": "Stable identifier (UUID).",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Stable identifier (UUID)."
           },
           "channel": {
-            "description": "phone: a phone call. web: a browser call from the website or dashboard.",
             "type": "string",
             "enum": [
               "phone",
               "web"
-            ]
+            ],
+            "description": "phone: a phone call. web: a browser call from the website or dashboard."
           },
           "status": {
             "type": "string",
@@ -3842,32 +3818,24 @@
           },
           "summary": {
             "description": "Short summary of the call, when one is available.",
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
+            "type": [
+              "string",
+              "null"
             ]
           },
           "end_reason": {
             "description": "Why the call ended, as reported by the call provider or receptionist.",
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
+            "type": [
+              "string",
+              "null"
             ]
           },
           "contact_id": {
             "anyOf": [
               {
-                "description": "Stable identifier (UUID).",
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "description": "Stable identifier (UUID)."
               },
               {
                 "type": "null"
@@ -3875,23 +3843,15 @@
             ]
           },
           "caller_name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
+            "type": [
+              "string",
+              "null"
             ]
           },
           "caller_phone": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
+            "type": [
+              "string",
+              "null"
             ]
           },
           "duration_seconds": {
@@ -3910,16 +3870,16 @@
             "type": "boolean"
           },
           "started_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           },
           "ended_at": {
             "anyOf": [
               {
-                "description": "ISO 8601 timestamp in UTC.",
                 "type": "string",
-                "format": "date-time"
+                "format": "date-time",
+                "description": "ISO 8601 timestamp in UTC."
               },
               {
                 "type": "null"
@@ -3927,9 +3887,9 @@
             ]
           },
           "created_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           },
           "transcript": {
             "type": "array",
@@ -3948,9 +3908,9 @@
                   "type": "string"
                 },
                 "at": {
-                  "description": "ISO 8601 timestamp in UTC.",
                   "type": "string",
-                  "format": "date-time"
+                  "format": "date-time",
+                  "description": "ISO 8601 timestamp in UTC."
                 }
               },
               "required": [
@@ -3985,69 +3945,49 @@
         "type": "object",
         "properties": {
           "id": {
-            "description": "Stable identifier (UUID).",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Stable identifier (UUID)."
           },
           "name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
+            "type": [
+              "string",
+              "null"
             ]
           },
           "phone": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
+            "type": [
+              "string",
+              "null"
             ]
           },
           "email": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
+            "type": [
+              "string",
+              "null"
             ]
           },
           "locale": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
+            "type": [
+              "string",
+              "null"
             ]
           },
           "timezone": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
+            "type": [
+              "string",
+              "null"
             ]
           },
           "created_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           },
           "updated_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           }
         },
         "required": [
@@ -4071,9 +4011,9 @@
             "maxLength": 200
           },
           "phone": {
-            "description": "Phone number in E.164 format.",
             "type": "string",
-            "pattern": "^\\+[1-9]\\d{6,14}$"
+            "pattern": "^\\+[1-9]\\d{6,14}$",
+            "description": "Phone number in E.164 format."
           },
           "email": {
             "type": "string",
@@ -4111,9 +4051,9 @@
             ]
           },
           "phone": {
-            "description": "Phone number in E.164 format.",
             "type": "string",
-            "pattern": "^\\+[1-9]\\d{6,14}$"
+            "pattern": "^\\+[1-9]\\d{6,14}$",
+            "description": "Phone number in E.164 format."
           },
           "email": {
             "anyOf": [
@@ -4160,9 +4100,9 @@
         "type": "object",
         "properties": {
           "id": {
-            "description": "Stable identifier (UUID).",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Stable identifier (UUID)."
           },
           "status": {
             "type": "string",
@@ -4172,62 +4112,54 @@
             ]
           },
           "starts_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           },
           "ends_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           },
           "timezone": {
             "type": "string"
           },
           "service_id": {
-            "description": "Stable identifier (UUID).",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Stable identifier (UUID)."
           },
           "service_name": {
             "type": "string"
           },
           "staff_id": {
-            "description": "Stable identifier (UUID).",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Stable identifier (UUID)."
           },
           "staff_name": {
             "type": "string"
           },
           "contact_id": {
-            "description": "Stable identifier (UUID).",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Stable identifier (UUID)."
           },
           "contact_name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
+            "type": [
+              "string",
+              "null"
             ]
           },
           "contact_phone": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
+            "type": [
+              "string",
+              "null"
             ]
           },
           "source": {
-            "description": "Where the booking came from, for example voice, web_chat, dashboard or api.",
-            "type": "string"
+            "type": "string",
+            "description": "Where the booking came from, for example voice, web_chat, dashboard or api."
           },
           "calendar_sync_status": {
             "type": "string",
@@ -4239,14 +4171,14 @@
             ]
           },
           "created_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           },
           "updated_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           }
         },
         "required": [
@@ -4273,14 +4205,14 @@
         "type": "object",
         "properties": {
           "service_id": {
-            "description": "Stable identifier (UUID).",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Stable identifier (UUID)."
           },
           "starts_at": {
-            "description": "Start time. Use a starts_at value from GET /availability.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "Start time. Use a starts_at value from GET /availability."
           },
           "contact_id": {
             "description": "An existing contact with a phone number. Provide contact_id or contact_phone.",
@@ -4288,9 +4220,9 @@
             "format": "uuid"
           },
           "contact_phone": {
-            "description": "Phone number in E.164 format.",
             "type": "string",
-            "pattern": "^\\+[1-9]\\d{6,14}$"
+            "pattern": "^\\+[1-9]\\d{6,14}$",
+            "description": "Phone number in E.164 format."
           },
           "contact_name": {
             "type": "string",
@@ -4317,9 +4249,9 @@
         "type": "object",
         "properties": {
           "starts_at": {
-            "description": "ISO 8601 timestamp with a Z or numeric offset.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp with a Z or numeric offset."
           },
           "staff_id": {
             "description": "Move the appointment to this active staff member. Defaults to the current one.",
@@ -4336,14 +4268,14 @@
         "type": "object",
         "properties": {
           "starts_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           },
           "ends_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           }
         },
         "required": [
@@ -4356,9 +4288,9 @@
         "type": "object",
         "properties": {
           "id": {
-            "description": "Stable identifier (UUID).",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Stable identifier (UUID)."
           },
           "status": {
             "type": "string",
@@ -4371,27 +4303,19 @@
             "type": "string"
           },
           "body": {
-            "description": "The full message as the team sees it.",
-            "type": "string"
+            "type": "string",
+            "description": "The full message as the team sees it."
           },
           "caller_name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
+            "type": [
+              "string",
+              "null"
             ]
           },
           "callback_phone": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
+            "type": [
+              "string",
+              "null"
             ]
           },
           "urgency": {
@@ -4410,13 +4334,9 @@
             ]
           },
           "callback_window": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
+            "type": [
+              "string",
+              "null"
             ]
           },
           "channel": {
@@ -4438,9 +4358,9 @@
           "call_id": {
             "anyOf": [
               {
-                "description": "Stable identifier (UUID).",
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "description": "Stable identifier (UUID)."
               },
               {
                 "type": "null"
@@ -4448,14 +4368,14 @@
             ]
           },
           "created_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           },
           "updated_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           }
         },
         "required": [
@@ -4478,9 +4398,9 @@
         "type": "object",
         "properties": {
           "id": {
-            "description": "Stable identifier (UUID).",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Stable identifier (UUID)."
           },
           "type": {
             "type": "string",
@@ -4496,9 +4416,9 @@
             "type": "string"
           },
           "created_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           }
         },
         "required": [
@@ -4511,7 +4431,7 @@
         "additionalProperties": false
       },
       "KnowledgeEntryCreate": {
-        "anyOf": [
+        "oneOf": [
           {
             "type": "object",
             "properties": {
@@ -4568,21 +4488,17 @@
         "type": "object",
         "properties": {
           "id": {
-            "description": "Stable identifier (UUID).",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Stable identifier (UUID)."
           },
           "url": {
             "type": "string"
           },
           "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
+            "type": [
+              "string",
+              "null"
             ]
           },
           "events": {
@@ -4621,14 +4537,14 @@
             ]
           },
           "created_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           },
           "updated_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           }
         },
         "required": [
@@ -4647,21 +4563,17 @@
         "type": "object",
         "properties": {
           "id": {
-            "description": "Stable identifier (UUID).",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Stable identifier (UUID)."
           },
           "url": {
             "type": "string"
           },
           "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
+            "type": [
+              "string",
+              "null"
             ]
           },
           "events": {
@@ -4700,18 +4612,18 @@
             ]
           },
           "created_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           },
           "updated_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           },
           "secret": {
-            "description": "Signing secret (whsec_...). Returned only when the endpoint is created.",
-            "type": "string"
+            "type": "string",
+            "description": "Signing secret (whsec_...). Returned only when the endpoint is created."
           }
         },
         "required": [
@@ -4731,10 +4643,10 @@
         "type": "object",
         "properties": {
           "url": {
-            "description": "HTTPS URL that receives events.",
             "type": "string",
             "maxLength": 2000,
-            "format": "uri"
+            "format": "uri",
+            "description": "HTTPS URL that receives events."
           },
           "events": {
             "minItems": 1,
@@ -4766,10 +4678,10 @@
         "type": "object",
         "properties": {
           "url": {
-            "description": "HTTPS URL that receives events.",
             "type": "string",
             "maxLength": 2000,
-            "format": "uri"
+            "format": "uri",
+            "description": "HTTPS URL that receives events."
           },
           "events": {
             "minItems": 1,
@@ -4811,14 +4723,14 @@
         "type": "object",
         "properties": {
           "event_id": {
-            "description": "Stable identifier (UUID).",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Stable identifier (UUID)."
           },
           "delivery_id": {
-            "description": "Stable identifier (UUID).",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Stable identifier (UUID)."
           }
         },
         "required": [
@@ -4831,9 +4743,9 @@
         "type": "object",
         "properties": {
           "id": {
-            "description": "Stable identifier (UUID).",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Stable identifier (UUID)."
           },
           "deleted": {
             "type": "boolean",
@@ -4850,9 +4762,9 @@
         "type": "object",
         "properties": {
           "id": {
-            "description": "Event id. Also sent as the webhook-id header; use it to ignore duplicates.",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Event id. Also sent as the webhook-id header; use it to ignore duplicates."
           },
           "type": {
             "type": "string",
@@ -4863,22 +4775,22 @@
             "const": "v1"
           },
           "created_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           },
           "business_id": {
-            "description": "Stable identifier (UUID).",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Stable identifier (UUID)."
           },
           "data": {
             "type": "object",
             "properties": {
               "endpoint_id": {
-                "description": "Stable identifier (UUID).",
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "description": "Stable identifier (UUID)."
               },
               "message": {
                 "type": "string"
@@ -4905,9 +4817,9 @@
         "type": "object",
         "properties": {
           "id": {
-            "description": "Event id. Also sent as the webhook-id header; use it to ignore duplicates.",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Event id. Also sent as the webhook-id header; use it to ignore duplicates."
           },
           "type": {
             "type": "string",
@@ -4918,30 +4830,30 @@
             "const": "v1"
           },
           "created_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           },
           "business_id": {
-            "description": "Stable identifier (UUID).",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Stable identifier (UUID)."
           },
           "data": {
             "type": "object",
             "properties": {
               "id": {
-                "description": "Stable identifier (UUID).",
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "description": "Stable identifier (UUID)."
               },
               "channel": {
-                "description": "phone: a phone call. web: a browser call from the website or dashboard.",
                 "type": "string",
                 "enum": [
                   "phone",
                   "web"
-                ]
+                ],
+                "description": "phone: a phone call. web: a browser call from the website or dashboard."
               },
               "status": {
                 "type": "string",
@@ -4962,32 +4874,24 @@
               },
               "summary": {
                 "description": "Short summary of the call, when one is available.",
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
+                "type": [
+                  "string",
+                  "null"
                 ]
               },
               "end_reason": {
                 "description": "Why the call ended, as reported by the call provider or receptionist.",
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
+                "type": [
+                  "string",
+                  "null"
                 ]
               },
               "contact_id": {
                 "anyOf": [
                   {
-                    "description": "Stable identifier (UUID).",
                     "type": "string",
-                    "format": "uuid"
+                    "format": "uuid",
+                    "description": "Stable identifier (UUID)."
                   },
                   {
                     "type": "null"
@@ -4995,23 +4899,15 @@
                 ]
               },
               "caller_name": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
+                "type": [
+                  "string",
+                  "null"
                 ]
               },
               "caller_phone": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
+                "type": [
+                  "string",
+                  "null"
                 ]
               },
               "duration_seconds": {
@@ -5030,16 +4926,16 @@
                 "type": "boolean"
               },
               "started_at": {
-                "description": "ISO 8601 timestamp in UTC.",
                 "type": "string",
-                "format": "date-time"
+                "format": "date-time",
+                "description": "ISO 8601 timestamp in UTC."
               },
               "ended_at": {
                 "anyOf": [
                   {
-                    "description": "ISO 8601 timestamp in UTC.",
                     "type": "string",
-                    "format": "date-time"
+                    "format": "date-time",
+                    "description": "ISO 8601 timestamp in UTC."
                   },
                   {
                     "type": "null"
@@ -5047,9 +4943,9 @@
                 ]
               },
               "created_at": {
-                "description": "ISO 8601 timestamp in UTC.",
                 "type": "string",
-                "format": "date-time"
+                "format": "date-time",
+                "description": "ISO 8601 timestamp in UTC."
               }
             },
             "required": [
@@ -5085,9 +4981,9 @@
         "type": "object",
         "properties": {
           "id": {
-            "description": "Event id. Also sent as the webhook-id header; use it to ignore duplicates.",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Event id. Also sent as the webhook-id header; use it to ignore duplicates."
           },
           "type": {
             "type": "string",
@@ -5098,22 +4994,22 @@
             "const": "v1"
           },
           "created_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           },
           "business_id": {
-            "description": "Stable identifier (UUID).",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Stable identifier (UUID)."
           },
           "data": {
             "type": "object",
             "properties": {
               "id": {
-                "description": "Stable identifier (UUID).",
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "description": "Stable identifier (UUID)."
               },
               "status": {
                 "type": "string",
@@ -5123,62 +5019,54 @@
                 ]
               },
               "starts_at": {
-                "description": "ISO 8601 timestamp in UTC.",
                 "type": "string",
-                "format": "date-time"
+                "format": "date-time",
+                "description": "ISO 8601 timestamp in UTC."
               },
               "ends_at": {
-                "description": "ISO 8601 timestamp in UTC.",
                 "type": "string",
-                "format": "date-time"
+                "format": "date-time",
+                "description": "ISO 8601 timestamp in UTC."
               },
               "timezone": {
                 "type": "string"
               },
               "service_id": {
-                "description": "Stable identifier (UUID).",
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "description": "Stable identifier (UUID)."
               },
               "service_name": {
                 "type": "string"
               },
               "staff_id": {
-                "description": "Stable identifier (UUID).",
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "description": "Stable identifier (UUID)."
               },
               "staff_name": {
                 "type": "string"
               },
               "contact_id": {
-                "description": "Stable identifier (UUID).",
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "description": "Stable identifier (UUID)."
               },
               "contact_name": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
+                "type": [
+                  "string",
+                  "null"
                 ]
               },
               "contact_phone": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
+                "type": [
+                  "string",
+                  "null"
                 ]
               },
               "source": {
-                "description": "Where the booking came from, for example voice, web_chat, dashboard or api.",
-                "type": "string"
+                "type": "string",
+                "description": "Where the booking came from, for example voice, web_chat, dashboard or api."
               },
               "calendar_sync_status": {
                 "type": "string",
@@ -5190,14 +5078,14 @@
                 ]
               },
               "created_at": {
-                "description": "ISO 8601 timestamp in UTC.",
                 "type": "string",
-                "format": "date-time"
+                "format": "date-time",
+                "description": "ISO 8601 timestamp in UTC."
               },
               "updated_at": {
-                "description": "ISO 8601 timestamp in UTC.",
                 "type": "string",
-                "format": "date-time"
+                "format": "date-time",
+                "description": "ISO 8601 timestamp in UTC."
               }
             },
             "required": [
@@ -5235,9 +5123,9 @@
         "type": "object",
         "properties": {
           "id": {
-            "description": "Event id. Also sent as the webhook-id header; use it to ignore duplicates.",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Event id. Also sent as the webhook-id header; use it to ignore duplicates."
           },
           "type": {
             "type": "string",
@@ -5248,22 +5136,22 @@
             "const": "v1"
           },
           "created_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           },
           "business_id": {
-            "description": "Stable identifier (UUID).",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Stable identifier (UUID)."
           },
           "data": {
             "type": "object",
             "properties": {
               "id": {
-                "description": "Stable identifier (UUID).",
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "description": "Stable identifier (UUID)."
               },
               "status": {
                 "type": "string",
@@ -5273,62 +5161,54 @@
                 ]
               },
               "starts_at": {
-                "description": "ISO 8601 timestamp in UTC.",
                 "type": "string",
-                "format": "date-time"
+                "format": "date-time",
+                "description": "ISO 8601 timestamp in UTC."
               },
               "ends_at": {
-                "description": "ISO 8601 timestamp in UTC.",
                 "type": "string",
-                "format": "date-time"
+                "format": "date-time",
+                "description": "ISO 8601 timestamp in UTC."
               },
               "timezone": {
                 "type": "string"
               },
               "service_id": {
-                "description": "Stable identifier (UUID).",
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "description": "Stable identifier (UUID)."
               },
               "service_name": {
                 "type": "string"
               },
               "staff_id": {
-                "description": "Stable identifier (UUID).",
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "description": "Stable identifier (UUID)."
               },
               "staff_name": {
                 "type": "string"
               },
               "contact_id": {
-                "description": "Stable identifier (UUID).",
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "description": "Stable identifier (UUID)."
               },
               "contact_name": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
+                "type": [
+                  "string",
+                  "null"
                 ]
               },
               "contact_phone": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
+                "type": [
+                  "string",
+                  "null"
                 ]
               },
               "source": {
-                "description": "Where the booking came from, for example voice, web_chat, dashboard or api.",
-                "type": "string"
+                "type": "string",
+                "description": "Where the booking came from, for example voice, web_chat, dashboard or api."
               },
               "calendar_sync_status": {
                 "type": "string",
@@ -5340,14 +5220,14 @@
                 ]
               },
               "created_at": {
-                "description": "ISO 8601 timestamp in UTC.",
                 "type": "string",
-                "format": "date-time"
+                "format": "date-time",
+                "description": "ISO 8601 timestamp in UTC."
               },
               "updated_at": {
-                "description": "ISO 8601 timestamp in UTC.",
                 "type": "string",
-                "format": "date-time"
+                "format": "date-time",
+                "description": "ISO 8601 timestamp in UTC."
               }
             },
             "required": [
@@ -5385,9 +5265,9 @@
         "type": "object",
         "properties": {
           "id": {
-            "description": "Event id. Also sent as the webhook-id header; use it to ignore duplicates.",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Event id. Also sent as the webhook-id header; use it to ignore duplicates."
           },
           "type": {
             "type": "string",
@@ -5398,22 +5278,22 @@
             "const": "v1"
           },
           "created_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           },
           "business_id": {
-            "description": "Stable identifier (UUID).",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Stable identifier (UUID)."
           },
           "data": {
             "type": "object",
             "properties": {
               "id": {
-                "description": "Stable identifier (UUID).",
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "description": "Stable identifier (UUID)."
               },
               "status": {
                 "type": "string",
@@ -5423,62 +5303,54 @@
                 ]
               },
               "starts_at": {
-                "description": "ISO 8601 timestamp in UTC.",
                 "type": "string",
-                "format": "date-time"
+                "format": "date-time",
+                "description": "ISO 8601 timestamp in UTC."
               },
               "ends_at": {
-                "description": "ISO 8601 timestamp in UTC.",
                 "type": "string",
-                "format": "date-time"
+                "format": "date-time",
+                "description": "ISO 8601 timestamp in UTC."
               },
               "timezone": {
                 "type": "string"
               },
               "service_id": {
-                "description": "Stable identifier (UUID).",
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "description": "Stable identifier (UUID)."
               },
               "service_name": {
                 "type": "string"
               },
               "staff_id": {
-                "description": "Stable identifier (UUID).",
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "description": "Stable identifier (UUID)."
               },
               "staff_name": {
                 "type": "string"
               },
               "contact_id": {
-                "description": "Stable identifier (UUID).",
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "description": "Stable identifier (UUID)."
               },
               "contact_name": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
+                "type": [
+                  "string",
+                  "null"
                 ]
               },
               "contact_phone": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
+                "type": [
+                  "string",
+                  "null"
                 ]
               },
               "source": {
-                "description": "Where the booking came from, for example voice, web_chat, dashboard or api.",
-                "type": "string"
+                "type": "string",
+                "description": "Where the booking came from, for example voice, web_chat, dashboard or api."
               },
               "calendar_sync_status": {
                 "type": "string",
@@ -5490,14 +5362,14 @@
                 ]
               },
               "created_at": {
-                "description": "ISO 8601 timestamp in UTC.",
                 "type": "string",
-                "format": "date-time"
+                "format": "date-time",
+                "description": "ISO 8601 timestamp in UTC."
               },
               "updated_at": {
-                "description": "ISO 8601 timestamp in UTC.",
                 "type": "string",
-                "format": "date-time"
+                "format": "date-time",
+                "description": "ISO 8601 timestamp in UTC."
               }
             },
             "required": [
@@ -5535,9 +5407,9 @@
         "type": "object",
         "properties": {
           "id": {
-            "description": "Event id. Also sent as the webhook-id header; use it to ignore duplicates.",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Event id. Also sent as the webhook-id header; use it to ignore duplicates."
           },
           "type": {
             "type": "string",
@@ -5548,22 +5420,22 @@
             "const": "v1"
           },
           "created_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           },
           "business_id": {
-            "description": "Stable identifier (UUID).",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Stable identifier (UUID)."
           },
           "data": {
             "type": "object",
             "properties": {
               "id": {
-                "description": "Stable identifier (UUID).",
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "description": "Stable identifier (UUID)."
               },
               "status": {
                 "type": "string",
@@ -5576,27 +5448,19 @@
                 "type": "string"
               },
               "body": {
-                "description": "The full message as the team sees it.",
-                "type": "string"
+                "type": "string",
+                "description": "The full message as the team sees it."
               },
               "caller_name": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
+                "type": [
+                  "string",
+                  "null"
                 ]
               },
               "callback_phone": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
+                "type": [
+                  "string",
+                  "null"
                 ]
               },
               "urgency": {
@@ -5615,13 +5479,9 @@
                 ]
               },
               "callback_window": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
+                "type": [
+                  "string",
+                  "null"
                 ]
               },
               "channel": {
@@ -5643,9 +5503,9 @@
               "call_id": {
                 "anyOf": [
                   {
-                    "description": "Stable identifier (UUID).",
                     "type": "string",
-                    "format": "uuid"
+                    "format": "uuid",
+                    "description": "Stable identifier (UUID)."
                   },
                   {
                     "type": "null"
@@ -5653,14 +5513,14 @@
                 ]
               },
               "created_at": {
-                "description": "ISO 8601 timestamp in UTC.",
                 "type": "string",
-                "format": "date-time"
+                "format": "date-time",
+                "description": "ISO 8601 timestamp in UTC."
               },
               "updated_at": {
-                "description": "ISO 8601 timestamp in UTC.",
                 "type": "string",
-                "format": "date-time"
+                "format": "date-time",
+                "description": "ISO 8601 timestamp in UTC."
               }
             },
             "required": [
@@ -5694,9 +5554,9 @@
         "type": "object",
         "properties": {
           "id": {
-            "description": "Event id. Also sent as the webhook-id header; use it to ignore duplicates.",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Event id. Also sent as the webhook-id header; use it to ignore duplicates."
           },
           "type": {
             "type": "string",
@@ -5707,82 +5567,62 @@
             "const": "v1"
           },
           "created_at": {
-            "description": "ISO 8601 timestamp in UTC.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "ISO 8601 timestamp in UTC."
           },
           "business_id": {
-            "description": "Stable identifier (UUID).",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Stable identifier (UUID)."
           },
           "data": {
             "type": "object",
             "properties": {
               "id": {
-                "description": "Stable identifier (UUID).",
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "description": "Stable identifier (UUID)."
               },
               "name": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
+                "type": [
+                  "string",
+                  "null"
                 ]
               },
               "phone": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
+                "type": [
+                  "string",
+                  "null"
                 ]
               },
               "email": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
+                "type": [
+                  "string",
+                  "null"
                 ]
               },
               "locale": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
+                "type": [
+                  "string",
+                  "null"
                 ]
               },
               "timezone": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
+                "type": [
+                  "string",
+                  "null"
                 ]
               },
               "created_at": {
-                "description": "ISO 8601 timestamp in UTC.",
                 "type": "string",
-                "format": "date-time"
+                "format": "date-time",
+                "description": "ISO 8601 timestamp in UTC."
               },
               "updated_at": {
-                "description": "ISO 8601 timestamp in UTC.",
                 "type": "string",
-                "format": "date-time"
+                "format": "date-time",
+                "description": "ISO 8601 timestamp in UTC."
               }
             },
             "required": [

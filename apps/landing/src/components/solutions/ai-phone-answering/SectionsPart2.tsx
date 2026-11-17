@@ -38,7 +38,7 @@ export function BusinessFit() {
             Built for call-heavy small businesses
           </h2>
           <p className="section-intro">
-            LobbyStack works best when phone calls turn into appointments,
+            Lead My Company works best when phone calls turn into appointments,
             quotes, jobs, consultations, or urgent service requests.
           </p>
         </div>
@@ -56,7 +56,7 @@ export function BusinessFit() {
         </div>
 
         <p className="mt-12 text-center text-sm font-medium text-muted-foreground">
-          If a missed call can mean a missed customer, LobbyStack can help you
+          If a missed call can mean a missed customer, Lead My Company can help you
           answer faster and give your team the details they need.
         </p>
       </div>
@@ -80,7 +80,7 @@ export function Capabilities() {
     },
     {
       title: "Knowledge base answers",
-      copy: "LobbyStack can answer from your services, policies, FAQs, hours, pricing guidance, and business instructions.",
+      copy: "Lead My Company can answer from your services, policies, FAQs, hours, pricing guidance, and business instructions.",
     },
     {
       title: "Appointment booking",
@@ -207,7 +207,7 @@ export function OpenSource() {
               Open-source phone automation you can actually inspect
             </h2>
             <p className="mt-6 text-lg leading-relaxed text-background/80">
-              LobbyStack is built for businesses that want practical automation
+              Lead My Company is built for businesses that want practical automation
               without mystery. You can start with the hosted product, review how
               the system works, and choose a setup that fits your team, volume,
               and technical needs.

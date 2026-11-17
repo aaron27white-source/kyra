@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-const mocks = vi.hoisted(() => ({ session: vi.fn(), consume: vi.fn(), exchange: vi.fn(), connect: vi.fn(), report: vi.fn(), rate: vi.fn() }));
+const mocks = vi.hoisted(() => ({ session: vi.fn(), consume: vi.fn(), exchange: vi.fn(), connect: vi.fn(), report: vi.fn(), rate: vi.fn(), authorize: vi.fn() }));
 vi.mock("@lobbystack/domain", () => ({ connectCalendar: mocks.connect }));
 vi.mock("@lobbystack/providers", () => ({ GoogleCalendarProvider: class {
   exchangeCode = mocks.exchange;
@@ -9,6 +9,7 @@ vi.mock("@/lib/api-helpers", () => ({
   requireApiSession: mocks.session,
   asApiResponse: mocks.report,
   jsonError: (message: string, status = 400, code?: string) => Response.json({ error: message, ...(code ? { code } : {}) }, { status }),
+  withOperatorTransaction: mocks.authorize,
 }));
 vi.mock("@/lib/domain-context", () => ({ createDomainContext: () => ({}) }));
 vi.mock("@/lib/google-calendar-oauth-store", () => ({ consumeCalendarOAuthState: mocks.consume }));
@@ -27,6 +28,7 @@ beforeEach(() => {
   mocks.consume.mockResolvedValue(true);
   mocks.exchange.mockResolvedValue({ accessToken: "token", expiresIn: 3600 });
   mocks.rate.mockResolvedValue({ allowed: true });
+  mocks.authorize.mockResolvedValue(undefined);
 });
 afterEach(() => vi.unstubAllEnvs());
 const callback = (state: string, query = "code=code") => new Request(`https://app.example.test/api/calendar/google/callback?state=${encodeURIComponent(state)}&${query}`);
@@ -89,4 +91,21 @@ it("fails closed when the limiter store is unavailable", async () => {
   const response = await GET(callback(state));
   expect(response.status).toBe(503);
   expect(mocks.session).not.toHaveBeenCalled();
+});
+
+it.each(["success", "error"] as const)("returns the pilot callback to integrations settings (%s)", async status => {
+  vi.stubEnv("LMC_PILOT_MODE", "true");
+  const state = createCalendarOAuthState({ userId: "user-1", businessId: "business" });
+  const response = await GET(callback(state, status === "success" ? "code=code" : "error=access_denied"));
+  const destination = new URL(response.headers.get("location")!);
+  expect(destination.pathname).toBe("/integrations");
+  expect(destination.searchParams.get("status")).toBe(status);
+  if (status === "error") expect(mocks.exchange).not.toHaveBeenCalled();
+});
+
+it("authorizes the tenant integration capability before consuming OAuth state", async () => {
+  const state = createCalendarOAuthState({ userId: "user-1", businessId: "business" });
+  await GET(callback(state));
+  expect(mocks.authorize).toHaveBeenCalledWith(expect.any(Request), expect.any(Function), { minimumRole: "business_admin", pilotCapability: "integrations" });
+  expect(mocks.authorize.mock.invocationCallOrder[0]).toBeLessThan(mocks.consume.mock.invocationCallOrder[0]!);
 });

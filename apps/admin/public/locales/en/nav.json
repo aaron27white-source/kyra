@@ -2,21 +2,24 @@
   "items": {
     "home": "Home",
     "calls": "Calls",
+    "appointments": "Appointments",
     "messages": "Messages",
     "agent": "Agent",
     "contacts": "Contacts",
     "analytics": "Analytics",
     "affiliate": "Affiliate Program",
-    "settings": "Settings"
+    "settings": "Settings",
+    "leads": "Email leads",
+    "emailSettings": "Email automation"
   },
   "search": {
     "placeholder": "Search workspace..."
   },
   "sidebar": {
     "businessSlugFallback": "Workspace console",
-    "general": "General",
+    "general": "Daily work",
     "agent": "Agent",
-    "other": "Manage",
+    "other": "Workspace",
     "workspace": "Workspace",
     "openSettings": "Open settings",
     "signedIn": "Signed in",

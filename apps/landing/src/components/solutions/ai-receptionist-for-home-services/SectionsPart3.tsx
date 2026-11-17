@@ -11,7 +11,7 @@ export function SolutionCta() {
           Answer the next job call, even when your crew is already working
         </h2>
         <p className="section-intro mx-auto max-w-lg">
-          Try LobbyStack with included voice minutes, set your trade-specific
+          Try Lead My Company with included voice minutes, set your trade-specific
           intake rules, and turn more phone calls into booked jobs.
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4">

@@ -1,3 +1,4 @@
+import { brand } from "@lobbystack/shared/brand"
 import { createHash } from "node:crypto"
 import {
   DEFAULT_DESCRIPTION,
@@ -14,10 +15,10 @@ export const AGENT_LINKS = [
   '</openapi.json>; rel="service-desc"; type="application/vnd.oai.openapi+json"',
   '</docs/api/>; rel="service-doc"; type="text/html"',
   '</llms.txt>; rel="describedby"; type="text/plain"',
-  '</feed.xml>; rel="alternate"; type="application/rss+xml"; title="LobbyStack RSS feed"',
-  '</schemamap.xml>; rel="describedby"; type="application/xml"; title="LobbyStack schema map"',
-  '</schema/page.json>; rel="describedby"; type="application/ld+json"; title="LobbyStack page schema graph"',
-  '</schema/post.json>; rel="describedby"; type="application/ld+json"; title="LobbyStack blog schema graph"',
+  '</feed.xml>; rel="alternate"; type="application/rss+xml"; title="Lead My Company RSS feed"',
+  '</schemamap.xml>; rel="describedby"; type="application/xml"; title="Lead My Company schema map"',
+  '</schema/page.json>; rel="describedby"; type="application/ld+json"; title="Lead My Company page schema graph"',
+  '</schema/post.json>; rel="describedby"; type="application/ld+json"; title="Lead My Company blog schema graph"',
   '</.well-known/agent-skills/index.json>; rel="describedby"; type="application/json"; title="Agent skills discovery index"',
   '</.well-known/mcp/server-card.json>; rel="describedby"; type="application/json"; title="MCP server card"',
 ]
@@ -80,68 +81,68 @@ export const apiCatalog = {
         {
           href: absoluteUrl("/openapi.json"),
           type: "application/vnd.oai.openapi+json",
-          title: "LobbyStack public agent-discovery OpenAPI description",
+          title: "Lead My Company public agent-discovery OpenAPI description",
         },
       ],
       "service-doc": [
         {
           href: absoluteUrl("/docs/api/"),
           type: "text/html",
-          title: "LobbyStack public API documentation",
+          title: "Lead My Company public API documentation",
         },
       ],
       describedby: [
         {
           href: absoluteUrl("/llms.txt"),
           type: "text/plain",
-          title: "LobbyStack LLM context",
+          title: "Lead My Company LLM context",
         },
         {
           href: absoluteUrl("/schemamap.xml"),
           type: "application/xml",
-          title: "LobbyStack schema map",
+          title: "Lead My Company schema map",
         },
         {
           href: absoluteUrl("/schema/page.json"),
           type: "application/ld+json",
-          title: "LobbyStack page schema graph",
+          title: "Lead My Company page schema graph",
         },
         {
           href: absoluteUrl("/schema/post.json"),
           type: "application/ld+json",
-          title: "LobbyStack blog schema graph",
+          title: "Lead My Company blog schema graph",
         },
         {
           href: absoluteUrl("/index.md"),
           type: "text/markdown",
-          title: "LobbyStack homepage markdown summary",
+          title: "Lead My Company homepage markdown summary",
         },
         {
           href: absoluteUrl("/features.md"),
           type: "text/markdown",
-          title: "LobbyStack features markdown summary",
+          title: "Lead My Company features markdown summary",
         },
         {
           href: absoluteUrl("/pricing.md"),
           type: "text/markdown",
-          title: "LobbyStack pricing markdown summary",
+          title: "Lead My Company pricing markdown summary",
         },
         {
           href: absoluteUrl("/affiliate-program.md"),
           type: "text/markdown",
-          title: "LobbyStack affiliate program markdown summary",
+          title: "Lead My Company affiliate program markdown summary",
         },
         {
           href: absoluteUrl("/missed-call-revenue-calculator/index.md"),
           type: "text/markdown",
-          title: "LobbyStack missed call revenue calculator markdown",
+          title: "Lead My Company missed call revenue calculator markdown",
         },
       ],
       status: [
         {
           href: absoluteUrl("/api/status"),
           type: "application/json",
-          title: "LobbyStack public API status",
+          title: "Lead My Company public API status",
         },
       ],
     },
@@ -151,7 +152,7 @@ export const apiCatalog = {
 export const openApiDocument = {
   openapi: "3.1.0",
   info: {
-    title: "LobbyStack Public Agent Discovery API",
+    title: "Lead My Company Public Agent Discovery API",
     version: "0.1.0",
     description:
       "Public discovery endpoints for agents, crawlers, and integrators visiting lobbystack.com.",
@@ -241,11 +242,11 @@ export const openApiDocument = {
     },
     "/feed.xml": {
       get: {
-        summary: "Get the LobbyStack RSS feed",
+        summary: "Get the Lead My Company RSS feed",
         operationId: "getRssFeed",
         responses: {
           "200": {
-            description: "RSS 2.0 feed for LobbyStack blog posts.",
+            description: "RSS 2.0 feed for Lead My Company blog posts.",
             content: {
               "application/rss+xml": {
                 schema: { type: "string" },
@@ -309,7 +310,7 @@ export const openApiDocument = {
         operationId: "getHomepageMarkdown",
         responses: {
           "200": {
-            description: "Markdown summary of LobbyStack's homepage.",
+            description: "Markdown summary of Lead My Company's homepage.",
             content: {
               "text/markdown": {
                 schema: { type: "string" },
@@ -325,7 +326,7 @@ export const openApiDocument = {
         operationId: "getFeaturesMarkdown",
         responses: {
           "200": {
-            description: "Markdown summary of LobbyStack's public features.",
+            description: "Markdown summary of Lead My Company's public features.",
             content: {
               "text/markdown": {
                 schema: { type: "string" },
@@ -342,7 +343,7 @@ export const openApiDocument = {
         responses: {
           "200": {
             description:
-              "Markdown summary of LobbyStack's plans, included limits, plan features, and overage rates.",
+              "Markdown summary of Lead My Company's plans, included limits, plan features, and overage rates.",
             content: {
               "text/markdown": {
                 schema: { type: "string" },
@@ -359,7 +360,7 @@ export const openApiDocument = {
         responses: {
           "200": {
             description:
-              "Markdown summary of the LobbyStack Affiliate Program terms, payouts, and onboarding.",
+              "Markdown summary of the Lead My Company Affiliate Program terms, payouts, and onboarding.",
             content: {
               "text/markdown": {
                 schema: { type: "string" },
@@ -425,7 +426,7 @@ export const openApiDocument = {
 
 export const publicStatus = {
   status: "ok",
-  service: "lobbystack.com public discovery",
+  service: `${brand.name} public discovery`,
   documentation: absoluteUrl("/docs/api/"),
 }
 
@@ -444,22 +445,22 @@ export const mcpServerCard = {
       {
         name: "get-site-summary",
         description:
-          "Return a concise overview of LobbyStack, useful links, and public documentation URLs.",
+          "Return a concise overview of Lead My Company, useful links, and public documentation URLs.",
       },
       {
         name: "get-navigation-links",
         description:
-          "Return public LobbyStack navigation links grouped by features, pricing, documentation, or legal pages.",
+          "Return public Lead My Company navigation links grouped by features, pricing, documentation, or legal pages.",
       },
       {
         name: "get-pricing",
         description:
-          "Return public LobbyStack pricing plan names, starting prices, included limits, overage rates, and links.",
+          "Return public Lead My Company pricing plan names, starting prices, included limits, overage rates, and links.",
       },
       {
         name: "get-features",
         description:
-          "Return key public LobbyStack features, including call answering, booking, workflows, transfers, alerts, dashboard, and reporting.",
+          "Return key public Lead My Company features, including call answering, booking, workflows, transfers, alerts, dashboard, and reporting.",
       },
       {
         name: "get-agent-discovery",
@@ -475,32 +476,32 @@ export const mcpServerCard = {
     resources: [
       {
         uri: absoluteUrl("/llms.txt"),
-        name: "LobbyStack LLM context",
+        name: "Lead My Company LLM context",
         mimeType: "text/plain",
       },
       {
         uri: absoluteUrl("/features.md"),
-        name: "LobbyStack features markdown summary",
+        name: "Lead My Company features markdown summary",
         mimeType: "text/markdown",
       },
       {
         uri: absoluteUrl("/pricing.md"),
-        name: "LobbyStack pricing markdown summary",
+        name: "Lead My Company pricing markdown summary",
         mimeType: "text/markdown",
       },
       {
         uri: absoluteUrl("/affiliate-program.md"),
-        name: "LobbyStack affiliate program markdown summary",
+        name: "Lead My Company affiliate program markdown summary",
         mimeType: "text/markdown",
       },
       {
         uri: absoluteUrl("/openapi.json"),
-        name: "LobbyStack public OpenAPI description",
+        name: "Lead My Company public OpenAPI description",
         mimeType: "application/vnd.oai.openapi+json",
       },
       {
         uri: absoluteUrl("/missed-call-revenue-calculator/index.md"),
-        name: "LobbyStack missed call revenue calculator markdown",
+        name: "Lead My Company missed call revenue calculator markdown",
         mimeType: "text/markdown",
       },
     ],
@@ -508,9 +509,9 @@ export const mcpServerCard = {
   },
 }
 
-export const lobbystackDiscoverySkill = `# LobbyStack Discovery
+export const lobbystackDiscoverySkill = `# Lead My Company Discovery
 
-Use this skill when an agent needs a concise, machine-readable orientation to LobbyStack's public website, documentation, and open-source project resources.
+Use this skill when an agent needs a concise, machine-readable orientation to Lead My Company's public website, documentation, and open-source project resources.
 
 ## Resources
 
@@ -541,7 +542,7 @@ export const agentSkillsIndex = {
       name: "lobbystack-discovery",
       type: "skill-md",
       description:
-        "Find LobbyStack public docs, API discovery metadata, pricing, features, and open-source resources.",
+        "Find Lead My Company public docs, API discovery metadata, pricing, features, and open-source resources.",
       url: absoluteUrl(
         "/.well-known/agent-skills/lobbystack-discovery/SKILL.md"
       ),
@@ -558,11 +559,11 @@ description: ${DEFAULT_DESCRIPTION}
 url: ${absoluteUrl("/")}
 ---
 
-# LobbyStack
+# Lead My Company
 
 ${DEFAULT_DESCRIPTION}
 
-## What LobbyStack Does
+## What Lead My Company Does
 
 - Answers inbound calls around the clock.
 - Uses business knowledge to answer common questions.
@@ -598,13 +599,13 @@ ${DEFAULT_DESCRIPTION}
 
 export const featuresMarkdown = `---
 title: AI Receptionist Features for Calls and Booking
-description: Public feature summary for LobbyStack's AI receptionist.
+description: Public feature summary for Lead My Company's AI receptionist.
 url: ${absoluteUrl("/features/")}
 ---
 
-# LobbyStack Features
+# Lead My Company Features
 
-LobbyStack is an open-source AI receptionist for call-heavy small businesses. It answers phone calls, books appointments, captures caller details, and transfers calls to a human when needed.
+Lead My Company is an open-source AI receptionist for call-heavy small businesses. It answers phone calls, books appointments, captures caller details, and transfers calls to a human when needed.
 
 ## Core Capabilities
 
@@ -628,13 +629,13 @@ Free includes 30 browser voice minutes and no telephone number. Starter and Pro 
 
 export const pricingMarkdown = `---
 title: AI Receptionist Pricing for Small Businesses
-description: Public pricing summary for LobbyStack's Free, Starter, Pro, and Enterprise plans.
+description: Public pricing summary for Lead My Company's Free, Starter, Pro, and Enterprise plans.
 url: ${absoluteUrl("/pricing/")}
 ---
 
-# LobbyStack Pricing
+# Lead My Company Pricing
 
-LobbyStack has Free, Starter, Pro, and Enterprise options. Plans scale by usage instead of locking the basic receptionist features behind higher tiers.
+Lead My Company has Free, Starter, Pro, and Enterprise options. Plans scale by usage instead of locking the basic receptionist features behind higher tiers.
 
 ## Plans
 
@@ -667,7 +668,7 @@ Starter is $30/month or $288/year and includes 150 voice minutes. Pro is $100/mo
 
 ### Do spam calls count toward usage?
 
-No. LobbyStack excludes spam calls from usage, so wrong numbers, robocalls, and spam calls do not count against included voice minutes or paid-plan overages.
+No. Lead My Company excludes spam calls from usage, so wrong numbers, robocalls, and spam calls do not count against included voice minutes or paid-plan overages.
 
 ### Are calls under 10 seconds charged?
 
@@ -677,18 +678,18 @@ No. Calls under 10 seconds are excluded from usage and do not count against incl
 export const affiliateProgramMarkdown = (locale: "en" | "fr") => {
   if (locale === "fr") {
     return `---
-title: Programme d'affiliation LobbyStack | 20 % de commission
-description: Résumé public du programme d'affiliation LobbyStack.
+title: Programme d'affiliation Lead My Company | 20 % de commission
+description: Résumé public du programme d'affiliation Lead My Company.
 url: ${absoluteUrl("/fr/affiliate-program/")}
 ---
 
-# Programme d'affiliation LobbyStack
+# Programme d'affiliation Lead My Company
 
-Parrainez des clients payants vers les forfaits hébergés LobbyStack et touchez une commission.
+Parrainez des clients payants vers les forfaits hébergés Lead My Company et touchez une commission.
 
 ## Conditions du programme
 
-| Terme | LobbyStack |
+| Terme | Lead My Company |
 | --- | --- |
 | Commission | 20 % |
 | Durée | 12 premiers mois après attribution |
@@ -696,11 +697,11 @@ Parrainez des clients payants vers les forfaits hébergés LobbyStack et touchez
 | Paiement minimum | 100 $ US |
 | Mode de paiement | PayPal |
 
-Les entreprises parrainées obtiennent 5 % de rabais sur les forfaits hébergés LobbyStack lorsqu'elles s'inscrivent via votre lien.
+Les entreprises parrainées obtiennent 5 % de rabais sur les forfaits hébergés Lead My Company lorsqu'elles s'inscrivent via votre lien.
 
 ## Ce qui paie une commission
 
-Vous touchez une commission uniquement sur les paiements de forfaits hébergés LobbyStack. L'auto-hébergement sans abonnement payant ne paie pas de commission.
+Vous touchez une commission uniquement sur les paiements de forfaits hébergés Lead My Company. L'auto-hébergement sans abonnement payant ne paie pas de commission.
 
 ## Comment commencer
 
@@ -715,18 +716,18 @@ Agences, consultants, créateurs et opérateurs qui recommandent des outils aux 
   }
 
   return `---
-title: LobbyStack Affiliate Program | Earn 20% Commission
-description: Public summary of the LobbyStack Affiliate Program.
+title: Lead My Company Affiliate Program | Earn 20% Commission
+description: Public summary of the Lead My Company Affiliate Program.
 url: ${absoluteUrl("/affiliate-program/")}
 ---
 
-# LobbyStack Affiliate Program
+# Lead My Company Affiliate Program
 
-Refer paying customers to hosted LobbyStack plans and earn commission.
+Refer paying customers to hosted Lead My Company plans and earn commission.
 
 ## Program terms
 
-| Term | LobbyStack |
+| Term | Lead My Company |
 | --- | --- |
 | Commission | 20% |
 | Duration | First 12 months after attribution |
@@ -734,11 +735,11 @@ Refer paying customers to hosted LobbyStack plans and earn commission.
 | Minimum payout | USD $100 |
 | Payout method | PayPal |
 
-Referred businesses get 5% off hosted LobbyStack plans when they sign up through your link.
+Referred businesses get 5% off hosted Lead My Company plans when they sign up through your link.
 
 ## What pays commission
 
-You earn commission on hosted LobbyStack plan payments only. Self-hosting without a paid LobbyStack subscription does not pay commission.
+You earn commission on hosted Lead My Company plan payments only. Self-hosting without a paid Lead My Company subscription does not pay commission.
 
 ## How to get started
 
@@ -753,7 +754,7 @@ Agencies, consultants, creators, and operators who recommend tools to small busi
 }
 
 export const calculatorMarkdown = `---
-title: Missed Call Revenue Calculator for Contractors - LobbyStack
+title: Missed Call Revenue Calculator for Contractors - Lead My Company
 description: Estimate weekly, monthly, and annual revenue at risk from missed contractor calls. Calculate how much you could recover with a 24/7 receptionist.
 url: ${absoluteUrl("/missed-call-revenue-calculator/")}
 ---
@@ -817,9 +818,9 @@ The same formula works across home services, but the risk looks different by tra
 
 ## What to do next
 
-Stop letting new leads go to voicemail, because they rarely leave one. LobbyStack provides an AI receptionist that works 24/7 to plug your revenue leak:
+Stop letting new leads go to voicemail, because they rarely leave one. Lead My Company provides an AI receptionist that works 24/7 to plug your revenue leak:
 
-If the calculator shows meaningful revenue at risk, the next step is to answer more calls without pulling technicians off the work they are already doing. LobbyStack combines AI phone answering, after-hours answering, and AI appointment scheduling so new leads can be captured when your team is busy.
+If the calculator shows meaningful revenue at risk, the next step is to answer more calls without pulling technicians off the work they are already doing. Lead My Company combines AI phone answering, after-hours answering, and AI appointment scheduling so new leads can be captured when your team is busy.
 
 - Answers every call instantly
 - Captures follow-up details automatically
@@ -852,7 +853,7 @@ Start with a conservative estimate and rerun the calculator with a second scenar
 No. Count them in your missed call total only if you lower the opportunity rate to account for them. The calculator is meant to estimate lost job revenue, so spam, vendors, wrong numbers, and non-buying calls should not be treated as real opportunities.
 
 ### Will an AI receptionist replace my office manager?
-No. LobbyStack is designed to handle the repetitive frontline work: answering basic questions, collecting intake details, and booking appointments. Your office manager can focus on complex dispatching, ordering parts, and customer service.
+No. Lead My Company is designed to handle the repetitive frontline work: answering basic questions, collecting intake details, and booking appointments. Your office manager can focus on complex dispatching, ordering parts, and customer service.
 
 ### Is this the same as an answering service ROI calculator?
 It is closely related. This calculator shows the revenue that may be at risk from missed calls. To think about ROI, compare that estimate with the monthly cost of an answering service or AI receptionist that can answer, qualify, and book more of those calls.

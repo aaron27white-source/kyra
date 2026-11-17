@@ -20,6 +20,7 @@
     "./replacement-calendar-check.ts",
     "./replacement-dashboard-aggregates-check.ts",
     "./voice-knowledge-retrieval-check.ts",
+    "./voice-v2-evaluation*.ts",
     "./replacement-appointment-audit-check.ts",
     "./replacement-billing-check.ts",
     "./replacement-feedback-check.ts",
@@ -29,6 +30,9 @@
     "./replacement-reconciliation.ts",
     "./replacement-smoke.ts",
     "./replacement-smoke.test.ts",
+    "./critical-dependencies.test.ts",
+    "./dependency-boundaries.test.ts",
+    "./smtp-dns-isolation.test.ts",
     "./replacement-sms-consent-check.ts",
     "./replacement-unit-economics-check.ts",
     "./replacement-analytics-usage-check.ts",
@@ -44,6 +48,11 @@
     "./replacement-password-recovery-check.ts",
     "./replacement-email-change-check.ts",
     "./performance/**/*.ts",
-    "./operations/**/*.ts"
+    "./operations/**/*.ts",
+    "./lmc-demo.ts",
+    "./lmc/**/*.ts",
+    "./lmc-tenant.ts",
+    "./lmc-tenant-setup.ts",
+    "./superadmin-bootstrap*.ts"
   ]
 }

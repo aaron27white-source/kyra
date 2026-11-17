@@ -56,7 +56,9 @@ export function AcceptInviteSurface() {
       const response = await fetch("/api/team/accept", { method: "POST", credentials: "include", headers: { "content-type": "application/json" }, body: JSON.stringify({ token }) });
       if (!response.ok) throw new Error();
       toast.success(t("acceptInvite.success", { businessName: invitation?.businessName ?? t("acceptInvite.workspaceFallback") }));
-      router.replace("/settings/team");
+      // The pilot boundary sends a complete workspace to /leads and an
+      // incomplete managed draft to /setup-required.
+      router.replace("/");
       router.refresh();
     } catch {
       setErrorMessage(t("acceptInvite.failed"));
@@ -75,6 +77,6 @@ export function AcceptInviteSurface() {
       <Button className="h-11 w-full" role="link" nativeButton={false} render={<Link href={loginHref} />}>{t("acceptInvite.signIn")}</Button>
       <Button className="h-11 w-full" role="link" nativeButton={false} render={<Link href={signupHref} />} variant="outline">{t("acceptInvite.createAccount")}</Button>
     </div>}
-    <p className="text-center text-sm"><Link className="font-medium text-foreground underline-offset-4 hover:underline" href={isAuthenticated ? "/settings/team" : localizePublicPath("/login", locale)}>{isAuthenticated ? t("acceptInvite.backToSettings") : t("acceptInvite.backToLogin")}</Link></p>
+    <p className="text-center text-sm"><Link className="font-medium text-foreground underline-offset-4 hover:underline" href={isAuthenticated ? "/setup-required" : localizePublicPath("/login", locale)}>{isAuthenticated ? t("acceptInvite.backToSettings") : t("acceptInvite.backToLogin")}</Link></p>
   </div></ReplacementOnboardingShell></div>;
 }

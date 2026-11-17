@@ -42,10 +42,12 @@ export function LocaleProvider({
   children,
   initialLocale,
   initialLocaleSource,
+  persistAccountPreferences = true,
 }: {
   children: ReactNode;
   initialLocale: SupportedLocale;
   initialLocaleSource: LocaleSource;
+  persistAccountPreferences?: boolean;
 }) {
   const { i18n } = useTranslation();
   const router = useRouter();
@@ -103,12 +105,12 @@ export function LocaleProvider({
 
   const accountLocale = useQuery({
     queryKey: ["account", "locale-preference", publicPage],
-    enabled: !publicPage,
+    enabled: !publicPage && persistAccountPreferences,
     queryFn: readAccountLocale,
     staleTime: 5 * 60_000,
     retry: false,
   });
-  const preferredLocale = publicPage ? undefined : accountLocale.data?.locale;
+  const preferredLocale = publicPage || !persistAccountPreferences ? undefined : accountLocale.data?.locale;
 
   useEffect(() => {
     if (!preferredLocale || userChangedLocale.current || initialLocaleSource === "query") {
@@ -142,6 +144,10 @@ export function LocaleProvider({
         router.replace(target, { scroll: false });
         return;
       }
+      if (!persistAccountPreferences) {
+        setIsSaving(false);
+        return;
+      }
       try {
         const response = await fetch("/api/preferences/locale", {
           method: "PATCH",
@@ -162,7 +168,7 @@ export function LocaleProvider({
         if (revision === preferenceRevision.current) setIsSaving(false);
       }
     },
-  }), [i18n, isSaving, locale, pathname, publicPage, router]);
+  }), [i18n, isSaving, locale, pathname, publicPage, persistAccountPreferences, router]);
 
   return <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>;
 }

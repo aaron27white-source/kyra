@@ -20,6 +20,7 @@ import { Field, FieldContent, FieldDescription, FieldGroup, FieldLabel } from "@
 import { PageHeader } from "@/components/page-header";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Switch } from "@/components/ui/switch";
 import { surfaceClassName } from "@/components/ui/surface";
 import { useTelemetry } from "@/components/product-analytics";
 
@@ -29,7 +30,7 @@ function GoogleCalendarLogo() {
 
 function formatTimestamp(value: string | null | undefined, locale: string): string | null { return value ? new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(value)) : null; }
 
-export function LiveIntegrationsSurface() {
+export function LiveIntegrationsSurface({ showWebhooks = true }: { showWebhooks?: boolean }) {
   const { i18n, t } = useTranslation("settings");
   const telemetry = useTelemetry();
   const searchParams = useSearchParams();
@@ -59,7 +60,12 @@ export function LiveIntegrationsSurface() {
 
   const update = useMutation({
     mutationFn: (input: { method: "PATCH" | "POST" | "DELETE"; calendarId?: string }) => requestJson(`/api/integrations?businessId=${encodeURIComponent(business!.businessId)}${input.method === "DELETE" ? `&connectionId=${encodeURIComponent(google!.id)}` : ""}`, { method: input.method, ...(input.method !== "DELETE" ? { body: JSON.stringify({ connectionId: google!.id, ...(input.calendarId ? { calendarId: input.calendarId } : {}) }) } : {}) }),
-    onSuccess: async (_, input) => { await queryClient.invalidateQueries({ queryKey: ["integrations", business?.businessId] }); if (input.method === "DELETE") { if (business) telemetry.track("web.integration.calendar_disconnect_completed", { businessId: business.businessId, provider: "google", scope: google?.staffId ? "staff" : "business" }); setDialogOpen(false); toast.success(t("integrations.google.disconnectedSuccess")); } else if (input.method === "PATCH") toast.success(t("integrations.google.calendarSaved")); },
+    onSuccess: async (_, input) => { await queryClient.invalidateQueries({ queryKey: ["integrations", business?.businessId] }); if (input.method === "DELETE") { if (business) telemetry.track("web.integration.calendar_disconnect_completed", { businessId: business.businessId, provider: "google", scope: google?.staffId ? "staff" : "business" }); setDialogOpen(false); toast.success(t("integrations.google.disconnectedSuccess")); } else if (input.method === "PATCH") toast.success(t("integrations.google.calendarSaved")); else toast.success(t("integrations.google.syncStarted")); },
+    onError: (error) => toast.error(error.message),
+  });
+  const updateAddressSharing = useMutation({
+    mutationFn: (enabled: boolean) => requestJson(`/api/integrations?businessId=${encodeURIComponent(business!.businessId)}`, { method: "PATCH", body: JSON.stringify({ shareServiceAddress: enabled }) }),
+    onSuccess: async () => { await queryClient.invalidateQueries({ queryKey: ["integrations", business?.businessId] }); toast.success(t("integrations.google.addressSharingSaved")); },
     onError: (error) => toast.error(error.message),
   });
 
@@ -68,16 +74,16 @@ export function LiveIntegrationsSurface() {
   return <>
     <div className="flex flex-col gap-6">
       <PageHeader title={t("sections.integrations")} />
-      {discoveryFailed || google?.lastSyncError ? <Alert variant="destructive"><AlertTitle>{t("integrations.google.syncNeedsAttention")}</AlertTitle><AlertDescription>{t("integrations.google.discoveryFailed")}</AlertDescription></Alert> : null}
+      {discoveryFailed || google?.lastSyncError ? <Alert variant="destructive"><AlertTitle>{t("integrations.google.syncNeedsAttention")}</AlertTitle><AlertDescription>{google?.lastSyncError ?? t("integrations.google.discoveryFailed")}</AlertDescription></Alert> : null}
       <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3"><li className={`${surfaceClassName} p-4`}>
         <div className="mb-8 flex items-center justify-between gap-3"><div className="flex size-10 shrink-0 items-center justify-center"><GoogleCalendarLogo /></div><div className="flex items-center gap-2">
           {integrations.isLoading ? <Skeleton className="h-9 w-24 rounded-md" /> : <Button disabled={!canManage} onClick={() => google ? setDialogOpen(true) : void connect()} size="sm" type="button" variant="outline" className={connected ? "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-800/60 dark:bg-emerald-950/30 dark:text-emerald-300" : undefined}>{connected ? t("integrations.actions.connected") : syncing ? t("integrations.status.syncing") : google ? t("integrations.google.reconnect") : t("integrations.actions.connect")}</Button>}
         </div></div>
         <div className="flex flex-col gap-1"><h2 className="type-section-title text-lg">{t("integrations.cards.google.title")}</h2><p className="type-body-muted line-clamp-2">{t("integrations.cards.google.description")}</p></div>
-      </li><li className={`${surfaceClassName} p-4`}>
+      </li>{showWebhooks ? <li className={`${surfaceClassName} p-4`}>
         <div className="mb-8 flex items-center justify-between gap-3"><div className="flex size-10 shrink-0 items-center justify-center"><Webhook aria-hidden="true" className="size-7" /></div><Button disabled={!canManage} nativeButton={false} render={<Link href="/integrations/webhooks" />} size="sm" variant="outline">{t("integrations.actions.manage")}</Button></div>
         <div className="flex flex-col gap-1"><h2 className="type-section-title text-lg">{t("integrations.cards.webhooks.title")}</h2><p className="type-body-muted line-clamp-2">{t("integrations.cards.webhooks.description")}</p></div>
-      </li></ul>
+      </li> : null}</ul>
     </div>
     <Dialog onOpenChange={setDialogOpen} open={dialogOpen}><DialogContent className="max-h-[90vh] w-full overflow-hidden p-0 sm:max-w-xl">
       <DialogHeader className="gap-0 border-b p-6 pb-5"><div className="flex items-start gap-4"><div className="flex size-11 shrink-0 items-center justify-center"><GoogleCalendarLogo /></div><div className="flex flex-col gap-1"><DialogTitle>{t("integrations.google.sheetTitle")}</DialogTitle><DialogDescription>{t("integrations.google.sheetDescription")}</DialogDescription></div></div></DialogHeader>
@@ -98,10 +104,11 @@ export function LiveIntegrationsSurface() {
           </Field></FieldGroup>
           <div className="flex flex-wrap gap-2">
             <Button disabled={!canManage || !selectedCalendarId || update.isPending || discoveryFailed} onClick={() => update.mutate({ method: "PATCH", calendarId: selectedCalendarId })} variant="secondary">{update.isPending ? t("integrations.google.savingCalendar") : t("integrations.google.saveCalendar")}</Button>
-            <Button disabled={!canManage || update.isPending || syncing || !google.selectedCalendarId} onClick={() => update.mutate({ method: "POST" })} variant="ghost"><RefreshCcw data-icon="inline-start" />{t("integrations.google.refreshCalendars")}</Button>
+            <Button disabled={!canManage || update.isPending || syncing || !google.selectedCalendarId} onClick={() => update.mutate({ method: "POST" })} variant="ghost"><RefreshCcw data-icon="inline-start" />{syncing ? t("integrations.status.syncing") : t("integrations.google.syncNow")}</Button>
             <Button disabled={!canManage || update.isPending} onClick={() => update.mutate({ method: "DELETE" })} size="sm" variant="outline"><Trash2 data-icon="inline-start" />{t("integrations.google.disconnect")}</Button>
           </div>
         </section> : null}
+        {google ? <section className="rounded-xl border p-4"><Field orientation="horizontal"><Switch aria-label={t("integrations.google.addressSharingLabel")} checked={integrations.data?.calendarShareServiceAddress === true} disabled={!canManage || updateAddressSharing.isPending} id="calendar-address-sharing" onCheckedChange={(enabled) => updateAddressSharing.mutate(enabled)} /><FieldContent><FieldLabel htmlFor="calendar-address-sharing">{t("integrations.google.addressSharingLabel")}</FieldLabel><FieldDescription>{t("integrations.google.addressSharingDescription")}</FieldDescription></FieldContent></Field></section> : null}
       </div>
     </DialogContent></Dialog>
   </>;

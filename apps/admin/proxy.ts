@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { isMaintenanceMode } from "@lobbystack/shared";
+import { isMaintenanceMode, isPilotMode, pilotAdminRoute } from "@lobbystack/shared";
 
 import { LOCALE_COOKIE, LOCALE_COOKIE_MAX_AGE_SECONDS, normalizeLocale } from "@/lib/locale";
 import {
@@ -24,7 +24,7 @@ import { embeddableSecurityHeaders, isEmbeddablePath, securityHeaders } from "./
 const stateChangingMethods = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 // /api/v1 and /api/mcp authenticate with bearer API keys only, never cookies, so they need no CSRF
 // origin check. /api/mcp refuses foreign browser origins itself.
-const csrfExemptPrefixes = ["/api/auth", "/api/webhooks", "/api/health", "/api/voice", "/api/widget", "/api/v1/", "/api/mcp"];
+const csrfExemptPrefixes = ["/api/auth", "/api/webhooks", "/api/health", "/api/voice", "/api/widget", "/api/v1/", "/api/mcp", "/api/lmc/capture/", "/api/lmc/unsubscribe/"];
 
 function isWebhookPath(pathname: string): boolean {
   return pathname.startsWith("/api/webhooks/");
@@ -111,6 +111,19 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const headers = isEmbeddablePath(pathname) ? embeddableSecurityHeaders() : securityHeaders();
 
+  if (isPilotMode(process.env)) {
+    const route = pilotAdminRoute(pathname);
+    if (!route || request.headers.has("next-action")) {
+      return new NextResponse(null, { status: 404, headers: { ...headers, "Cache-Control": "no-store" } });
+    }
+    if (!route.methods.includes(request.method)) {
+      return new NextResponse(null, { status: 405, headers: { ...headers, "Allow": route.methods.join(", "), "Cache-Control": "no-store" } });
+    }
+    if (pathname === "/") return NextResponse.redirect(new URL("/leads", request.url), 307);
+    if (pathname === "/favicon.ico") return NextResponse.rewrite(new URL("/brand/lmc-logo.svg", request.url), { headers });
+  }
+
+
   const isApiRequest = pathname.startsWith("/api/");
   if (isMaintenanceMode(process.env) && (isWebhookPath(pathname) || (isApiRequest && !isMaintenanceHealthProbe(pathname, request.method)) || stateChangingMethods.has(request.method))) {
     // Webhooks are rejected before their handlers can validate, enqueue, or acknowledge them.
@@ -179,7 +192,6 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Ordinary public assets keep the headers configured in next.config.ts without
-  // paying for a proxy execution on every request.
-  matcher: ["/((?!_next/static|_next/image|favicon\\.ico$|locales/|brand/|lobbystack-logo\\.svg$).*)"],
+  // Include static prefixes: method checks and future routes cannot bypass the gate.
+  matcher: ["/:path*"],
 };

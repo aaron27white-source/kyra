@@ -10,6 +10,6 @@ export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
     const search = url.searchParams.get("search")?.trim();
-    return NextResponse.json(await withOperatorTransaction(request, async ({ session, businessId }) => await listContacts(createDomainContext(), { userId: session.user.id, businessId, ...(search ? { search } : {}), limit: Number(url.searchParams.get("limit") ?? 50), offset: Number(url.searchParams.get("offset") ?? 0) })));
+    return NextResponse.json(await withOperatorTransaction(request, async ({ session, businessId }) => await listContacts(createDomainContext(), { userId: session.user.id, businessId, ...(search ? { search } : {}), limit: Number(url.searchParams.get("limit") ?? 50), offset: Number(url.searchParams.get("offset") ?? 0) }), { pilotCapability: "contacts" }));
   } catch (error) { return asApiResponse(error); }
 }

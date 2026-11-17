@@ -8,9 +8,10 @@ export type ReceptionistAgent = ToolLoopAgent<never, ToolSet>;
 export function createReceptionistAgent(input: { model: LanguageModel; context: AgentToolContext; extraInstructions?: string }): ReceptionistAgent {
   return new ToolLoopAgent({
     model: input.model,
-    instructions: [buildAgentInstructions(input.context.snapshot, input.context.channel, { intakeOnly: input.context.intakeOnly ?? false }), input.extraInstructions].filter(Boolean).join("\n\n"),
+    instructions: [buildAgentInstructions(input.context.snapshot, input.context.channel, { intakeOnly: input.context.intakeOnly ?? false, hasTrustedCallerId: Boolean(input.context.callerPhone) }), input.extraInstructions].filter(Boolean).join("\n\n"),
     tools: createReceptionistTools(input.context),
-    // One lookup, maybe a second, then the answer. Voice callers are waiting.
-    stopWhen: stepCountIs(4),
+    // Voice callers are waiting. Asynchronous email can afford additional
+    // knowledge lookups, without changing the voice latency budget.
+    stopWhen: stepCountIs(input.context.channel === "email" ? 8 : 4),
   });
 }

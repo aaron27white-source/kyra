@@ -43,7 +43,14 @@ export function useTelemetry(): BrowserTelemetry {
   return telemetry;
 }
 
-export function ProductAnalytics({ children }: { children?: ReactNode }) {
+const disabledTelemetry = createBrowserTelemetry(undefined, { optedOut: true });
+
+export function ProductAnalytics({ children, disabled = false }: { children?: ReactNode; disabled?: boolean }) {
+  if (disabled) return <AnalyticsTelemetryContext.Provider value={disabledTelemetry}>{children}</AnalyticsTelemetryContext.Provider>;
+  return <EnabledProductAnalytics>{children}</EnabledProductAnalytics>;
+}
+
+function EnabledProductAnalytics({ children }: { children?: ReactNode }) {
   const pathname = usePathname();
   const projectToken = process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN;
   const sensitive = isSensitiveAnalyticsRoute(pathname ?? "");

@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { connectCalendar } from "@lobbystack/domain";
 import { GoogleCalendarProvider, SecretBox } from "@lobbystack/providers";
 import { assertCertificationRecipient } from "@lobbystack/shared";
-import { asApiResponse, jsonError, requireApiSession } from "@/lib/api-helpers";
+import { asApiResponse, jsonError, requireApiSession, withOperatorTransaction } from "@/lib/api-helpers";
 import { createDomainContext } from "@/lib/domain-context";
 import { verifyCalendarOAuthState } from "@/lib/google-calendar-oauth";
 import { enforceCalendarOAuthRateLimits } from "@/lib/google-calendar-oauth-limit";
@@ -22,7 +22,8 @@ function provider(): GoogleCalendarProvider {
 }
 
 export async function GET(request: Request) {
-  const destination = (status: "success" | "error") => NextResponse.redirect(new URL(`/integrations?calendar=google&status=${status}`, process.env.APP_BASE_URL ?? request.url));
+  const settingsPath = "/integrations";
+  const destination = (status: "success" | "error") => NextResponse.redirect(new URL(`${settingsPath}?calendar=google&status=${status}`, process.env.APP_BASE_URL ?? request.url));
   try {
     const url = new URL(request.url);
     const code = url.searchParams.get("code");
@@ -39,6 +40,9 @@ export async function GET(request: Request) {
     if (!verified) return NextResponse.json({ error: "Google OAuth state is invalid or expired." }, { status: 400 });
     const session = await requireApiSession(request);
     if (session.user.id !== verified.userId) return NextResponse.json({ error: "Google OAuth state belongs to another user." }, { status: 403 });
+    const authorizationUrl = new URL(request.url);
+    authorizationUrl.searchParams.set("businessId", verified.businessId);
+    await withOperatorTransaction(new Request(authorizationUrl, { headers: request.headers, method: "GET" }), async () => undefined, { minimumRole: "business_admin", pilotCapability: "integrations" });
     // Authenticated dimensions, counted once per request, before consumption or
     // the provider exchange.
     const identityRate = await enforceCalendarOAuthRateLimits(

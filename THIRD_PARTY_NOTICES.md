@@ -39,3 +39,12 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+
+## Geist font
+
+The pilot landing bundles the unmodified Geist Latin variable font from the installed `@fontsource-variable/geist` package (5.2.8).
+
+- Copyright: Copyright 2024 The Geist Project Authors (https://github.com/vercel/geist-font.git)
+- License: SIL Open Font License 1.1
+- The complete font license is retained in `apps/landing/pilot-public/attributions/GEIST-OFL.txt` and included in the static artifact.

@@ -15,6 +15,7 @@ import { getMeter } from "@lobbystack/telemetry/node";
 import { getPostHogDistinctIdForBusinessSystem } from "@lobbystack/telemetry";
 import { advanceOnboardingStageInTransaction } from "./onboarding";
 import { recordProductEvent } from "./productEvents";
+import { effectiveServiceIntakePolicy } from "./service-intake";
 
 const ragMeter = getMeter("lobbystack-rag");
 const searchDuration = ragMeter.createHistogram("rag.search.duration_ms", { unit: "ms" });
@@ -149,7 +150,7 @@ export async function retryKnowledgeDocument(context: DomainContext, input: { us
   await withBusinessTransaction(context.db, { ...input, actorType: "operator" }, async (tx) => {
     await requireBusinessAdmin(tx, input);
     const document = (await tx.select({ id: knowledgeDocuments.id, sourceType: knowledgeDocuments.sourceType, sourceUrl: knowledgeDocuments.sourceUrl, revision: knowledgeDocuments.revision }).from(knowledgeDocuments).where(and(eq(knowledgeDocuments.id, input.documentId), eq(knowledgeDocuments.businessId, input.businessId))).limit(1).for("update"))[0];
-    if (!document) throw new Error("Knowledge document not found.");
+    if (!document) throw Object.assign(new Error("Knowledge document not found."), { status: 404 });
     await queueKnowledgeDocumentRetry(tx, input, document);
   });
 }
@@ -201,7 +202,7 @@ export async function deleteKnowledgeDocument(context: DomainContext, input: { u
     await requireBusinessAdmin(tx, input);
     await tx.delete(knowledgeChunks).where(and(eq(knowledgeChunks.documentId, input.documentId), eq(knowledgeChunks.businessId, input.businessId)));
     const [document] = await tx.delete(knowledgeDocuments).where(and(eq(knowledgeDocuments.id, input.documentId), eq(knowledgeDocuments.businessId, input.businessId))).returning({ id: knowledgeDocuments.id });
-    if (!document) throw new Error("Knowledge document not found.");
+    if (!document) throw Object.assign(new Error("Knowledge document not found."), { status: 404 });
     await enqueueOutbox(tx, { topic: "snapshot.refresh", businessId: input.businessId, aggregateType: "knowledge_document", aggregateId: document.id, dedupeKey: `knowledge:${document.id}:deleted:${Date.now()}`, payload: { businessId: input.businessId, reason: "document_deleted" } });
   });
 }
@@ -234,7 +235,7 @@ export async function updateKnowledgeSnippet(
   await withBusinessTransaction(context.db, { ...input, actorType: "operator" }, async (tx) => {
     await requireBusinessAdmin(tx, input);
     const [snippet] = await tx.update(knowledgeSnippets).set({ ...(input.title !== undefined ? { title: input.title.trim() } : {}), ...(input.content !== undefined ? { content: input.content.trim() } : {}), ...(input.tags !== undefined ? { tags: input.tags } : {}), ...(input.priority !== undefined ? { priority: input.priority } : {}), ...(input.active !== undefined ? { active: input.active } : {}), updatedAt: new Date() }).where(and(eq(knowledgeSnippets.id, input.snippetId), eq(knowledgeSnippets.businessId, input.businessId))).returning({ id: knowledgeSnippets.id });
-    if (!snippet) throw new Error("Knowledge snippet not found.");
+    if (!snippet) throw Object.assign(new Error("Knowledge snippet not found."), { status: 404 });
     await enqueueOutbox(tx, { topic: "snapshot.refresh", businessId: input.businessId, aggregateType: "knowledge_snippet", aggregateId: snippet.id, dedupeKey: `knowledge-snippet:${snippet.id}:snapshot:${Date.now()}`, payload: { businessId: input.businessId, reason: "snippet_updated" } });
   });
 }
@@ -243,7 +244,7 @@ export async function deleteKnowledgeSnippet(context: DomainContext, input: { us
   await withBusinessTransaction(context.db, { ...input, actorType: "operator" }, async (tx) => {
     await requireBusinessAdmin(tx, input);
     const [snippet] = await tx.delete(knowledgeSnippets).where(and(eq(knowledgeSnippets.id, input.snippetId), eq(knowledgeSnippets.businessId, input.businessId))).returning({ id: knowledgeSnippets.id });
-    if (!snippet) throw new Error("Knowledge snippet not found.");
+    if (!snippet) throw Object.assign(new Error("Knowledge snippet not found."), { status: 404 });
     await enqueueOutbox(tx, { topic: "snapshot.refresh", businessId: input.businessId, aggregateType: "knowledge_snippet", aggregateId: snippet.id, dedupeKey: `knowledge-snippet:${snippet.id}:snapshot:${Date.now()}`, payload: { businessId: input.businessId, reason: "snippet_deleted" } });
   });
 }
@@ -557,6 +558,7 @@ export async function refreshBusinessSnapshot(
       closures: closureRows.map((row) => ({ startsAt: row.startsAt.toISOString(), endsAt: row.endsAt.toISOString(), reason: row.reason })),
       services: serviceRows.map((row) => ({
         id: row.id, name: row.name, durationMinutes: row.durationMinutes,
+        intakePolicy: effectiveServiceIntakePolicy(currentProfile?.intakePolicy, row.intakePolicy),
         ...(row.description ? { description: row.description } : {}),
         ...(row.localizedNames ? { localizedNames: {
           ...(typeof row.localizedNames.en === "string" ? { en: row.localizedNames.en } : {}),

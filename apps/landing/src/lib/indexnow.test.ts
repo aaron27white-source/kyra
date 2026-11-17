@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest"
 import { findChangedPages, isKeyFileLive, pageSignature } from "./indexnow"
 
 const page = ({
-  title = "AI Receptionist for Plumbers | LobbyStack",
+  title = "AI Receptionist for Plumbers | Lead My Company",
   body = "<h1>Plumbers</h1><p>Answers burst pipe calls.</p>",
   image = '<img src="/_astro/missed-calls.Ab12Cd.webp?w=800" alt="Plumbing call">',
   socialImage = "https://lobbystack.com/illustrations/missed-calls.webp",
@@ -61,7 +61,7 @@ describe("pageSignature", () => {
       pageSignature(page({ body: "<h1>Plumbers</h1><p>New copy.</p>" }))
     ).not.toBe(base)
     expect(
-      pageSignature(page({ title: "Plumbing answering | LobbyStack" }))
+      pageSignature(page({ title: "Plumbing answering | Lead My Company" }))
     ).not.toBe(base)
     expect(
       pageSignature(

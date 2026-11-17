@@ -5,6 +5,7 @@ import { getDatabase } from "./databases";
 
 export const ADMIN_RUNTIME_DATABASE_ROLES = [
   "lobbystack_app",
+  "lobbystack_system",
   "lobbystack_auth",
   "lobbystack_worker",
   "lobbystack_dispatcher",

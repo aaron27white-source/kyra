@@ -1,3 +1,4 @@
+import type * as DbModule from "@lobbystack/db";
 import { createHmac } from "node:crypto";
 import { PgDialect } from "drizzle-orm/pg-core";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
@@ -8,7 +9,7 @@ vi.mock("@/lib/api-helpers", () => ({ getDispatcherDatabase: () => ({ db: {} }),
 vi.mock("@/lib/domain-context", () => ({ createWorkerDomainContext: () => ({ db: {} }) }));
 vi.mock("@lobbystack/domain", () => ({ recordProductEvent: mocks.recordProductEvent }));
 vi.mock("@lobbystack/db", async importOriginal => ({
-  ...await importOriginal<typeof import("@lobbystack/db")>(),
+  ...await importOriginal<typeof DbModule>(),
   withDispatcherTransaction: async (_db: unknown, callback: (tx: unknown) => unknown) => callback({ select: () => ({ from: () => ({ where: (condition: unknown) => { mocks.where(condition); return { limit: mocks.lookup }; } }) }) }),
   withBusinessTransaction: async (_db: unknown, scope: unknown, callback: (tx: unknown) => unknown) => {
     mocks.scope(scope);

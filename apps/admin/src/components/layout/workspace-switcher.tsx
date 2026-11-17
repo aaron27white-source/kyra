@@ -17,7 +17,7 @@ async function getBusinesses(): Promise<{ businesses: Business[] }> {
   if (!response.ok) throw new Error("Unable to load workspaces.");
   return await response.json() as { businesses: Business[] };
 }
-export function WorkspaceSwitcher() {
+export function WorkspaceSwitcher({ allowCreate = true }: { allowCreate?: boolean }) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { t } = useTranslation("nav");
@@ -78,11 +78,13 @@ export function WorkspaceSwitcher() {
                 </DropdownMenuItem>
               ))}
             </DropdownMenuGroup>
+            {allowCreate ? <>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="gap-2.5 px-3 py-2" render={<Link href="/onboarding/business?create=true" />}>
               <Plus className="size-4" />
               {t("sidebar.createBusiness")}
             </DropdownMenuItem>
+            </> : null}
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

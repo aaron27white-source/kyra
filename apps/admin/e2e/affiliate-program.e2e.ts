@@ -4,6 +4,7 @@ import { eq, like, sql } from "drizzle-orm";
 
 import { affiliateAttributions, affiliateCommissions, affiliatePayoutItems, affiliateProfiles, businesses, createDatabaseClient, providerEvents, users, type Database } from "@lobbystack/db";
 import { createBusiness, generateAffiliatePayoutRun, markAffiliatePayoutItemPaid, reconcileBillingProviderEvent } from "@lobbystack/domain";
+import { brand } from "@lobbystack/shared/brand";
 
 import enAffiliate from "../public/locales/en/affiliate.json" with { type: "json" };
 import frAffiliate from "../public/locales/fr/affiliate.json" with { type: "json" };
@@ -11,6 +12,7 @@ import enCommon from "../public/locales/en/common.json" with { type: "json" };
 import frCommon from "../public/locales/fr/common.json" with { type: "json" };
 import enNav from "../public/locales/en/nav.json" with { type: "json" };
 import enOnboarding from "../public/locales/en/onboarding.json" with { type: "json" };
+import { ABANDON_INTENT_STORAGE_KEY } from "../src/lib/abandon-intent";
 
 import { completeSignupEmailVerification, isolateAuthRateLimit } from "./fixtures/email-verification";
 
@@ -129,6 +131,9 @@ test("the affiliate program works from referral link to payout", async ({ browse
     const { businessId: ownerBusinessId } = await createBusiness({ db: migrator.db as unknown as Database }, { userId: owner.id, name: "Affiliate Owner Co", timezone: "UTC", businessType: "service_company" });
     await migrator.db.update(businesses).set({ onboardingStage: "complete" }).where(eq(businesses.id, ownerBusinessId));
     await migrator.db.update(users).set({ activeBusinessId: ownerBusinessId }).where(eq(users.id, owner.id));
+    await page.evaluate(([storageKey, businessId]) => {
+      localStorage.setItem(storageKey, JSON.stringify({ [businessId]: Date.now() }));
+    }, [ABANDON_INTENT_STORAGE_KEY, ownerBusinessId] as const);
 
     // Client navigation keeps the dashboard layout, so the namespace loads in the browser.
     await page.goto("/");
@@ -141,7 +146,7 @@ test("the affiliate program works from referral link to payout", async ({ browse
     await page.goto("/affiliate?lng=fr");
     await expectFullyTranslated(page, frAffiliate, frCommon.loading.retry);
     await page.screenshot({ path: testInfo.outputPath("affiliate-fr.png"), fullPage: true });
-    await page.getByRole("link", { name: frAffiliate.terms.link }).evaluate((link) => (link as HTMLAnchorElement).href).then((href) => expect(href).toBe("https://lobbystack.com/fr/terms/#affiliate-program"));
+    await page.getByRole("link", { name: frAffiliate.terms.link }).evaluate((link) => (link as HTMLAnchorElement).href).then((href) => expect(href).toBe(`${brand.url}/fr/terms/#affiliate-program`));
 
     // Payout settings.
     await page.getByRole("tab", { name: frAffiliate.settings.open }).click();

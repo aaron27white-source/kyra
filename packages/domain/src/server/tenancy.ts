@@ -202,7 +202,7 @@ export async function inviteMember(
 
 export async function acceptInvitation(
   context: DomainContext,
-  input: { userId: string; tokenHash: string },
+  input: { userId: string; tokenHash: string; verifiedEmail: string },
 ): Promise<{ businessId: string; role: string }> {
   const resolved = await context.db.execute<{ business_id: string }>(sql`select app.resolve_business_by_invitation(${input.tokenHash}) as business_id`);
   const businessId = resolved.rows[0]?.business_id;
@@ -210,10 +210,13 @@ export async function acceptInvitation(
     throw new Error("Invitation is invalid or expired.");
   }
   return await withBusinessTransaction(context.db, { userId: input.userId, actorType: "system", businessId }, async (tx) => {
-    const rows = await tx.select().from(businessInvitations).where(and(eq(businessInvitations.tokenHash, input.tokenHash), eq(businessInvitations.status, "pending"))).limit(1);
+    const rows = await tx.select().from(businessInvitations).where(and(eq(businessInvitations.tokenHash, input.tokenHash), eq(businessInvitations.status, "pending"))).limit(1).for("update");
     const invitation = rows[0];
     if (!invitation || invitation.expiresAt <= new Date()) {
       throw new Error("Invitation is invalid or expired.");
+    }
+    if (normalizeAuthEmail(input.verifiedEmail) !== invitation.normalizedEmail) {
+      throw Object.assign(new Error("This invitation belongs to another verified email address."), { status: 403, code: "invitation_email_mismatch" });
     }
     await tx.insert(businessMemberships).values({
       businessId: invitation.businessId,
@@ -225,6 +228,7 @@ export async function acceptInvitation(
       set: { role: invitation.role, status: "active", updatedAt: new Date() },
     });
     await tx.update(businessInvitations).set({ status: "accepted", acceptedByUserId: input.userId, acceptedAt: new Date(), updatedAt: new Date() }).where(eq(businessInvitations.id, invitation.id));
+    await tx.update(users).set({ activeBusinessId: invitation.businessId, updatedAt: new Date() }).where(eq(users.id, input.userId));
     return { businessId: invitation.businessId, role: invitation.role };
   });
 }

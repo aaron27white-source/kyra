@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 
 import nodemailer, { type Transporter } from "nodemailer";
-import { assertCertificationRecipient } from "@lobbystack/shared";
+import { assertCertificationRecipient, brand } from "@lobbystack/shared";
 
 export type SmtpConfig = {
   host: string;
@@ -48,6 +48,65 @@ export class SmtpEmailProvider {
   }
 }
 
+
+/**
+ * Transactional email over Resend HTTPS. Reuses the SMTP provider's templates
+ * and stable outbox idempotency key, without opening blocked SMTP ports.
+ */
+export class ResendTransactionalEmailProvider {
+  constructor(private readonly config: {
+    apiKey: string;
+    from: string;
+    replyTo?: string;
+    fetch?: typeof fetch;
+  }) {
+    if (!/^re_[A-Za-z0-9_-]{8,}$/.test(config.apiKey)) {
+      throw new Error("RESEND_CONFIGURATION_REQUIRED");
+    }
+  }
+
+  async sendTemplate(input: Parameters<SmtpEmailProvider["sendTemplate"]>[0]): Promise<{ messageId: string }> {
+    assertCertificationRecipient("email", input.to);
+    const email = renderTemplate(input.template, input.subject, input.variables);
+    // An explicit sender must not inherit the application's default reply-to.
+    const replyTo = input.from ? input.replyTo : input.replyTo ?? this.config.replyTo;
+    const payload = {
+      from: input.from ?? this.config.from,
+      to: [input.to],
+      subject: input.subject,
+      text: email.text,
+      ...(email.html ? { html: email.html } : {}),
+      ...(replyTo ? { reply_to: replyTo } : {}),
+    };
+
+    try {
+      const response = await (this.config.fetch ?? fetch)("https://api.resend.com/emails", {
+        method: "POST",
+        redirect: "error",
+        signal: AbortSignal.timeout(10_000),
+        headers: {
+          Authorization: `Bearer ${this.config.apiKey}`,
+          "Content-Type": "application/json",
+          ...(input.idempotencyKey ? { "Idempotency-Key": createHash("sha256").update(input.idempotencyKey).digest("hex") } : {}),
+        },
+        body: JSON.stringify(payload),
+      });
+      if (!response.ok) throw new Error("EMAIL_PROVIDER_UNAVAILABLE");
+      const result: unknown = await response.json();
+      const messageId = result !== null && typeof result === "object" && "id" in result
+        ? (result as { id: unknown }).id
+        : undefined;
+      if (typeof messageId !== "string" || messageId.length === 0) {
+        throw new Error("EMAIL_PROVIDER_UNAVAILABLE");
+      }
+      return { messageId };
+    } catch {
+      // Do not leak credentials, recipients or provider responses into job logs.
+      throw new Error("EMAIL_PROVIDER_UNAVAILABLE");
+    }
+  }
+}
+
 function renderTemplate(template: TemplateName, subject: string, variables: Record<string, string>): { text: string; html?: string } {
   const text = templateBody(template, variables);
 
@@ -62,7 +121,7 @@ function renderTemplate(template: TemplateName, subject: string, variables: Reco
       previewText: subject,
       content: [
         '<h1 style="margin:0 0 24px;font-size:28px;font-weight:600;line-height:1.25;color:#0B0B0D;text-align:center;">Verify your email address</h1>',
-        '<p style="margin:0 0 24px;font-size:16px;line-height:1.6;color:#3D3D3D;text-align:center;">Enter this verification code to finish setting up your Kyra account.</p>',
+        `<p style="margin:0 0 24px;font-size:16px;line-height:1.6;color:#3D3D3D;text-align:center;">Enter this verification code to finish setting up your ${brand.name} account.</p>`,
         `<p style="margin:0 0 24px;padding:16px 24px;background-color:#F3F4F6;border-radius:16px;font-size:32px;font-weight:600;line-height:1.25;letter-spacing:8px;color:#0B0B0D;text-align:center;">${code}</p>`,
         '<p style="margin:0 0 12px;font-size:14px;line-height:1.5;color:#6B7280;text-align:center;">This code expires in 10 minutes.</p>',
         '<p style="margin:0;font-size:14px;line-height:1.5;color:#6B7280;text-align:center;">If you did not request this code, you can safely ignore this email.</p>',
@@ -75,22 +134,22 @@ function templateBody(template: TemplateName, variables: Record<string, string>)
   switch (template) {
     case "existing_account":
       return variables.locale === "fr"
-        ? `Vous avez déjà un compte Kyra. Connectez-vous pour continuer : ${variables.signInUrl}. Mot de passe oublié ? ${variables.resetUrl}. Si vous n’avez pas demandé la création d’un compte, ignorez cet e-mail.`
-        : `You already have a Kyra account. Sign in to continue: ${variables.signInUrl}. Forgot your password? ${variables.resetUrl}. If you did not request an account, ignore this email.`;
+        ? `Vous avez déjà un compte ${brand.name}. Connectez-vous pour continuer : ${variables.signInUrl}. Mot de passe oublié ? ${variables.resetUrl}. Si vous n’avez pas demandé la création d’un compte, ignorez cet e-mail.`
+        : `You already have a ${brand.name} account. Sign in to continue: ${variables.signInUrl}. Forgot your password? ${variables.resetUrl}. If you did not request an account, ignore this email.`;
     case "verify_email":
       return variables.code
-        ? `Your Kyra email verification code is: ${variables.code}. It expires in 10 minutes.`
-        : `Verify your Kyra email address using this link: ${variables.url ?? ""}`;
+        ? `Your ${brand.name} email verification code is: ${variables.code}. It expires in 10 minutes.`
+        : `Verify your ${brand.name} email address using this link: ${variables.url ?? ""}`;
     case "password_reset":
       return variables.code
-        ? `Your Kyra password reset code is: ${variables.code}. It expires in 10 minutes.`
-        : `Reset your Kyra password using this link: ${variables.url ?? ""}`;
+        ? `Your ${brand.name} password reset code is: ${variables.code}. It expires in 10 minutes.`
+        : `Reset your ${brand.name} password using this link: ${variables.url ?? ""}`;
     case "invitation":
-      return `You have been invited to join Kyra. Accept the invitation here: ${variables.url ?? ""}`;
+      return `You have been invited to join ${brand.name}. Accept the invitation here: ${variables.url ?? ""}`;
     case "operator_alert":
-      return variables.message ?? "Kyra operator notification";
+      return variables.message ?? `${brand.name} operator notification`;
     case "feedback_submission":
-      return variables.body ?? "Kyra dashboard feedback";
+      return variables.body ?? `${brand.name} dashboard feedback`;
     case "onboarding_followup":
       return onboardingFollowupBody(variables);
   }
@@ -103,7 +162,7 @@ function onboardingFollowupBody(variables: Record<string, string>): string {
     return [
       variables.firstName ? `Bonjour ${variables.firstName},` : "Bonjour,",
       "",
-      `Je suis ${sender}, le fondateur de Kyra. Vous avez configuré une réceptionniste pour ${business} hier. Merci de l'avoir essayée.`,
+      `Je suis ${sender}, le fondateur de ${brand.name}. Vous avez configuré une réceptionniste pour ${business} hier. Merci de l'avoir essayée.`,
       "",
       "J'aimerais savoir ce que vous en avez pensé :",
       "",
@@ -115,13 +174,13 @@ function onboardingFollowupBody(variables: Record<string, string>): string {
       "",
       "Merci encore,",
       sender,
-      "Fondateur, Kyra",
+      `Fondateur, ${brand.name}`,
     ].join("\n");
   }
   return [
     variables.firstName ? `Hi ${variables.firstName},` : "Hi,",
     "",
-    `I'm ${sender}, the founder of Kyra. You set up a receptionist for ${business} yesterday. Thanks for giving it a try.`,
+    `I'm ${sender}, the founder of ${brand.name}. You set up a receptionist for ${business} yesterday. Thanks for giving it a try.`,
     "",
     "I'd love to hear what you thought:",
     "",
@@ -133,13 +192,13 @@ function onboardingFollowupBody(variables: Record<string, string>): string {
     "",
     "Thanks again,",
     sender,
-    "Founder, Kyra",
+    `Founder, ${brand.name}`,
   ].join("\n");
 }
 
 function renderEmailLayout({ previewText, content }: { previewText: string; content: string }): string {
   const escapedPreviewText = escapeHtml(previewText);
-  const logoSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="-30 -30 278 291" role="img" aria-label="Kyra"><g transform="translate(0.000000,231.000000) scale(0.100000,-0.100000)" fill="#0B0B0D" stroke="none"><path d="M968 2280 c-42 -16 -195 -79 -340 -141 -144 -62 -317 -133 -383 -159 -90 -36 -130 -58 -162 -88 -85 -82 -78 2 -81 -976 -3 -968 -6 -916 63 -916 19 0 54 9 77 20 24 10 147 62 273 114 338 138 342 140 365 178 20 32 20 48 20 763 0 702 1 731 19 761 12 19 34 37 54 43 33 11 54 4 398 -133 267 -107 370 -152 387 -171 26 -31 23 42 25 -725 l2 -673 c0 -50 8 -86 19 -86 11 -12 31 -21 47 -21 24 0 296 106 358 140 11 5 30 27 43 47 l23 38 l0 654 0 836 -27 46 c-48 81 -77 98 -404 233 -170 71 -371 155 -447 187 -165 71 -208 75 -329 29z"/></g></svg>`;
+  const logoSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 64 64" role="img" aria-label="${brand.name}"><rect width="64" height="64" rx="12" fill="${brand.colors.primary}"/><path d="M18 16v32h28v-8H26V16z" fill="${brand.colors.onPrimary}"/></svg>`;
 
   return `<!doctype html>
 <html lang="en">

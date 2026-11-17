@@ -3,14 +3,14 @@ import type { Locale } from "@/i18n"
 
 export const pricingFaqs: FaqItem[] = [
   {
-    question: "How does LobbyStack paid pricing work?",
+    question: "How does Lead My Company paid pricing work?",
     answer:
       "Starter is $30/month or $288/year and includes 150 voice minutes each month. Pro is $100/month or $960/year and includes 500 voice minutes each month. Starter voice overage is $0.20/minute, Pro voice overage is $0.18/minute, and extra alert SMS segments and transfer attempts cost $0.02 each.",
   },
   {
     question: "Do spam calls or very short calls count toward usage?",
     answer:
-      "No. LobbyStack excludes spam calls and calls under 10 seconds from usage, so wrong numbers, robocalls, instant hang-ups, and pocket dials do not count against your included voice minutes or paid-plan overages.",
+      "No. Lead My Company excludes spam calls and calls under 10 seconds from usage, so wrong numbers, robocalls, instant hang-ups, and pocket dials do not count against your included voice minutes or paid-plan overages.",
   },
   {
     question: "Can I switch plans or cancel anytime?",
@@ -18,20 +18,20 @@ export const pricingFaqs: FaqItem[] = [
       "Yes. You can upgrade, downgrade, or cancel your plan from billing settings. When you downgrade, you keep your current plan until the end of the billing period. There are no cancellation fees.",
   },
   {
-    question: "Can I use LobbyStack for free?",
+    question: "Can I use Lead My Company for free?",
     answer:
       "Yes. You can test 30 browser voice minutes on Free without a credit card. Free has no telephone number. Choose Starter or Pro for a dedicated number.",
   },
   {
     question: "What AI receptionist features are available today?",
     answer:
-      "LobbyStack can answer calls, capture caller details, answer business questions from your knowledge base, qualify leads, book appointments, route urgent callers, send summaries by email, and support recordings, transcripts, Google Calendar, and conversations in the caller's language.",
+      "Lead My Company can answer calls, capture caller details, answer business questions from your knowledge base, qualify leads, book appointments, route urgent callers, send summaries by email, and support recordings, transcripts, Google Calendar, and conversations in the caller's language.",
   },
 ]
 
 export const pricingFaqsFr: FaqItem[] = [
   {
-    question: "Comment fonctionnent les forfaits payants LobbyStack ?",
+    question: "Comment fonctionnent les forfaits payants Lead My Company ?",
     answer:
       "Starter coûte 30 $/mois ou 288 $/an et inclut 150 minutes vocales chaque mois. Pro coûte 100 $/mois ou 960 $/an et inclut 500 minutes vocales. Les dépassements vocaux sont de 0,20 $/min en Starter et 0,18 $/min en Pro; les SMS d’alerte et tentatives de transfert supplémentaires sont facturés 0,02 $ par unité.",
   },
@@ -39,7 +39,7 @@ export const pricingFaqsFr: FaqItem[] = [
     question:
       "Les appels indésirables ou très courts comptent-ils dans l’usage ?",
     answer:
-      "Non. LobbyStack exclut les appels indésirables et les appels de moins de 10 secondes de l’usage, afin que les mauvais numéros, appels automatisés, raccrochages instantanés et appels accidentels ne consomment pas vos minutes incluses.",
+      "Non. Lead My Company exclut les appels indésirables et les appels de moins de 10 secondes de l’usage, afin que les mauvais numéros, appels automatisés, raccrochages instantanés et appels accidentels ne consomment pas vos minutes incluses.",
   },
   {
     question: "Puis-je changer de forfait ou annuler à tout moment ?",
@@ -47,7 +47,7 @@ export const pricingFaqsFr: FaqItem[] = [
       "Oui. Vous pouvez passer à un forfait supérieur, revenir à un forfait inférieur ou annuler depuis les réglages de facturation. Si vous changez de forfait, votre forfait actuel reste actif jusqu’à la fin de la période. Il n’y a pas de frais d’annulation.",
   },
   {
-    question: "Puis-je utiliser LobbyStack gratuitement ?",
+    question: "Puis-je utiliser Lead My Company gratuitement ?",
     answer:
       "Oui. Vous pouvez tester 30 minutes vocales dans le navigateur sur Free, sans carte bancaire. Free ne comprend aucun numéro de téléphone. Choisissez Starter ou Pro pour obtenir un numéro dédié.",
   },
@@ -55,7 +55,7 @@ export const pricingFaqsFr: FaqItem[] = [
     question:
       "Quelles fonctionnalités de réceptionniste IA sont disponibles aujourd’hui ?",
     answer:
-      "LobbyStack peut répondre aux appels, collecter les détails de l’appelant, répondre aux questions depuis votre base de connaissances, qualifier les prospects, planifier des rendez‑vous, transférer les urgences, envoyer des résumés par courriel et prendre en charge les enregistrements, transcriptions, Google Calendar et conversations dans la langue de l’appelant.",
+      "Lead My Company peut répondre aux appels, collecter les détails de l’appelant, répondre aux questions depuis votre base de connaissances, qualifier les prospects, planifier des rendez‑vous, transférer les urgences, envoyer des résumés par courriel et prendre en charge les enregistrements, transcriptions, Google Calendar et conversations dans la langue de l’appelant.",
   },
 ]
 

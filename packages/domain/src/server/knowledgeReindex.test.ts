@@ -1,8 +1,9 @@
+import type * as DbModule from "@lobbystack/db";
 import { describe, expect, it, vi } from "vitest";
 import type { DomainContext } from "./context";
 
 const mocks = vi.hoisted(() => ({ transaction: vi.fn() }));
-vi.mock("@lobbystack/db", async original => ({ ...(await original<typeof import("@lobbystack/db")>()), withBusinessTransaction: mocks.transaction }));
+vi.mock("@lobbystack/db", async original => ({ ...(await original<typeof DbModule>()), withBusinessTransaction: mocks.transaction }));
 import { reindexStoredKnowledgeDocument } from "./knowledge";
 
 describe("stored knowledge reindex guards", () => {

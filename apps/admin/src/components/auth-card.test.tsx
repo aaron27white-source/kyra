@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AuthCard } from "./auth-card";
 const analytics = vi.hoisted(() => ({ record: vi.fn() }));
-const navigation = vi.hoisted(() => ({ replace: vi.fn() }));
+const navigation = vi.hoisted(() => ({ replace: vi.fn(), push: vi.fn() }));
 vi.mock("next/navigation", () => ({ useRouter: () => navigation }));
 vi.mock("@/lib/auth-success-analytics", () => ({ recordAuthSuccess: analytics.record }));
 vi.mock("react-i18next", () => ({ useTranslation: () => ({ t: (key: string) => key, i18n: { language: "en", resolvedLanguage: "en" } }) }));
@@ -47,6 +47,16 @@ describe("original login and signup behavior", () => {
     await userEvent.click(screen.getByRole("button", { name: "login.submit" }));
     expect(await screen.findByLabelText("verifyEmail.codeLabel")).toBeTruthy();
     expect(fetch).toHaveBeenCalledTimes(1);
+  });
+  it("routes an MFA-enabled login to the TOTP challenge without recording success", async () => {
+    window.history.replaceState(null, "", "/en/login?returnTo=%2Finternal%2Fclients");
+    vi.mocked(fetch).mockResolvedValueOnce(Response.json({ twoFactorRedirect: true, twoFactorMethods: ["totp"] }));
+    render(<AuthCard mode="login" />);
+    await userEvent.type(screen.getByLabelText("login.email"), "admin@example.invalid");
+    await userEvent.type(screen.getByLabelText("login.password"), "Valid-Password-123!");
+    await userEvent.click(screen.getByRole("button", { name: "login.submit" }));
+    await waitFor(() => expect(navigation.push).toHaveBeenCalledWith("/internal/mfa?returnTo=%2Finternal%2Fclients"));
+    expect(analytics.record).not.toHaveBeenCalled();
   });
   it("verifies the six-digit code and records authentication success", async () => {
     vi.mocked(fetch)

@@ -1,3 +1,4 @@
+import type * as LiveWebCallModule from "@/lib/live-web-call";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
@@ -23,7 +24,7 @@ vi.mock("@lobbystack/domain", () => ({
   recordVoiceSnapshotLoaded: mocks.recordVoiceSnapshotLoaded,
   startLiveWebCall: mocks.startLiveWebCall,
 }));
-vi.mock("@/lib/live-web-call", async (original) => ({ ...(await original<typeof import("@/lib/live-web-call")>()), resolveLiveWebCallAccess: mocks.access, liveSessionEndToken: (sessionId: string) => `token-for-${sessionId}` }));
+vi.mock("@/lib/live-web-call", async (original) => ({ ...(await original<typeof LiveWebCallModule>()), resolveLiveWebCallAccess: mocks.access, liveSessionEndToken: (sessionId: string) => `token-for-${sessionId}` }));
 vi.mock("@/lib/web-voice-policy", () => ({ enforceWebVoiceRateLimits: mocks.rateLimit }));
 vi.mock("@/lib/business-snapshot", () => ({ loadValidBusinessSnapshot: mocks.snapshot }));
 vi.mock("@/lib/domain-context", () => ({ createWorkerDomainContext: () => ({ db: {} }) }));

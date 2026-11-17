@@ -1,3 +1,6 @@
+import type * as ApiModule from "better-auth/api";
+import type * as EmailVerificationPolicyModule from "./email-verification-policy";
+import type * as DbModule from "@lobbystack/db";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { getCurrentAdapter, runWithAdapter } from "@better-auth/core/context";
 
@@ -11,10 +14,10 @@ vi.mock("better-auth", () => ({ betterAuth: (config: unknown) => {
   mocks.config = config;
   return { $context: Promise.resolve({ adapter: (config as any).database }), api: { createVerificationOTP: mocks.createOtp } };
 } }));
-vi.mock("better-auth/api", async importOriginal => ({ ...await importOriginal<typeof import("better-auth/api")>(), createAuthMiddleware: (handler: unknown) => handler }));
+vi.mock("better-auth/api", async importOriginal => ({ ...await importOriginal<typeof ApiModule>(), createAuthMiddleware: (handler: unknown) => handler }));
 vi.mock("better-auth/adapters/drizzle", () => ({ drizzleAdapter: mocks.adapter }));
 vi.mock("./turnstile", () => ({ verifyTurnstileForSignUp: mocks.challenge }));
-vi.mock("./email-verification-policy", async importOriginal => ({ ...await importOriginal<typeof import("./email-verification-policy")>(), assertEmailVerificationSendAllowed: mocks.allowed }));
+vi.mock("./email-verification-policy", async importOriginal => ({ ...await importOriginal<typeof EmailVerificationPolicyModule>(), assertEmailVerificationSendAllowed: mocks.allowed }));
 vi.mock("./databases", () => {
   const db = {
     select: () => ({ from: () => ({ where: () => ({ limit: mocks.select }) }) }),
@@ -32,7 +35,7 @@ vi.mock("./databases", () => {
   return { getDatabase: (role: string) => ({ db, role }) };
 });
 vi.mock("@lobbystack/db", async importOriginal => ({
-  ...await importOriginal<typeof import("@lobbystack/db")>(),
+  ...await importOriginal<typeof DbModule>(),
   assertDatabaseRole: mocks.role,
   enqueueOutbox: mocks.enqueue,
   withBusinessTransaction: async (_db: unknown, _scope: unknown, callback: (tx: unknown) => unknown) => callback({}),

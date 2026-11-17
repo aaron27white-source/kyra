@@ -210,7 +210,7 @@ export async function sendWebhookTestEvent(context: DomainContext, input: { busi
     if (!endpoint) throw notFound("Webhook endpoint");
     const eventId = randomUUID();
     const createdAt = new Date();
-    await tx.insert(webhookEvents).values({ id: eventId, businessId: input.businessId, type: WEBHOOK_TEST_EVENT_TYPE, payload: buildEventPayload({ id: eventId, type: WEBHOOK_TEST_EVENT_TYPE, businessId: input.businessId, createdAt, data: { endpoint_id: endpoint.id, message: "This is a test event from Kyra." } }), createdAt });
+    await tx.insert(webhookEvents).values({ id: eventId, businessId: input.businessId, type: WEBHOOK_TEST_EVENT_TYPE, payload: buildEventPayload({ id: eventId, type: WEBHOOK_TEST_EVENT_TYPE, businessId: input.businessId, createdAt, data: { endpoint_id: endpoint.id, message: "This is a test event from Lead My Company." } }), createdAt });
     const deliveryId = await queueDelivery(tx, { businessId: input.businessId, endpointId: endpoint.id, eventId });
     return { event_id: eventId, delivery_id: deliveryId };
   });
@@ -340,7 +340,7 @@ export async function processWebhookDelivery(
       eventKind: "webhookDisabled",
       eventKey: `webhookDisabled:${endpoint.id}:${at.getTime()}`,
       subject: "A webhook endpoint was turned off",
-      body: `Kyra stopped sending events to ${new URL(endpoint.url).host} after every delivery failed for about a day. Fix the endpoint, then turn it back on in Integrations > Webhooks.`,
+      body: `Lead My Company stopped sending events to ${new URL(endpoint.url).host} after every delivery failed for about a day. Fix the endpoint, then turn it back on in Integrations > Webhooks.`,
     });
     endpointsDisabled.add(1);
     return { outcome: "failed" as const, endpointDisabled: true };

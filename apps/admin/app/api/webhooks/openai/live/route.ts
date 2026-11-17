@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 import { buildPhoneSessionConfig } from "@lobbystack/agent-core/live/session";
 import { finishLiveCall, getCachedBusinessSnapshot, loadCallbackContext, resolveMissedCallCallback, startLivePhoneCall } from "@lobbystack/domain";
-import { ASSISTANT_NAME } from "@lobbystack/shared";
+import { ASSISTANT_NAME, isPilotMode } from "@lobbystack/shared";
 import type { BusinessContextSnapshot } from "@lobbystack/shared";
 import { getAppDatabase } from "@/lib/api-helpers";
 import { createWorkerDomainContext } from "@/lib/domain-context";
@@ -54,8 +54,8 @@ export async function POST(request: Request) {
       }
       const greetingOverride = `Hi, this is ${ASSISTANT_NAME}, the virtual receptionist for ${snapshot.displayName}, returning your call. This call may be recorded. How can I help?`;
       return await answerCall(client, { sessionId, businessId: callback.businessId, snapshot, from: context.callerPhone, to: phoneFromSipHeader(header("from")) ?? "callback", greetingOverride });
-    } catch (error) {
-      console.error("[kyra] callback answer failed", error instanceof Error ? error.message : error);
+    } catch {
+      console.error(JSON.stringify({ event: "live.setup.failed", operation: "callback_setup", reason: "call_setup_failed", sessionId, businessId: callback.businessId }));
       await client.live.sessions.reject(sessionId, { status_code: 503 }).catch(() => undefined);
       return new NextResponse(null, { status: 200 });
     }
@@ -65,10 +65,10 @@ export async function POST(request: Request) {
   const to = phoneFromSipHeader(header("diversion")) ?? phoneFromSipHeader(header("to"));
   const from = phoneFromSipHeader(header("from"));
   // Only the dialled-number headers: "From" is the caller's own number.
-  const routing = event.data.sip_headers.filter((item) => ["to", "diversion", "p-called-party-id"].includes(item.name.toLowerCase()));
+  const routingHeaderNames = event.data.sip_headers.filter((item) => ["to", "diversion", "p-called-party-id"].includes(item.name.toLowerCase())).map((item) => item.name.toLowerCase());
   if (!to) {
     // No deployment can route a call without a dialled number.
-    console.warn("[live] incoming call without a dialled number", JSON.stringify({ sessionId, routing }));
+    console.warn(JSON.stringify({ event: "live.inbound.rejected", reason: "missing_dialled_number", sessionId, routingHeaderNames }));
     await client.live.sessions.reject(sessionId, { status_code: 404 }).catch(() => undefined);
     return new NextResponse(null, { status: 200 });
   }
@@ -78,35 +78,63 @@ export async function POST(request: Request) {
   // or reject it; until ownership is known, this deployment leaves the call alone.
   let businessId: string | null | undefined;
   try {
-    const resolved = await getAppDatabase().db.execute<{ business_id: string | null }>(sql`select app.resolve_business_by_phone(${to}) as business_id`);
+    const resolved = isPilotMode(process.env)
+      ? await getAppDatabase().db.execute<{ business_id: string | null }>(sql`select app.resolve_lmc_live_business_by_phone(${to}) as business_id`)
+      : await getAppDatabase().db.execute<{ business_id: string | null }>(sql`select app.resolve_business_by_phone(${to}) as business_id`);
     businessId = resolved.rows[0]?.business_id;
-  } catch (error) {
+  } catch {
     // Ownership is unknown: don't reject a call that may belong to the other
     // deployment. A 503 makes OpenAI deliver the event again.
-    console.error("[live] couldn't look up the dialled number", error instanceof Error ? error.message : error);
+    console.error(JSON.stringify({ event: "live.inbound.lookup_failed", reason: "tenant_resolution_unavailable", sessionId }));
     return new NextResponse(null, { status: 503 });
   }
   if (!businessId) {
-    console.info("[live] incoming call for a number this deployment doesn't serve", JSON.stringify({ sessionId, to, routing }));
+    console.info(JSON.stringify({ event: "live.inbound.ignored", reason: "number_not_enabled_here", sessionId, routingHeaderNames }));
     return new NextResponse(null, { status: 200 });
   }
 
   try {
     const snapshot = await getCachedBusinessSnapshot(createWorkerDomainContext(), { businessId });
     if (!snapshot) {
-      console.warn("[live] no published snapshot for incoming call", JSON.stringify({ sessionId, businessId }));
+      console.warn(JSON.stringify({ event: "live.inbound.rejected", reason: "snapshot_unavailable", sessionId, businessId }));
       await client.live.sessions.reject(sessionId, { status_code: 503 });
       return new NextResponse(null, { status: 200 });
     }
     return await answerCall(client, { sessionId, businessId, snapshot, from, to });
-  } catch (error) {
-    console.error("[live] incoming call failed", error instanceof Error ? error.message : error);
+  } catch {
+    console.error(JSON.stringify({ event: "live.setup.failed", operation: "inbound_setup", reason: "call_setup_failed", sessionId, businessId }));
     await client.live.sessions.reject(sessionId, { status_code: 503 }).catch(() => undefined);
     return new NextResponse(null, { status: 200 });
   }
 }
 
 type LiveClient = ReturnType<typeof getLiveClient>;
+
+function safeProviderError(error: unknown): { status?: number; code?: string; requestId?: string } {
+  if (!error || typeof error !== "object") return {};
+  const value = error as { status?: unknown; code?: unknown; errorCode?: unknown; requestId?: unknown; request_id?: unknown };
+  const code = value.code ?? value.errorCode;
+  const requestId = value.requestId ?? value.request_id;
+  return {
+    ...(typeof value.status === "number" && Number.isInteger(value.status) ? { status: value.status } : {}),
+    ...(typeof code === "string" && /^[a-z0-9_.-]{1,80}$/i.test(code) ? { code } : {}),
+    ...(typeof requestId === "string" && /^[A-Za-z0-9_-]{1,128}$/.test(requestId) ? { requestId } : {}),
+  };
+}
+
+function logSetupFailure(reason: string, input: { sessionId: string; businessId: string }, error?: unknown, operation = reason): void {
+  console.error(JSON.stringify({ event: "live.setup.failed", operation, reason, ...input, ...safeProviderError(error) }));
+}
+
+async function hangupAfterSetupFailure(client: LiveClient, input: { sessionId: string; businessId: string }, reason: string): Promise<void> {
+  console.info(JSON.stringify({ event: "live.provider_hangup.requested", ...input, reason, transport: "sip" }));
+  try {
+    await client.live.sessions.hangup(input.sessionId);
+    console.info(JSON.stringify({ event: "live.provider_hangup.accepted", ...input, reason, transport: "sip" }));
+  } catch (error) {
+    logSetupFailure("provider_hangup_failed", input, error, "provider_hangup");
+  }
+}
 
 // Reserves minutes and records the call before accepting it, the same way the
 // Twilio media path does, so billing and limits behave identically.
@@ -124,12 +152,10 @@ async function answerCall(client: LiveClient, input: { sessionId: string; busine
     }
     throw error;
   }
-  // A retried delivery. The first one may have died before accepting or before
-  // the worker attached, so finish the job without touching the call record:
-  // accepting an accepted session just fails, and attaching is idempotent.
-  if (call.duplicate) {
-    await client.live.sessions.accept(input.sessionId, { session: buildPhoneSessionConfig(input.snapshot) }).catch(() => undefined);
-    await attachWorkerToLiveSession({ sessionId: input.sessionId, businessId: input.businessId, callId: call.callId, conversationId: call.conversationId, channel: "voice", ...(input.from ? { callerPhone: input.from } : {}), ...(input.greetingOverride ? { greetingOverride: input.greetingOverride } : {}) }).catch(() => undefined);
+  // Never revive an already finalized call record on webhook redelivery.
+  if (call.duplicate && call.ended) {
+    console.info(JSON.stringify({ event: "live.setup.duplicate_ignored", reason: "call_already_ended", sessionId: input.sessionId, businessId: input.businessId }));
+    await client.live.sessions.reject(input.sessionId, { status_code: 486 }).catch(() => undefined);
     return new NextResponse(null, { status: 200 });
   }
   if (call.blocked) {
@@ -138,18 +164,37 @@ async function answerCall(client: LiveClient, input: { sessionId: string; busine
     await finishLiveCall(domain, { businessId: input.businessId, callId: call.callId, seconds: 0, end: "blocked_contact" });
     return new NextResponse(null, { status: 200 });
   }
-  try {
-    await client.live.sessions.accept(input.sessionId, { session: buildPhoneSessionConfig(input.snapshot) });
-  } catch (error) {
-    await finishLiveCall(domain, { businessId: input.businessId, callId: call.callId, seconds: 0, end: "setup_failed" });
-    throw error;
+  // On retry, accept may fail because OpenAI already accepted the session. The
+  // awaited worker attach is authoritative: it returns success only after a
+  // live sideband and first output audio are established.
+  let accepted = false;
+  if (!call.duplicate) {
+    try {
+      await client.live.sessions.accept(input.sessionId, { session: buildPhoneSessionConfig(input.snapshot) });
+      accepted = true;
+    } catch (error) {
+      logSetupFailure("openai_session_accept_failed", { sessionId: input.sessionId, businessId: input.businessId }, error, "session_accept");
+      await hangupAfterSetupFailure(client, { sessionId: input.sessionId, businessId: input.businessId }, "setup_failed");
+      await finishLiveCall(domain, { businessId: input.businessId, callId: call.callId, seconds: 0, end: "setup_failed" }).catch((finalizeError) => logSetupFailure("setup_failure_finalize_failed", { sessionId: input.sessionId, businessId: input.businessId }, finalizeError, "call_finalize"));
+      throw error;
+    }
+  } else {
+    try {
+      await client.live.sessions.accept(input.sessionId, { session: buildPhoneSessionConfig(input.snapshot) });
+      accepted = true;
+    } catch {
+      console.info(JSON.stringify({ event: "live.session.accept_retry_skipped", reason: "duplicate_delivery", sessionId: input.sessionId, businessId: input.businessId }));
+    }
   }
+  if (accepted) console.info(JSON.stringify({ event: "live.session.accepted", sessionId: input.sessionId, businessId: input.businessId }));
   try {
     await attachWorkerToLiveSession({ sessionId: input.sessionId, businessId: input.businessId, callId: call.callId, conversationId: call.conversationId, channel: "voice", ...(input.from ? { callerPhone: input.from } : {}), ...(input.greetingOverride ? { greetingOverride: input.greetingOverride } : {}) });
   } catch (error) {
     // Without the worker nobody answers delegations, so end the call cleanly.
-    await client.live.sessions.hangup(input.sessionId).catch(() => undefined);
-    await finishLiveCall(domain, { businessId: input.businessId, callId: call.callId, seconds: 0, end: "setup_failed" });
+    const attach = error && typeof error === "object" && "reason" in error && typeof error.reason === "string" ? error.reason : undefined;
+    logSetupFailure(attach ?? "worker_attach_failed", { sessionId: input.sessionId, businessId: input.businessId }, error, "worker_attach");
+    await hangupAfterSetupFailure(client, { sessionId: input.sessionId, businessId: input.businessId }, attach ?? "worker_attach_failed");
+    await finishLiveCall(domain, { businessId: input.businessId, callId: call.callId, seconds: 0, end: "setup_failed" }).catch((finalizeError) => logSetupFailure("setup_failure_finalize_failed", { sessionId: input.sessionId, businessId: input.businessId }, finalizeError, "call_finalize"));
     throw error;
   }
   return new NextResponse(null, { status: 200 });

@@ -39,6 +39,8 @@ jobs:
       - run: pnpm --filter @lobbystack/admin --filter @lobbystack/landing lint
       - run: pnpm telemetry:coverage
       - run: pnpm build
+      - name: Reject public artifact regressions before release validation
+        run: pnpm --filter @lobbystack/landing pilot:test
       - name: Verify the committed embed loader matches the build
         run: git diff --exit-code -- apps/admin/public/embed/embed.js
       - run: pnpm test
@@ -46,24 +48,8 @@ jobs:
       - name: Validate Compose config
         run: docker compose --env-file .env.example -f docker-compose.yml config --quiet
 
-  # The Zapier integration is a standalone npm package on the Node version
-  # Zapier runs (22). Its tests mock every HTTP call.
-  zapier:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    defaults:
-      run:
-        working-directory: integrations/zapier
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: integrations/zapier/package-lock.json
-      - run: npm ci
-      - run: npm test
-
+  # Standalone integrations/zapier is not used or packaged by the email pilot.
+  # Its separate npm graph remains unremediated; see docs/DEV_ADVISORIES.md.
   database:
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -74,10 +60,12 @@ jobs:
       LOBBYSTACK_RELIABILITY_TEST_DATABASE_URL: postgres://postgres:lobbystack@127.0.0.1:5432/lobbystack_test
       LOBBYSTACK_AUTH_TEST_DATABASE_URL: postgres://postgres:lobbystack@127.0.0.1:5432/lobbystack_test
       LOBBYSTACK_APP_DATABASE_URL: postgres://lobbystack_app:app@127.0.0.1:5432/lobbystack_test
+      LOBBYSTACK_SYSTEM_DATABASE_URL: postgres://lobbystack_system:system@127.0.0.1:5432/lobbystack_test
       LOBBYSTACK_AUTH_DATABASE_URL: postgres://lobbystack_auth:auth@127.0.0.1:5432/lobbystack_test
       LOBBYSTACK_WORKER_DATABASE_URL: postgres://lobbystack_worker:worker@127.0.0.1:5432/lobbystack_test
       LOBBYSTACK_DISPATCHER_DATABASE_URL: postgres://lobbystack_dispatcher:dispatcher@127.0.0.1:5432/lobbystack_test
       LOBBYSTACK_APP_PASSWORD: app
+      LOBBYSTACK_SYSTEM_PASSWORD: system
       LOBBYSTACK_AUTH_PASSWORD: auth
       LOBBYSTACK_WORKER_PASSWORD: worker
       LOBBYSTACK_DISPATCHER_PASSWORD: dispatcher
@@ -147,9 +135,66 @@ jobs:
   images:
     uses: ./.github/workflows/runtime-images.yml
 
+  dependency-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.30.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.22.1
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Gate production dependencies on zero high or critical advisories
+        run: pnpm audit --prod --audit-level high
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install pinned Gitleaks with archive verification
+        run: python scripts/security/install-gitleaks.py .tmp/security-tools
+      - name: Prove historical exceptions cannot hide a new secret
+        run: python scripts/security/verify-gitleaks-policy.py .tmp/security-tools/gitleaks
+      - name: Scan complete reachable Git history with redacted matches
+        run: .tmp/security-tools/gitleaks git --redact=100 --log-opts=--all --report-format json --report-path .tmp/gitleaks.json
+
+  sast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install pinned Semgrep
+        run: python -m pip install semgrep==1.182.1
+      - name: Scan with the maintained security-audit rules, without telemetry
+        run: |
+          mkdir -p .tmp
+          semgrep scan --config p/security-audit --metrics=off --disable-version-check --timeout 30 --strict --error --json --output .tmp/semgrep.json
+
   validate:
     if: always()
-    needs: [checks, database, e2e, images]
+    needs:
+      [
+        checks,
+        database,
+        e2e,
+        images,
+        dependency-audit,
+        secret-scan,
+        sast,
+      ]
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
@@ -160,7 +205,7 @@ jobs:
           node -e 'const results = JSON.parse(process.env.RESULTS); if (Object.values(results).some(job => job.result !== "success")) process.exit(1);'
 
   migrate-production:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: vars.LMC_ENABLE_PRODUCTION_DEPLOY == 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: validate
     runs-on: ubuntu-latest
     timeout-minutes: 45
@@ -172,7 +217,7 @@ jobs:
       contents: read
     env:
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_PRODUCTION_TOKEN }}
-      RAILWAY_PROJECT_ID: af0a130e-7b02-4fc0-94ef-b0ac45a0a0a6
+      RAILWAY_PROJECT_ID: ${{ vars.LMC_RAILWAY_PROJECT_ID }}
       RAILWAY_ENVIRONMENT: production
       RAILWAY_SERVICE: migrator
     steps:

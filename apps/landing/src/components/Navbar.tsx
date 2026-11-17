@@ -1,3 +1,4 @@
+import { brand } from "@lobbystack/shared/brand"
 import { buttonVariants } from "@/components/ui/button"
 import { APP_LOGIN_URL, APP_SIGNUP_URL } from "@/lib/app-links"
 import { GithubIcon } from "@/components/GithubIcon"
@@ -60,7 +61,7 @@ const labels = {
     resources: "Resources",
     pricing: "Pricing",
     login: "Log in",
-    github: "LobbyStack on GitHub",
+    github: "Lead My Company on GitHub",
     tryFree: "Try for free",
     blog: "Blog",
     changelog: "Changelog",
@@ -74,7 +75,7 @@ const labels = {
     resources: "Ressources",
     pricing: "Tarifs",
     login: "Connexion",
-    github: "LobbyStack sur GitHub",
+    github: "Lead My Company sur GitHub",
     tryFree: "Essayer gratuitement",
     blog: "Blog",
     changelog: "Journal des changements",
@@ -309,13 +310,14 @@ export function Navbar({ locale = "en" }: NavbarProps) {
           className="flex items-center focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
         >
           <img
-            src="/lobbystack-logo.svg"
-            alt="LobbyStack"
-            width={155}
-            height={43}
+            src={brand.logoPath}
+            alt={brand.name}
+            width={32}
+            height={32}
             decoding="async"
             className="h-7 w-auto"
           />
+          <span className="ml-2 text-sm font-semibold">{brand.name}</span>
         </a>
 
         {/* Desktop Nav */}

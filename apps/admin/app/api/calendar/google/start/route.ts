@@ -23,7 +23,7 @@ export async function GET(request: Request) {
     const session = await requireApiSession(request);
     const businessId = businessIdFromRequest(request);
     if (!businessId) return NextResponse.json({ error: "businessId is required." }, { status: 400 });
-    await withOperatorTransaction(request, async () => undefined, { minimumRole: "business_admin" });
+    await withOperatorTransaction(request, async () => undefined, { minimumRole: "business_admin", pilotCapability: "integrations" });
     // Authenticate and confirm membership before consuming any rate-limit
     // quota, then bound state creation per operator, business, and trusted IP.
     const rate = await enforceCalendarOAuthRateLimits(

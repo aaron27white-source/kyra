@@ -7,24 +7,24 @@ export const aiPhoneAnsweringFaqs: FaqItem[] = [
       "AI phone answering uses a conversational AI receptionist to pick up business calls, speak with callers, answer questions, collect details, and take the next step based on your rules.",
   },
   {
-    question: "Can LobbyStack answer calls from my existing business number?",
+    question: "Can Lead My Company answer calls from my existing business number?",
     answer:
-      "Yes. You can use a dedicated LobbyStack number or forward calls from the business number customers already call.",
+      "Yes. You can use a dedicated Lead My Company number or forward calls from the business number customers already call.",
   },
   {
     question: "Can it answer only when we are closed or busy?",
     answer:
-      "Yes. LobbyStack can answer every call, only after hours, only when your team is unavailable, or for specific lines and workflows.",
+      "Yes. Lead My Company can answer every call, only after hours, only when your team is unavailable, or for specific lines and workflows.",
   },
   {
     question: "Can it book appointments?",
     answer:
-      "Yes. LobbyStack can check availability, offer times, book appointments, and send confirmation details to the caller.",
+      "Yes. Lead My Company can check availability, offer times, book appointments, and send confirmation details to the caller.",
   },
   {
     question: "What happens if a caller needs a real person?",
     answer:
-      "You define the handoff rules. LobbyStack can transfer urgent calls, high-value leads, upset customers, or special cases to the right person with the call context attached.",
+      "You define the handoff rules. Lead My Company can transfer urgent calls, high-value leads, upset customers, or special cases to the right person with the call context attached.",
   },
   {
     question: "Can I control what the AI says?",
@@ -34,12 +34,12 @@ export const aiPhoneAnsweringFaqs: FaqItem[] = [
   {
     question: "Is this better than a traditional answering service?",
     answer:
-      "It depends on the call. LobbyStack is a strong fit for routine questions, booking, intake, lead qualification, and call summaries. Calls that need human judgment can still be transferred to your team.",
+      "It depends on the call. Lead My Company is a strong fit for routine questions, booking, intake, lead qualification, and call summaries. Calls that need human judgment can still be transferred to your team.",
   },
   {
     question: "Can it handle multiple calls at the same time?",
     answer:
-      "Yes. LobbyStack can help multiple callers at once, so customers are not stuck waiting for a single receptionist to become available.",
+      "Yes. Lead My Company can help multiple callers at once, so customers are not stuck waiting for a single receptionist to become available.",
   },
   {
     question: "Will I be able to review what happened on each call?",
@@ -49,6 +49,6 @@ export const aiPhoneAnsweringFaqs: FaqItem[] = [
   {
     question: "How much does AI phone answering cost?",
     answer:
-      "LobbyStack has a free plan with included voice minutes and paid plans for higher usage. See the pricing page for current limits, included minutes, and usage rates.",
+      "Lead My Company has a free plan with included voice minutes and paid plans for higher usage. See the pricing page for current limits, included minutes, and usage rates.",
   },
 ]

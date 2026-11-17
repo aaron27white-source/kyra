@@ -1,10 +1,11 @@
+import type * as DomainModule from "@lobbystack/domain";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { JobEnvelope } from "@lobbystack/contracts";
 import { processWebhookDelivery, pruneApiHistory, recordProductEvent } from "@lobbystack/domain";
 
 vi.mock("@lobbystack/domain", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@lobbystack/domain")>()),
+  ...(await importOriginal<typeof DomainModule>()),
   processWebhookDelivery: vi.fn(),
   pruneApiHistory: vi.fn(),
   recordProductEvent: vi.fn(),

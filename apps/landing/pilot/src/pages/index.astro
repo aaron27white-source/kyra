@@ -1,0 +1,35 @@
+---
+import Layout from "@/layouts/pilot.astro"
+---
+<Layout title="Email lead management" description="Lead My Company brings incoming service requests, email conversations and the next steps for your team into one place.">
+  <section class="intro" aria-labelledby="intro-title">
+    <p class="eyebrow">Lead My Company</p>
+    <h1 id="intro-title">Keep every lead's<br />next step in view.</h1>
+    <p class="summary">Bring incoming service requests, email conversations and your team's next steps together.</p>
+    <a class="primary-link" href="https://app.leadmycompany.com/en/login">Sign in to your workspace <span aria-hidden="true">↗</span></a>
+  </section>
+  <section class="workflow" aria-labelledby="workflow-title">
+    <h2 id="workflow-title">From a request to a clear next step</h2>
+    <div class="steps">
+      <article><p class="step-number" aria-hidden="true">01</p><h3>Receive the request</h3><p>Collect a lead through a connected form or email address.</p></article>
+      <article><p class="step-number" aria-hidden="true">02</p><h3>Keep the context</h3><p>Keep qualification details and the email conversation with the lead.</p></article>
+      <article><p class="step-number" aria-hidden="true">03</p><h3>Move it forward</h3><p>Check calendar availability or hand the conversation to your team.</p></article>
+    </div>
+  </section>
+</Layout>
+<style>
+  .intro { max-width: 800px; padding: 32px 0 64px; }
+  .eyebrow { margin: 0 0 24px; color: var(--muted-foreground); font-size: 14px; }
+  h1 { font-size: clamp(40px, 7vw, 72px); }
+  .summary { max-width: 560px; font-size: 20px; line-height: 1.6; color: var(--muted-foreground); margin-bottom: 32px; }
+  .primary-link { display: inline-flex; align-items: center; gap: 16px; padding: 16px 24px; border-radius: var(--radius-xl); color: white; background: #0f172a; text-decoration: none; }
+  .primary-link:hover { background: #1e293b; }
+  .workflow { border-top: 1px solid var(--border); padding-top: 48px; }
+  h2 { font-size: 24px; font-weight: 500; letter-spacing: -0.02em; margin-bottom: 32px; }
+  .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
+  article { padding: 24px; border: 1px solid var(--border); border-radius: var(--radius-xl); }
+  .step-number { margin: 0 0 24px; color: var(--muted-foreground); font-size: 14px; }
+  h3 { font-size: 18px; font-weight: 500; margin-bottom: 12px; }
+  article p:last-child { color: var(--muted-foreground); line-height: 1.6; }
+  @media (max-width: 720px) { .intro { padding-top: 16px; padding-bottom: 48px; } .steps { grid-template-columns: 1fr; gap: 16px; } }
+</style>

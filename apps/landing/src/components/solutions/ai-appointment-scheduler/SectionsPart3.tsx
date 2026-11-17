@@ -15,7 +15,7 @@ export function SolutionCta() {
           Book more appointments from the calls you already get
         </h2>
         <p className="section-intro mx-auto max-w-lg">
-          Try LobbyStack with included voice minutes, set your scheduling rules, and let callers book while they are ready to act.
+          Try Lead My Company with included voice minutes, set your scheduling rules, and let callers book while they are ready to act.
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
           <a

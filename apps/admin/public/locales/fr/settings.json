@@ -20,8 +20,47 @@
     "widget": "Widget de site web",
     "apiKeys": "Clés API",
     "connectedApps": "Applications connectées",
-    "kyra": "Kyra",
-    "backOffice": "Back Office"
+    "kyra": "Lead My Company",
+    "backOffice": "Back Office",
+    "email": "Automatisation e-mail",
+    "businessProfile": "Entreprise"
+  },
+  "businessProfile": {
+    "title": "Profil de l’entreprise",
+    "description": "Gardez à jour l’identité utilisée par Kyra et dans les communications avec les clients.",
+    "unavailable": "Aucun espace d’entreprise actif n’est disponible.",
+    "saved": "Profil de l’entreprise enregistré.",
+    "save": "Enregistrer le profil",
+    "saving": "Enregistrement…",
+    "readOnly": "Seuls un propriétaire ou un administrateur peuvent modifier ce profil.",
+    "fields": {
+      "name": "Nom de l’entreprise",
+      "timezone": "Fuseau horaire IANA",
+      "type": "Catégorie d’entreprise",
+      "website": "Site Web"
+    }
+  },
+  "businessHours": {
+    "title": "Heures d’ouverture",
+    "description": "Ces heures déterminent les disponibilités et les réponses que Kyra donne aux clients.",
+    "saved": "Heures d’ouverture enregistrées.",
+    "save": "Enregistrer les heures",
+    "saving": "Enregistrement…",
+    "open": "Ouvert",
+    "closed": "Fermé",
+    "to": "à",
+    "enabled": "Ouvert le {{day}}",
+    "opens": "Heure d’ouverture le {{day}}",
+    "closes": "Heure de fermeture le {{day}}",
+    "days": {
+      "0": "Dimanche",
+      "1": "Lundi",
+      "2": "Mardi",
+      "3": "Mercredi",
+      "4": "Jeudi",
+      "5": "Vendredi",
+      "6": "Samedi"
+    }
   },
   "widget": {
     "title": "Widget de site web",
@@ -402,7 +441,7 @@
     },
     "telemetry": {
       "label": "Partager les données de télémétrie",
-      "description": "Aidez-nous à améliorer Kyra en partageant des données d'utilisation et d'erreurs anonymisées.",
+      "description": "Aidez-nous à améliorer Lead My Company en partageant des données d'utilisation et d'erreurs anonymisées.",
       "saveFailed": "Nous n’avons pas pu enregistrer votre préférence de télémétrie. Veuillez réessayer."
     }
   },
@@ -424,10 +463,13 @@
       "sheetDescription": "Connectez les calendriers de l'équipe et choisissez celui qui reçoit les réservations.",
       "connectionSectionTitle": "Connexion",
       "connectionSectionDescription": "Choisissez un membre réservable et connectez ou reconnectez Google Calendar.",
-      "privacyNoticeText": "La connexion à Google Calendar permet à Kyra de lire la disponibilité de votre calendrier et de créer, mettre à jour ou supprimer des rendez-vous sur le calendrier que vous sélectionnez.",
+      "privacyNoticeText": "La connexion à Google Calendar permet à Lead My Company de lire la disponibilité de votre calendrier et de créer, mettre à jour ou supprimer des rendez-vous sur le calendrier que vous sélectionnez.",
       "privacyPolicyLinkText": "Politique de confidentialité",
       "calendarSectionTitle": "Réglages du calendrier",
       "calendarSectionDescription": "Choisissez le calendrier à synchroniser et consultez l'état de synchronisation.",
+      "addressSharingLabel": "Inclure les adresses de service dans Google Calendar",
+      "addressSharingDescription": "Lorsque cette option est activée, les adresses apparaissent dans le lieu de l'événement du calendrier sélectionné et peuvent être visibles par toute personne ayant accès à ce calendrier. Les futurs rendez-vous existants sont mis à jour. Désactivez-la pour supprimer les adresses ajoutées par Kyra.",
+      "addressSharingSaved": "Préférence de partage des adresses enregistrée.",
       "staffLabel": "Membre de l'équipe",
       "selectStaff": "Choisir un membre",
       "chooseStaffFirst": "Choisissez le membre de l'équipe dont vous voulez connecter le Google Calendar.",
@@ -454,6 +496,8 @@
       "chooseCalendarFirst": "Choisissez un calendrier Google avant d'enregistrer.",
       "loadingCalendars": "Chargement des calendriers...",
       "refreshCalendars": "Actualiser",
+      "syncNow": "Synchroniser maintenant",
+      "syncStarted": "La synchronisation Google Calendar a commencé.",
       "saveCalendar": "Enregistrer le calendrier",
       "savingCalendar": "Enregistrement...",
       "calendarSaved": "Le calendrier Google sélectionné a été enregistré.",
@@ -802,11 +846,11 @@
       },
       "webhookDisabled": {
         "title": "Point de terminaison webhook désactivé",
-        "description": "Quand Kyra cesse d'envoyer des événements à un point de terminaison webhook parce que toutes les livraisons ont échoué pendant environ une journée."
+        "description": "Quand Lead My Company cesse d'envoyer des événements à un point de terminaison webhook parce que toutes les livraisons ont échoué pendant environ une journée."
       },
       "missedCall": {
         "title": "Appel manqué",
-        "description": "Quand Kyra fait le suivi d'un appel resté sans réponse."
+        "description": "Quand Lead My Company fait le suivi d'un appel resté sans réponse."
       },
       "emergency": {
         "title": "Urgence signalée",
@@ -814,7 +858,7 @@
       },
       "ownerBrief": {
         "title": "Résumé quotidien",
-        "description": "Le résumé de 18 h de Kyra, quand l'automatisation du niveau 3 est activée."
+        "description": "Le résumé de 18 h de Lead My Company, quand l'automatisation du niveau 3 est activée."
       }
     },
     "systemIssues": {
@@ -822,7 +866,7 @@
     },
     "smsConsent": {
       "title": "Activer les alertes SMS",
-      "description": "Confirmez que vous voulez que Kyra envoie des alertes de l'espace de travail à votre numéro de téléphone vérifié.",
+      "description": "Confirmez que vous voulez que Lead My Company envoie des alertes de l'espace de travail à votre numéro de téléphone vérifié.",
       "cancel": "Annuler",
       "accept": "J'accepte, activer les SMS"
     }
@@ -833,7 +877,7 @@
   },
   "apiKeys": {
     "title": "Clés API",
-    "description": "Connectez des outils comme Zapier ou vos propres scripts à Kyra. Chaque clé ne fonctionne que pour cette entreprise.",
+    "description": "Connectez des outils comme Zapier ou vos propres scripts à Lead My Company. Chaque clé ne fonctionne que pour cette entreprise.",
     "empty": "Aucune clé API pour l'instant.",
     "neverUsed": "Jamais",
     "createdBy": "{{date}} par {{name}}",
@@ -891,7 +935,7 @@
   },
   "webhooks": {
     "title": "Webhooks",
-    "description": "Kyra envoie une requête HTTPS POST à votre URL quand quelque chose se produit, par exemple un appel terminé ou une nouvelle réservation. Chaque requête est signée pour que vous puissiez vérifier qu'elle vient de nous.",
+    "description": "Lead My Company envoie une requête HTTPS POST à votre URL quand quelque chose se produit, par exemple un appel terminé ou une nouvelle réservation. Chaque requête est signée pour que vous puissiez vérifier qu'elle vient de nous.",
     "empty": "Aucun point de terminaison webhook pour l'instant.",
     "enabledLabel": "Envoyer les événements à ce point de terminaison",
     "restricted": {
@@ -925,19 +969,19 @@
     "create": {
       "action": "Ajouter un point de terminaison",
       "title": "Ajouter un point de terminaison webhook",
-      "description": "Choisissez où Kyra envoie les événements et lesquels envoyer.",
+      "description": "Choisissez où Lead My Company envoie les événements et lesquels envoyer.",
       "submit": "Ajouter"
     },
     "edit": {
       "action": "Modifier",
       "title": "Modifier le point de terminaison webhook",
-      "description": "Les changements s'appliquent au prochain événement envoyé par Kyra.",
+      "description": "Les changements s'appliquent au prochain événement envoyé par Lead My Company.",
       "submit": "Enregistrer"
     },
     "delete": {
       "action": "Supprimer",
       "title": "Supprimer ce point de terminaison?",
-      "description": "Kyra cesse d'envoyer des événements à {{url}} et supprime son journal des livraisons.",
+      "description": "Lead My Company cesse d'envoyer des événements à {{url}} et supprime son journal des livraisons.",
       "confirm": "Supprimer",
       "done": "Point de terminaison supprimé"
     },
@@ -984,8 +1028,8 @@
   },
   "connectedApps": {
     "title": "Applications connectées",
-    "description": "Les assistants IA comme Claude ou ChatGPT connectés à Kyra. Chacun ne fonctionne que pour cette entreprise, avec l'accès approuvé lors de la connexion.",
-    "empty": "Aucune application connectée pour l'instant. Pour en connecter une, ajoutez Kyra dans les réglages de l'assistant et connectez-vous.",
+    "description": "Les assistants IA comme Claude ou ChatGPT connectés à Lead My Company. Chacun ne fonctionne que pour cette entreprise, avec l'accès approuvé lors de la connexion.",
+    "empty": "Aucune application connectée pour l'instant. Pour en connecter une, ajoutez Lead My Company dans les réglages de l'assistant et connectez-vous.",
     "neverUsed": "Jamais",
     "unnamed": "Application sans nom",
     "grantedBy": "{{date}} par {{name}}",
@@ -1025,11 +1069,11 @@
     "saved": "Enregistré",
     "save": "Enregistrer",
     "saving": "Enregistrement…",
-    "loadFailed": "Impossible de charger les réglages de Kyra",
+    "loadFailed": "Impossible de charger les réglages de Lead My Company",
     "readOnly": "Seuls les propriétaires et les administrateurs peuvent modifier ces réglages.",
     "plan": {
       "title": "Votre forfait",
-      "description": "Ce que Kyra fait pour cette entreprise.",
+      "description": "Ce que Lead My Company fait pour cette entreprise.",
       "backOffice": "Module Back Office",
       "change": "Pour changer de forfait ou ajouter le Back Office, contactez Key 20.",
       "tiers": {
@@ -1040,16 +1084,16 @@
     },
     "missedCalls": {
       "title": "Appels manqués",
-      "description": "Ce que fait Kyra quand un appel reste sans réponse."
+      "description": "Ce que fait Lead My Company quand un appel reste sans réponse."
     },
     "fields": {
       "missedCallTextEnabled": {
         "label": "Répondre par texto aux appels manqués",
-        "hint": "Kyra envoie un texto en 30 secondes environ. Chaque texto contient la ligne de désabonnement."
+        "hint": "Lead My Company envoie un texto en 30 secondes environ. Chaque texto contient la ligne de désabonnement."
       },
       "smsAiEnabled": {
-        "label": "Laisser Kyra répondre aux textos",
-        "hint": "Kyra recueille le problème, l'adresse et un bon moment, puis réserve ou vous transmet la demande. Désactivez pour répondre vous-même."
+        "label": "Laisser Lead My Company répondre aux textos",
+        "hint": "Lead My Company recueille le problème, l'adresse et un bon moment, puis réserve ou vous transmet la demande. Désactivez pour répondre vous-même."
       },
       "photoRequestsEnabled": {
         "label": "Demander des photos",
@@ -1062,11 +1106,11 @@
         "hold": "Attendre l'ouverture"
       },
       "voiceCallbackEnabled": {
-        "label": "Kyra rappelle les appels manqués",
-        "hint": "L'interrupteur vocal. Kyra précise qu'elle est une réceptionniste virtuelle et que l'appel peut être enregistré. Si elle ne joint pas le client, il reçoit un texto."
+        "label": "Lead My Company rappelle les appels manqués",
+        "hint": "L'interrupteur vocal. Lead My Company précise qu'elle est une réceptionniste virtuelle et que l'appel peut être enregistré. Si elle ne joint pas le client, il reçoit un texto."
       },
       "callbackMode": {
-        "label": "Quand Kyra rappelle",
+        "label": "Quand Lead My Company rappelle",
         "hint": "Demander d'abord attend que le client réponde OUI. Automatique rappelle en une minute et le message d'accueil l'annonce.",
         "askFirst": "Demander d'abord (réponse OUI)",
         "automatic": "Automatiquement"
@@ -1078,7 +1122,7 @@
       "contactWindow": {
         "start": "Contacter les clients à partir de",
         "end": "Jusqu'à",
-        "hint": "Kyra n'appelle jamais, et les automatisations n'envoient jamais de texto, en dehors de ces heures (votre fuseau horaire)."
+        "hint": "Lead My Company n'appelle jamais, et les automatisations n'envoient jamais de texto, en dehors de ces heures (votre fuseau horaire)."
       },
       "emergencyPhone": {
         "label": "Téléphone de garde pour les urgences",
@@ -1086,8 +1130,8 @@
       },
       "textBackMessage": {
         "label": "Premier texto (anglais)",
-        "hint": "Laissez vide pour le texte par défaut de Kyra. {business} devient le nom de votre entreprise.",
-        "placeholder": "Hi, this is Kyra, the virtual receptionist for {business}. Sorry we missed your call. How can we help?"
+        "hint": "Laissez vide pour le texte par défaut de Lead My Company. {business} devient le nom de votre entreprise.",
+        "placeholder": "Hi, this is Lead My Company, the virtual receptionist for {business}. Sorry we missed your call. How can we help?"
       },
       "textBackMessageEs": {
         "label": "Premier texto (espagnol)"
@@ -1103,7 +1147,7 @@
     },
     "recent": {
       "title": "Appels manqués récents",
-      "description": "Les 100 derniers appels manqués et ce que Kyra a fait.",
+      "description": "Les 100 derniers appels manqués et ce que Lead My Company a fait.",
       "empty": "Aucun appel manqué pour l'instant.",
       "afterHours": "hors des heures",
       "columns": {
@@ -1118,7 +1162,7 @@
         "awaiting_consent": "En attente du OUI",
         "callback_queued": "Appel prévu",
         "calling": "Appel en cours",
-        "reached": "Joint par Kyra",
+        "reached": "Joint par Lead My Company",
         "not_reached": "Non joint, texto envoyé",
         "handled": "Traité",
         "opted_out": "Désabonné",
@@ -1127,7 +1171,7 @@
     },
     "automations": {
       "title": "Automatisations",
-      "description": "Kyra prend contact d'elle-même. Jamais en dehors de la plage de contact, jamais auprès de quelqu'un qui s'est désabonné, et au plus un texto automatique par client et par jour.",
+      "description": "Lead My Company prend contact d'elle-même. Jamais en dehors de la plage de contact, jamais auprès de quelqu'un qui s'est désabonné, et au plus un texto automatique par client et par jour.",
       "message": "Message",
       "needsTier3": "Niveau 3 requis",
       "needsBackOffice": "Back Office requis",
@@ -1208,6 +1252,30 @@
         "remove": "Supprimer la ligne",
         "addLine": "Ajouter une ligne"
       }
+    }
+  },
+  "navigation": {
+    "selectSection": "Choisir une section des réglages",
+    "groups": {
+      "workspace": "Espace de travail",
+      "agent": "Agent",
+      "channels": "Canaux clients",
+      "account": "Compte"
+    },
+    "descriptions": {
+      "businessProfile": "Définissez l’identité et les horaires utilisés par votre réceptionniste.",
+      "business": "Invitez des collègues et gérez leur accès à cet espace.",
+      "phoneNumber": "Choisissez et gérez le numéro utilisé par vos clients pour joindre votre réceptionniste.",
+      "kyra": "Gérez le compte Lead My Company et ses automatisations.",
+      "backOffice": "Configurez les processus internes et les préférences opérationnelles.",
+      "email": "Gérez la collecte et l’envoi des prospects reçus par e-mail.",
+      "widget": "Personnalisez le chat intégré à votre site web.",
+      "connectedApps": "Consultez les applications et services connectés à cet espace.",
+      "apiKeys": "Gérez les identifiants utilisés par les outils et services externes.",
+      "usage": "Suivez votre utilisation et les limites de votre offre.",
+      "billing": "Consultez votre offre, vos factures et vos moyens de paiement.",
+      "appearance": "Choisissez la langue et l’apparence du tableau de bord.",
+      "notifications": "Choisissez les notifications reçues par votre équipe et leur destination."
     }
   }
 }

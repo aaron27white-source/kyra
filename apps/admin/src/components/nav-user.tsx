@@ -117,6 +117,7 @@ function LogOutAnimatedIcon({ controls }: { controls: IconAnimationControls }) {
 }
 
 type NavUserProps = {
+  showAccount?: boolean;
   onSignOut: () => void;
   onUpgradeToPro?: () => void;
   showUpgradeToPro?: boolean;
@@ -128,6 +129,7 @@ export function NavUser({
   onSignOut,
   onUpgradeToPro,
   showUpgradeToPro = false,
+  showAccount = true,
   user,
   isLoading = false,
 }: NavUserProps) {
@@ -204,7 +206,7 @@ export function NavUser({
               </>
             ) : null}
             <DropdownMenuGroup>
-              <DropdownMenuItem
+              {showAccount ? <DropdownMenuItem
                 onBlur={() => stopIconAnimation(accountIconRef)}
                 onFocus={() => startIconAnimation(accountIconRef)}
                 onMouseEnter={() => startIconAnimation(accountIconRef)}
@@ -213,7 +215,7 @@ export function NavUser({
               >
                 <UserIcon ref={accountIconRef} size={16} />
                 {t("sidebar.account")}
-              </DropdownMenuItem>
+              </DropdownMenuItem> : null}
               <DropdownMenuItem
                 closeOnClick={false}
                 onClick={toggleTheme}

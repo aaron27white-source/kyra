@@ -3,6 +3,7 @@ import type { ReactNode } from "react"
 import { cn } from "@/lib/utils"
 
 type PageHeaderProps = {
+  eyebrow?: ReactNode
   title: ReactNode
   description?: ReactNode
   actions?: ReactNode
@@ -10,7 +11,9 @@ type PageHeaderProps = {
 }
 
 export function PageHeader({
+  eyebrow,
   title,
+  description,
   actions,
   className,
 }: PageHeaderProps) {
@@ -21,8 +24,10 @@ export function PageHeader({
         className
       )}
     >
-      <div className="flex min-w-0 flex-col">
+      <div className="flex min-w-0 flex-col gap-1">
+        {eyebrow ? <p className="mb-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-muted-foreground">{eyebrow}</p> : null}
         <h1 className="type-page-title">{title}</h1>
+        {description ? <p className="max-w-3xl text-sm leading-6 text-muted-foreground">{description}</p> : null}
       </div>
       {actions ? (
         <div className="flex shrink-0 flex-wrap items-center gap-2">

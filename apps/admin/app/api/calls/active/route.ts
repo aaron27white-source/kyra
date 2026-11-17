@@ -19,7 +19,7 @@ export async function GET(request: Request) {
         await Promise.all(completed.map(({ id }) => removeCompletedVoicePresence({ businessId, callId: id })));
       }
       return { active: await countActiveVoiceCalls(businessId) };
-    }));
+    }, { pilotCapability: "voice" }));
   } catch (error) {
     return asApiResponse(error);
   }

@@ -1,49 +1,118 @@
 import { Readable } from "node:stream";
 import type { IncomingMessage, ServerResponse } from "node:http";
 
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   controllers: 0,
   controllerOptions: [] as Array<Record<string, (...args: never[]) => unknown>>,
   snapshot: vi.fn(),
+  loadCaller: vi.fn(),
+  createAgent: vi.fn(() => ({})),
   recordProductEvent: vi.fn(async (..._args: unknown[]) => "event_1"),
+  providerHangup: vi.fn(async (..._args: unknown[]) => undefined),
   finishLiveCall: vi.fn(async (..._args: unknown[]) => false),
+  controllerStart: vi.fn(async () => undefined),
+  controllerCancel: vi.fn(),
+  StartupError: class LiveCallStartupError extends Error {
+    constructor(readonly reason: string, readonly errorCode?: string) { super(reason); }
+  },
 }));
 
 vi.mock("@lobbystack/agent-core", () => ({
   createAgentModel: () => ({}),
-  createReceptionistAgent: () => ({}),
+  createReceptionistAgent: mocks.createAgent,
+  LiveCallStartupError: mocks.StartupError,
   LiveCallController: class {
     constructor(options: Record<string, (...args: never[]) => unknown>) {
       mocks.controllers += 1;
       mocks.controllerOptions.push(options);
     }
-    start() {}
+    start() { return mocks.controllerStart(); }
+    cancelStartup() { mocks.controllerCancel(); }
   },
 }));
 vi.mock("@lobbystack/domain", () => ({
   getCachedBusinessSnapshot: mocks.snapshot,
+  loadLiveCallForPricing: mocks.loadCaller,
   finishLiveCall: mocks.finishLiveCall,
   LIVE_CALL_PROVIDER: "openai_live",
   recordProductEvent: mocks.recordProductEvent,
 }));
 vi.mock("@lobbystack/jobs", () => ({ renewVoicePresenceGateway: vi.fn(async () => undefined), updateVoicePresence: vi.fn(async () => undefined) }));
-vi.mock("openai", () => ({ default: class {} }));
+vi.mock("openai", () => ({ default: class { live = { sessions: { hangup: mocks.providerHangup } }; } }));
 
-import { createLiveCallHandler, parseAttachRequest, providerSeconds } from "./liveCalls";
+import { actualLiveCallEnd, createLiveCallHandler, parseAttachRequest, providerSeconds } from "./liveCalls";
 
 function attachRequest(body: Record<string, unknown>): IncomingMessage {
   return Object.assign(Readable.from([Buffer.from(JSON.stringify(body))]), { url: "/internal/live/attach", method: "POST", headers: { "x-internal-service-token": "token" } }) as unknown as IncomingMessage;
 }
 
 function response(): ServerResponse {
-  return { writeHead: vi.fn(), end: vi.fn() } as unknown as ServerResponse;
+  let closeListener: (() => void) | undefined;
+  const result = {
+    writeHead: vi.fn(),
+    end: vi.fn(),
+    once: vi.fn((_event: string, listener: () => void) => { closeListener = listener; return result; }),
+    off: vi.fn(() => result),
+    destroyed: false,
+    writableEnded: false,
+    emitClose: () => { result.destroyed = true; closeListener?.(); },
+  };
+  return result as unknown as ServerResponse;
 }
 
+beforeEach(() => {
+  mocks.controllers = 0;
+  mocks.controllerOptions.length = 0;
+  mocks.controllerStart.mockReset().mockResolvedValue(undefined);
+  mocks.controllerCancel.mockReset();
+  mocks.providerHangup.mockReset().mockResolvedValue(undefined);
+  mocks.createAgent.mockClear();
+  mocks.loadCaller.mockReset().mockResolvedValue(undefined);
+});
 afterEach(() => { vi.unstubAllEnvs(); });
 
 describe("createLiveCallHandler", () => {
+  it("uses the documented Live SIP hangup endpoint and logs the correlated accepted result", async () => {
+    vi.stubEnv("LIVE_PROTOTYPE_ENABLED", "true");
+    vi.stubEnv("INTERNAL_SERVICE_TOKEN", "token");
+    vi.stubEnv("OPENAI_API_KEY", "sk-test");
+    mocks.snapshot.mockResolvedValue({ businessId: "biz_1", greeting: "Hi" });
+    const log = vi.spyOn(console, "info").mockImplementation(() => undefined);
+    const handler = createLiveCallHandler({ domain: { db: {} as never } });
+    await handler.handle(attachRequest({ sessionId: "live_sip_end", businessId: "biz_1", callId: "call_sip_end", channel: "voice" }), response());
+    const options = mocks.controllerOptions.at(-1)!;
+    await options.onHangup!("caller_finished" as never);
+    expect(mocks.providerHangup).toHaveBeenCalledWith("live_sip_end");
+    expect(log).toHaveBeenCalledWith(expect.stringContaining('"event":"live.provider_hangup.requested"'));
+    expect(log).toHaveBeenCalledWith(expect.stringContaining('"event":"live.provider_hangup.accepted"'));
+    expect(log.mock.calls.map(([value]) => value).join("\n")).toContain('"callId":"call_sip_end"');
+    log.mockRestore();
+  });
+
+  it("does not treat an accepted request or an unconfirmed local close as SIP disconnection", () => {
+    expect(actualLiveCallEnd({ closeReason: "close_requested", providerHangupOutcome: "unconfirmed", sessionConfirmedClosed: false, providerCallDisconnected: false }, "caller_finished", "voice")).toBe("connection_lost");
+    expect(actualLiveCallEnd({ closeReason: "close_requested", providerHangupOutcome: "failed", sessionConfirmedClosed: true, providerCallDisconnected: false }, "caller_finished", "voice")).toBe("connection_lost");
+  });
+
+  it("records SIP disconnection only after a terminal Live close confirms an accepted hangup", () => {
+    expect(actualLiveCallEnd({ closeReason: "close_requested", providerHangupOutcome: "accepted", sessionConfirmedClosed: true, providerCallDisconnected: true }, "caller_finished", "voice")).toBe("caller_finished");
+    expect(actualLiveCallEnd({ closeReason: "remote_hangup", providerHangupOutcome: "not_requested", sessionConfirmedClosed: true, providerCallDisconnected: true }, "caller_finished", "voice")).toBe("caller_hung_up");
+  });
+
+  it("recovers trusted Caller ID from the tenant-scoped call record when SIP does not provide a valid number", async () => {
+    vi.stubEnv("LIVE_PROTOTYPE_ENABLED", "true");
+    vi.stubEnv("INTERNAL_SERVICE_TOKEN", "token");
+    vi.stubEnv("OPENAI_API_KEY", "sk-test");
+    mocks.snapshot.mockResolvedValue({ businessId: "biz_1", greeting: "Hi" });
+    mocks.loadCaller.mockResolvedValue({ startedAt: new Date(), callerPhone: "+14165550100" });
+    const handler = createLiveCallHandler({ domain: { db: {} as never } });
+    await handler.handle(attachRequest({ sessionId: "live_caller_id", businessId: "biz_1", callId: "call_caller_id", channel: "voice" }), response());
+    expect(mocks.loadCaller).toHaveBeenCalledWith({ db: {} }, { businessId: "biz_1", callId: "call_caller_id" });
+    expect(mocks.createAgent).toHaveBeenCalledWith(expect.objectContaining({ context: expect.objectContaining({ callerPhone: "+14165550100" }) }));
+  });
+
   it("opens one sideband when two attaches for a session overlap", async () => {
     vi.stubEnv("LIVE_PROTOTYPE_ENABLED", "true");
     vi.stubEnv("INTERNAL_SERVICE_TOKEN", "token");
@@ -59,6 +128,60 @@ describe("createLiveCallHandler", () => {
     await Promise.all([first, second]);
     expect(mocks.controllers).toBe(1);
     expect(handler.activeCalls()).toBe(1);
+  });
+
+  it("does not acknowledge attach until controller startup has succeeded", async () => {
+    vi.stubEnv("LIVE_PROTOTYPE_ENABLED", "true");
+    vi.stubEnv("INTERNAL_SERVICE_TOKEN", "token");
+    vi.stubEnv("OPENAI_API_KEY", "sk-test");
+    mocks.snapshot.mockResolvedValue({ businessId: "biz_1", greeting: "Hi" });
+    let release!: () => void;
+    mocks.controllerStart.mockReturnValueOnce(new Promise<undefined>((resolve) => { release = () => resolve(undefined); }));
+    const handler = createLiveCallHandler({ domain: { db: {} as never } });
+    const res = response();
+    const attachBody = { sessionId: "live_ready", businessId: "biz_1", callId: "call_ready", channel: "voice" };
+    const pending = handler.handle(attachRequest(attachBody), res);
+    await vi.waitFor(() => expect(mocks.controllers).toBeGreaterThan(0));
+    const duplicateResponse = response();
+    const duplicate = handler.handle(attachRequest(attachBody), duplicateResponse);
+    await Promise.resolve();
+    expect(res.writeHead).not.toHaveBeenCalled();
+    expect(duplicateResponse.writeHead).not.toHaveBeenCalled();
+    release();
+    await Promise.all([pending, duplicate]);
+    expect(res.writeHead).toHaveBeenCalledWith(202, { "content-type": "application/json" });
+    expect(duplicateResponse.writeHead).toHaveBeenCalledWith(202, { "content-type": "application/json" });
+  });
+
+  it("cancels sideband startup when the Admin attach request disconnects", async () => {
+    vi.stubEnv("LIVE_PROTOTYPE_ENABLED", "true");
+    vi.stubEnv("INTERNAL_SERVICE_TOKEN", "token");
+    vi.stubEnv("OPENAI_API_KEY", "sk-test");
+    mocks.snapshot.mockResolvedValue({ businessId: "biz_1", greeting: "Hi" });
+    let failStartup!: () => void;
+    mocks.controllerStart.mockReturnValueOnce(new Promise<undefined>((_resolve, reject) => { failStartup = () => reject(new mocks.StartupError("sideband_connection_failed", "attach_request_cancelled")); }));
+    mocks.controllerCancel.mockImplementationOnce(() => failStartup());
+    const handler = createLiveCallHandler({ domain: { db: {} as never } });
+    const res = response() as ServerResponse & { emitClose: () => void };
+    const pending = handler.handle(attachRequest({ sessionId: "live_cancelled", businessId: "biz_1", callId: "call_cancelled", channel: "voice" }), res);
+    await vi.waitFor(() => expect(mocks.controllers).toBeGreaterThan(0));
+    res.emitClose();
+    await pending;
+    expect(mocks.controllerCancel).toHaveBeenCalledOnce();
+    expect(handler.activeCalls()).toBe(0);
+  });
+
+  it("returns a retryable startup failure instead of accepting a silent call", async () => {
+    vi.stubEnv("LIVE_PROTOTYPE_ENABLED", "true");
+    vi.stubEnv("INTERNAL_SERVICE_TOKEN", "token");
+    vi.stubEnv("OPENAI_API_KEY", "sk-test");
+    mocks.snapshot.mockResolvedValue({ businessId: "biz_1", greeting: "Hi" });
+    mocks.controllerStart.mockRejectedValueOnce(new mocks.StartupError("greeting_start_failed", "greeting_audio_timeout"));
+    const handler = createLiveCallHandler({ domain: { db: {} as never } });
+    const res = response();
+    await handler.handle(attachRequest({ sessionId: "live_silent", businessId: "biz_1", callId: "call_silent", channel: "voice" }), res);
+    expect(res.writeHead).toHaveBeenCalledWith(503, { "content-type": "application/json" });
+    expect(handler.activeCalls()).toBe(0);
   });
 });
 

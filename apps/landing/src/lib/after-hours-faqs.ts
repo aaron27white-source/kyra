@@ -9,12 +9,12 @@ export const afterHoursFaqs: FaqItem[] = [
   {
     question: "Can it actually book appointments after hours?",
     answer:
-      "Yes. LobbyStack checks your calendar availability, offers open time slots to the caller, books the appointment, and sends a confirmation text. Your team sees the booking details the next morning.",
+      "Yes. Lead My Company checks your calendar availability, offers open time slots to the caller, books the appointment, and sends a confirmation text. Your team sees the booking details the next morning.",
   },
   {
     question: "How does it know what counts as urgent?",
     answer:
-      "You define the rules. LobbyStack can ask about the caller's situation, check keywords like emergency, urgent, or broken, and transfer the call to your on-call person. Everything else gets summarized for morning review.",
+      "You define the rules. Lead My Company can ask about the caller's situation, check keywords like emergency, urgent, or broken, and transfer the call to your on-call person. Everything else gets summarized for morning review.",
   },
   {
     question: "Will it wake up my on-call staff?",
@@ -24,7 +24,7 @@ export const afterHoursFaqs: FaqItem[] = [
   {
     question: "Can it work with my existing business phone number?",
     answer:
-      "Yes. Forward calls from your current business number to LobbyStack after hours, or use a dedicated line. Callers never know the difference. They just reach someone who can help.",
+      "Yes. Forward calls from your current business number to Lead My Company after hours, or use a dedicated line. Callers never know the difference. They just reach someone who can help.",
   },
   {
     question: "What industries benefit most from after-hours answering?",
@@ -34,21 +34,21 @@ export const afterHoursFaqs: FaqItem[] = [
   {
     question: "How is this different from a voicemail?",
     answer:
-      "Voicemail asks callers to leave a message and wait. Most people hang up. LobbyStack answers the call, asks questions, captures details, and books appointments. The caller gets help immediately, and your team gets a complete summary.",
+      "Voicemail asks callers to leave a message and wait. Most people hang up. Lead My Company answers the call, asks questions, captures details, and books appointments. The caller gets help immediately, and your team gets a complete summary.",
   },
   {
     question: "Is it cheaper than a human answering service?",
     answer:
-      "The total depends on call volume, handling time, setup, and the amount of human service included. Compare LobbyStack's published voice-minute pricing with each answering service's per-call, per-minute, staffing, and overage charges.",
+      "The total depends on call volume, handling time, setup, and the amount of human service included. Compare Lead My Company's published voice-minute pricing with each answering service's per-call, per-minute, staffing, and overage charges.",
   },
   {
     question: "Can I review what happened on after-hours calls?",
     answer:
-      "Yes. Every call generates a summary, transcript, recording, and booking details. You review them in the LobbyStack dashboard or receive email and SMS alerts. Nothing gets lost overnight.",
+      "Yes. Every call generates a summary, transcript, recording, and booking details. You review them in the Lead My Company dashboard or receive email and SMS alerts. Nothing gets lost overnight.",
   },
   {
     question: "How much does after-hours answering cost?",
     answer:
-      "LobbyStack's free plan includes voice minutes to test after-hours coverage. Paid plans scale with usage. See the pricing page for current minute allowances, SMS rates, and overage costs.",
+      "Lead My Company's free plan includes voice minutes to test after-hours coverage. Paid plans scale with usage. See the pricing page for current minute allowances, SMS rates, and overage costs.",
   },
 ]

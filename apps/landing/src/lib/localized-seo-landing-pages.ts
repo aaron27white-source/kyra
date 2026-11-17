@@ -16,7 +16,7 @@ const commonFaqsFr: FaqItem[] = [
   {
     question: "Que se passe-t-il si l’appel dépasse ce que l’IA sait faire ?",
     answer:
-      "LobbyStack peut poser des questions de clarification, prendre un message ou transférer l’appel selon vos règles.",
+      "Lead My Company peut poser des questions de clarification, prendre un message ou transférer l’appel selon vos règles.",
   },
   {
     question: "Puis-je commencer gratuitement ?",
@@ -32,14 +32,14 @@ const bespokeSolutionPagesFr: Record<string, SeoLandingPage> = {
     path: "/solutions/ai-phone-answering/",
     title: "Réponse téléphonique IA pour petites entreprises",
     description:
-      "LobbyStack répond aux appels 24/7, qualifie les demandes, recueille les coordonnées, planifie les rendez-vous et transfère les urgences selon vos règles.",
+      "Lead My Company répond aux appels 24/7, qualifie les demandes, recueille les coordonnées, planifie les rendez-vous et transfère les urgences selon vos règles.",
     eyebrow: "Réponse téléphonique IA",
     h1: "Une réponse téléphonique IA qui décroche quand votre équipe ne peut pas.",
     intro:
-      "LobbyStack répond dès la première sonnerie, comprend le besoin du client, collecte les détails et décide de planifier, prendre un message ou transférer selon vos règles.",
+      "Lead My Company répond dès la première sonnerie, comprend le besoin du client, collecte les détails et décide de planifier, prendre un message ou transférer selon vos règles.",
     image: "/illustrations/call-capture.webp",
     imageAlt:
-      "Réceptionniste IA LobbyStack collectant les détails d’un appelant",
+      "Réceptionniste IA Lead My Company collectant les détails d’un appelant",
     proofPoints: [
       "Répond aux appels en direct, hors horaires et pendant les pics",
       "Collecte coordonnées, besoin, urgence et prochaine étape",
@@ -49,7 +49,7 @@ const bespokeSolutionPagesFr: Record<string, SeoLandingPage> = {
       {
         title:
           "Transformez les appels sans réponse en prochaines étapes claires",
-        body: "Les appelants n’attendent pas toujours un rappel. LobbyStack répond rapidement, pose les bonnes questions et donne à votre équipe un résumé exploitable.",
+        body: "Les appelants n’attendent pas toujours un rappel. Lead My Company répond rapidement, pose les bonnes questions et donne à votre équipe un résumé exploitable.",
         points: [
           "Accueil et ton personnalisés",
           "Questions d’accueil adaptées à votre entreprise",
@@ -83,14 +83,14 @@ const bespokeSolutionPagesFr: Record<string, SeoLandingPage> = {
     path: "/solutions/ai-appointment-scheduler/",
     title: "Planificateur de rendez‑vous IA pour petites entreprises",
     description:
-      "LobbyStack planifie les rendez-vous pendant les appels, vérifie les disponibilités, recueille les détails, confirme la réservation et traite les exceptions.",
+      "Lead My Company planifie les rendez-vous pendant les appels, vérifie les disponibilités, recueille les détails, confirme la réservation et traite les exceptions.",
     eyebrow: "Planification de rendez‑vous IA",
     h1: "Un planificateur IA qui réserve pendant que le client est encore prêt.",
     intro:
-      "LobbyStack vérifie les disponibilités, propose des créneaux, confirme les rendez‑vous et envoie une confirmation par texto sans aller-retour manuel.",
+      "Lead My Company vérifie les disponibilités, propose des créneaux, confirme les rendez‑vous et envoie une confirmation par texto sans aller-retour manuel.",
     image: "/illustrations/booking-flow.webp",
     imageAlt:
-      "Planificateur de rendez‑vous IA LobbyStack confirmant une réservation",
+      "Planificateur de rendez‑vous IA Lead My Company confirmant une réservation",
     proofPoints: [
       "Réserve pendant l’appel au lieu d’attendre un rappel",
       "Respecte vos horaires, types de rendez‑vous et consignes",
@@ -99,7 +99,7 @@ const bespokeSolutionPagesFr: Record<string, SeoLandingPage> = {
     sections: [
       {
         title: "Réduisez les allers-retours de planification",
-        body: "Quand un appelant est prêt, LobbyStack peut proposer les bons créneaux, confirmer le rendez‑vous et recueillir les détails nécessaires à la préparation.",
+        body: "Quand un appelant est prêt, Lead My Company peut proposer les bons créneaux, confirmer le rendez‑vous et recueillir les détails nécessaires à la préparation.",
         points: [
           "Disponibilités lues dans Google Calendar",
           "Questions de qualification avant la réservation",
@@ -108,7 +108,7 @@ const bespokeSolutionPagesFr: Record<string, SeoLandingPage> = {
       },
       {
         title: "Gardez le contrôle des cas particuliers",
-        body: "Si une demande sort de vos règles, LobbyStack prend les préférences, explique la suite et transmet le contexte à votre équipe.",
+        body: "Si une demande sort de vos règles, Lead My Company prend les préférences, explique la suite et transmet le contexte à votre équipe.",
         points: [
           "Règles par service, zone ou type de rendez‑vous",
           "Message pour l’équipe si besoin",
@@ -131,16 +131,16 @@ const bespokeSolutionPagesFr: Record<string, SeoLandingPage> = {
     group: "solution",
     slug: "ai-receptionist-for-home-services",
     path: "/solutions/ai-receptionist-for-home-services/",
-    title: "Réceptionniste IA pour services à domicile | LobbyStack",
+    title: "Réceptionniste IA pour services à domicile | Lead My Company",
     description:
-      "LobbyStack répond et qualifie les appels de CVC, plomberie, électricité, toiture et autres services pendant que les équipes travaillent sur le terrain.",
+      "Lead My Company répond et qualifie les appels de CVC, plomberie, électricité, toiture et autres services pendant que les équipes travaillent sur le terrain.",
     eyebrow: "Services à domicile",
     h1: "Un réceptionniste IA pour les équipes de services à domicile.",
     intro:
       "Recueillez les détails du chantier, la zone de service, l’urgence et le besoin de planification pendant que vos équipes restent sur le terrain.",
     image: "/illustrations/industry-bookings.webp",
     imageAlt:
-      "Réceptionniste IA LobbyStack planifiant des travaux de services à domicile",
+      "Réceptionniste IA Lead My Company planifiant des travaux de services à domicile",
     proofPoints: [
       "Qualifie urgence, zone de service et type de travail",
       "Aide les appelants à réserver ou à laisser un message",
@@ -149,7 +149,7 @@ const bespokeSolutionPagesFr: Record<string, SeoLandingPage> = {
     sections: [
       {
         title: "Couvrez le téléphone pendant que l’équipe est sur le terrain",
-        body: "Les techniciens ne peuvent pas toujours répondre sans interrompre le travail. LobbyStack collecte les informations essentielles et garde les demandes visibles.",
+        body: "Les techniciens ne peuvent pas toujours répondre sans interrompre le travail. Lead My Company collecte les informations essentielles et garde les demandes visibles.",
         points: [
           "Questions adaptées aux services à domicile",
           "Notes de travail et résumé après chaque appel",

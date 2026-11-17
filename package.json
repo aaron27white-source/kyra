@@ -18,10 +18,10 @@
     "pdf-parse": "^2.4.5",
     "pdfjs-dist": "5.4.296",
     "pureimage": "^0.4.18",
-    "sharp": "^0.35.4",
+    "sharp": "^0.35.5",
     "tesseract.js": "^7.0.0",
     "twilio": "^5.12.2",
-    "zod": "^3.24.2"
+    "zod": "^4.6.6"
   },
   "scripts": {
     "dev": "node scripts/dev.mjs",
@@ -84,6 +84,7 @@
     "replacement:webhooks": "tsx --tsconfig tsconfig.base.json scripts/replacement-webhook-check.ts",
     "replacement:telemetry": "tsx --tsconfig tsconfig.base.json scripts/replacement-telemetry-check.ts",
     "telemetry:coverage": "tsx --tsconfig tsconfig.base.json scripts/telemetry-registry-coverage.ts",
+    "voice-v2:evaluate": "tsx --tsconfig scripts/tsconfig.json scripts/voice-v2-evaluation.ts",
     "replacement:privacy": "tsx --tsconfig tsconfig.base.json scripts/replacement-privacy-check.ts",
     "replacement:web-voice-policy": "tsx --tsconfig tsconfig.base.json scripts/replacement-web-voice-policy-check.ts",
     "replacement:demo": "tsx --tsconfig tsconfig.base.json scripts/replacement-demo-check.ts",
@@ -123,7 +124,12 @@
     "replacement:onboarding": "tsx --tsconfig scripts/tsconfig.json scripts/replacement-onboarding-check.ts",
     "replacement:catalog": "tsx --tsconfig scripts/tsconfig.json scripts/replacement-catalog-check.ts",
     "replacement:calendar": "tsx --tsconfig scripts/tsconfig.json scripts/replacement-calendar-check.ts",
-    "replacement:contacts": "tsx --tsconfig scripts/tsconfig.json scripts/replacement-contact-pagination-check.ts"
+    "replacement:contacts": "tsx --tsconfig scripts/tsconfig.json scripts/replacement-contact-pagination-check.ts",
+    "test:lmc": "vitest run --config tests/lmc/vitest.config.mts",
+    "lmc:demo": "tsx --tsconfig scripts/tsconfig.json scripts/lmc-demo.ts",
+    "lmc:tenant": "tsx --tsconfig scripts/tsconfig.json scripts/lmc-tenant.ts",
+    "lmc:tenant-setup": "tsx --tsconfig scripts/tsconfig.json scripts/lmc-tenant-setup.ts",
+    "superadmin:bootstrap": "tsx --tsconfig scripts/tsconfig.json scripts/superadmin-bootstrap.ts"
   },
   "devDependencies": {
     "@types/luxon": "^3.7.1",
@@ -137,6 +143,8 @@
     "standardwebhooks": "^1.0.0",
     "tsx": "^4.20.3",
     "typescript": "^5.8.2",
-    "vitest": "^4.1.11"
+    "vite": "8.2.4",
+    "vitest": "^4.1.12",
+    "yaml": "2.9.0"
   }
 }

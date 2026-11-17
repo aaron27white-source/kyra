@@ -1,3 +1,4 @@
+import type * as DomainModule from "@lobbystack/domain";
 import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -8,7 +9,7 @@ const idempotency = vi.hoisted(() => ({ store: new Map<string, { hash: string; r
 // REST routes call these directly; the MCP tools get fakes through dependencies.
 const rest = vi.hoisted(() => ({ resolveApiKey: vi.fn(), createAppointmentForApi: vi.fn(), createContactForApi: vi.fn() }));
 vi.mock("@lobbystack/domain", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@lobbystack/domain")>();
+  const actual = await importOriginal<typeof DomainModule>();
   return {
     ...actual,
     ...rest,

@@ -4,17 +4,17 @@ export const plumberFaqs: FaqItem[] = [
   {
     question: "Can it tell a caller how to shut off their water?",
     answer:
-      "Yes. Add your shutoff instructions to LobbyStack's knowledge base. When a caller reports an active leak, LobbyStack reads those steps, then transfers the call or books the visit according to your rules.",
+      "Yes. Add your shutoff instructions to Lead My Company's knowledge base. When a caller reports an active leak, Lead My Company reads those steps, then transfers the call or books the visit according to your rules.",
   },
   {
     question: "What happens if a caller smells gas?",
     answer:
-      "You write the policy. A common one tells callers to leave the building and call the gas utility's emergency line. LobbyStack follows your script and notifies your team.",
+      "You write the policy. A common one tells callers to leave the building and call the gas utility's emergency line. Lead My Company follows your script and notifies your team.",
   },
   {
     question: "Can it quote drain cleaning or a service call fee?",
     answer:
-      "Yes, if you give it the numbers. LobbyStack can quote an exact price, a starting price, or a range. You choose which services it quotes and which ones need an estimate visit.",
+      "Yes, if you give it the numbers. Lead My Company can quote an exact price, a starting price, or a range. You choose which services it quotes and which ones need an estimate visit.",
   },
   {
     question: "Will it book water heater replacements?",
@@ -24,13 +24,13 @@ export const plumberFaqs: FaqItem[] = [
   {
     question: "Does it work with my existing business number?",
     answer:
-      "Yes. Forward your current number to LobbyStack, or give it a separate line for after-hours and overflow calls.",
+      "Yes. Forward your current number to Lead My Company, or give it a separate line for after-hours and overflow calls.",
   },
   {
     question:
       "How is an AI answering service different from a live plumbing answering service?",
     answer:
-      "A live service puts a human operator on the line, who usually reads a script and takes a message. LobbyStack answers with AI, so it takes several calls at once, books jobs into your calendar during the call, and quotes the prices you set. You can still transfer any call to someone on your team.",
+      "A live service puts a human operator on the line, who usually reads a script and takes a message. Lead My Company answers with AI, so it takes several calls at once, books jobs into your calendar during the call, and quotes the prices you set. You can still transfer any call to someone on your team.",
   },
   {
     question: "How much does it cost for a plumbing business?",
@@ -43,12 +43,12 @@ export const hvacFaqs: FaqItem[] = [
   {
     question: "Can it answer only when my office is overwhelmed?",
     answer:
-      "Yes. You can set LobbyStack to answer every call, or only when your team is busy, closed, or unavailable. You might run overflow mode in peak season and full coverage after hours.",
+      "Yes. You can set Lead My Company to answer every call, or only when your team is busy, closed, or unavailable. You might run overflow mode in peak season and full coverage after hours.",
   },
   {
     question: "How does it decide which no-heat or no-AC call is urgent?",
     answer:
-      "You describe the rule in plain language, for example: no heat and the house is below 55°F, or an elderly person or infant lives there. LobbyStack asks the questions it needs to apply your rule and transfers matching calls to your on-call tech.",
+      "You describe the rule in plain language, for example: no heat and the house is below 55°F, or an elderly person or infant lives there. Lead My Company asks the questions it needs to apply your rule and transfers matching calls to your on-call tech.",
   },
   {
     question: "What system details can it collect?",
@@ -58,17 +58,17 @@ export const hvacFaqs: FaqItem[] = [
   {
     question: "Can it quote a tune-up or diagnostic fee?",
     answer:
-      "Yes, if you give it the numbers. LobbyStack can state an exact price, a starting price, or a range. For full system replacements, it books an estimate visit instead.",
+      "Yes, if you give it the numbers. Lead My Company can state an exact price, a starting price, or a range. For full system replacements, it books an estimate visit instead.",
   },
   {
     question: "Does it work with my existing business number?",
     answer:
-      "Yes. Forward your current number to LobbyStack, or point only your overflow and after-hours calls at it.",
+      "Yes. Forward your current number to Lead My Company, or point only your overflow and after-hours calls at it.",
   },
   {
     question: "Should I use an AI or a live HVAC answering service?",
     answer:
-      "It depends on which calls you want a person to take. LobbyStack fits when you want calls booked into your calendar during the call and overflow handled without a busy signal. You can run it on overflow only and keep your office on the calls you want to answer yourself.",
+      "It depends on which calls you want a person to take. Lead My Company fits when you want calls booked into your calendar during the call and overflow handled without a busy signal. You can run it on overflow only and keep your office on the calls you want to answer yourself.",
   },
   {
     question: "How much does it cost for an HVAC company?",
@@ -91,22 +91,22 @@ export const electricianFaqs: FaqItem[] = [
   {
     question: "What does it ask about panel upgrades and EV chargers?",
     answer:
-      "You choose the questions. Common ones cover panel amperage, the home's age, the charger or generator the caller wants, and whether they own the home. LobbyStack attaches the answers to the estimate booking.",
+      "You choose the questions. Common ones cover panel amperage, the home's age, the charger or generator the caller wants, and whether they own the home. Lead My Company attaches the answers to the estimate booking.",
   },
   {
     question: "Can it route commercial and residential calls differently?",
     answer:
-      "Yes. LobbyStack can ask whether the property is commercial or residential and send commercial calls to your estimator or office line.",
+      "Yes. Lead My Company can ask whether the property is commercial or residential and send commercial calls to your estimator or office line.",
   },
   {
     question: "Does it work with my existing business number?",
     answer:
-      "Yes. Forward your current number to LobbyStack, or use a separate line for after-hours and overflow calls.",
+      "Yes. Forward your current number to Lead My Company, or use a separate line for after-hours and overflow calls.",
   },
   {
     question: "What does an electrician answering service need to handle?",
     answer:
-      "Two kinds of calls: hazards that need safety instructions and a fast transfer, and estimate requests that need the right intake questions. LobbyStack handles both with rules you write and books estimates into your calendar during the call.",
+      "Two kinds of calls: hazards that need safety instructions and a fast transfer, and estimate requests that need the right intake questions. Lead My Company handles both with rules you write and books estimates into your calendar during the call.",
   },
   {
     question: "How much does it cost for an electrical contractor?",
@@ -124,12 +124,12 @@ export const garageDoorFaqs: FaqItem[] = [
   {
     question: "Can it handle emergency garage door calls after hours?",
     answer:
-      "Yes. LobbyStack answers after-hours calls and follows your escalation rules. If a caller reports a car trapped inside or a door stuck open at night, it transfers them to your on-call tech with the details already collected.",
+      "Yes. Lead My Company answers after-hours calls and follows your escalation rules. If a caller reports a car trapped inside or a door stuck open at night, it transfers them to your on-call tech with the details already collected.",
   },
   {
     question: "Will it book appointments while I am on a job?",
     answer:
-      "Yes. While you are replacing springs or installing openers, LobbyStack checks your calendar, offers open slots, and books the appointment before the caller hangs up.",
+      "Yes. While you are replacing springs or installing openers, Lead My Company checks your calendar, offers open slots, and books the appointment before the caller hangs up.",
   },
   {
     question: "What intake questions can it ask garage door callers?",
@@ -139,17 +139,17 @@ export const garageDoorFaqs: FaqItem[] = [
   {
     question: "Does it work with my existing business number?",
     answer:
-      "Yes. Forward calls from the number your customers already know, or use a dedicated LobbyStack line for overflow and after-hours coverage.",
+      "Yes. Forward calls from the number your customers already know, or use a dedicated Lead My Company line for overflow and after-hours coverage.",
   },
   {
     question: "Will I see what was discussed on every call?",
     answer:
-      "Yes. After every call, LobbyStack sends a summary with the caller details, issue description, appointment time, transcript, and recording. You review it from the dashboard or via email and SMS alerts.",
+      "Yes. After every call, Lead My Company sends a summary with the caller details, issue description, appointment time, transcript, and recording. You review it from the dashboard or via email and SMS alerts.",
   },
   {
     question: "How much does it cost for a garage door repair business?",
     answer:
-      "LobbyStack has a free plan with included voice minutes and paid plans for higher call volume. Most garage door repair shops start on the free plan and upgrade as call volume grows. See the pricing page for current rates.",
+      "Lead My Company has a free plan with included voice minutes and paid plans for higher call volume. Most garage door repair shops start on the free plan and upgrade as call volume grows. See the pricing page for current rates.",
   },
 ]
 
@@ -162,12 +162,12 @@ export const applianceRepairFaqs: FaqItem[] = [
   {
     question: "Can it handle urgent appliance calls after hours?",
     answer:
-      "Yes. LobbyStack answers after-hours calls and follows your escalation rules. If a caller reports a refrigerator that stopped working or a washing machine flooding, it transfers them to your on-call tech with the details already collected.",
+      "Yes. Lead My Company answers after-hours calls and follows your escalation rules. If a caller reports a refrigerator that stopped working or a washing machine flooding, it transfers them to your on-call tech with the details already collected.",
   },
   {
     question: "Will it book appointments while I am on a repair?",
     answer:
-      "Yes. While you are diagnosing a dishwasher or replacing a compressor, LobbyStack checks your calendar, offers open slots, and books the appointment before the caller hangs up.",
+      "Yes. While you are diagnosing a dishwasher or replacing a compressor, Lead My Company checks your calendar, offers open slots, and books the appointment before the caller hangs up.",
   },
   {
     question: "What intake questions can it ask appliance callers?",
@@ -177,17 +177,17 @@ export const applianceRepairFaqs: FaqItem[] = [
   {
     question: "Does it work with my existing business number?",
     answer:
-      "Yes. Forward calls from the number your customers already know, or use a dedicated LobbyStack line for overflow and after-hours coverage.",
+      "Yes. Forward calls from the number your customers already know, or use a dedicated Lead My Company line for overflow and after-hours coverage.",
   },
   {
     question: "Will I see what was discussed on every call?",
     answer:
-      "Yes. After every call, LobbyStack sends a summary with the caller details, appliance description, appointment time, transcript, and recording. You review it from the dashboard or via email and SMS alerts.",
+      "Yes. After every call, Lead My Company sends a summary with the caller details, appliance description, appointment time, transcript, and recording. You review it from the dashboard or via email and SMS alerts.",
   },
   {
     question: "How much does it cost for an appliance repair business?",
     answer:
-      "LobbyStack has a free plan with included voice minutes and paid plans for higher call volume. Most appliance repair shops start on the free plan and upgrade as call volume grows. See the pricing page for current rates.",
+      "Lead My Company has a free plan with included voice minutes and paid plans for higher call volume. Most appliance repair shops start on the free plan and upgrade as call volume grows. See the pricing page for current rates.",
   },
 ]
 
@@ -200,12 +200,12 @@ export const restorationFaqs: FaqItem[] = [
   {
     question: "Can it handle emergency restoration calls after hours?",
     answer:
-      "Yes. LobbyStack answers after-hours calls and follows your escalation rules. If a caller reports water damage, smoke damage, or mold, it transfers them to your on-call team with the details already collected. Routine estimate requests go to the morning queue.",
+      "Yes. Lead My Company answers after-hours calls and follows your escalation rules. If a caller reports water damage, smoke damage, or mold, it transfers them to your on-call team with the details already collected. Routine estimate requests go to the morning queue.",
   },
   {
     question: "Will it book estimate visits while my team is on site?",
     answer:
-      "Yes. While your crew is mitigating damage or reconstructing, LobbyStack checks your calendar, offers open slots, and books the estimate before the caller hangs up.",
+      "Yes. While your crew is mitigating damage or reconstructing, Lead My Company checks your calendar, offers open slots, and books the estimate before the caller hangs up.",
   },
   {
     question: "What intake questions can it ask restoration callers?",
@@ -215,17 +215,17 @@ export const restorationFaqs: FaqItem[] = [
   {
     question: "Does it work with my existing business number?",
     answer:
-      "Yes. Forward calls from the number your customers already know, or use a dedicated LobbyStack line for overflow and after-hours coverage.",
+      "Yes. Forward calls from the number your customers already know, or use a dedicated Lead My Company line for overflow and after-hours coverage.",
   },
   {
     question: "Will I see what was discussed on every call?",
     answer:
-      "Yes. After every call, LobbyStack sends a summary with the caller details, damage description, appointment time, transcript, and recording. You review it from the dashboard or via email and SMS alerts.",
+      "Yes. After every call, Lead My Company sends a summary with the caller details, damage description, appointment time, transcript, and recording. You review it from the dashboard or via email and SMS alerts.",
   },
   {
     question: "How much does it cost for a restoration business?",
     answer:
-      "LobbyStack has a free plan with included voice minutes and paid plans for higher call volume. Most restoration companies start on the free plan and upgrade as call volume grows. See the pricing page for current rates.",
+      "Lead My Company has a free plan with included voice minutes and paid plans for higher call volume. Most restoration companies start on the free plan and upgrade as call volume grows. See the pricing page for current rates.",
   },
 ]
 
@@ -238,12 +238,12 @@ export const locksmithFaqs: FaqItem[] = [
   {
     question: "Can it handle emergency lockout calls after hours?",
     answer:
-      "Yes. LobbyStack answers after-hours calls and follows your escalation rules. If a caller is locked out of their home or car, it transfers them to your on-call locksmith with the location and details already collected.",
+      "Yes. Lead My Company answers after-hours calls and follows your escalation rules. If a caller is locked out of their home or car, it transfers them to your on-call locksmith with the location and details already collected.",
   },
   {
     question: "Will it book appointments while I am on a job?",
     answer:
-      "Yes. While you are rekeying locks or installing hardware, LobbyStack checks your calendar, offers open slots, and books the appointment before the caller hangs up.",
+      "Yes. While you are rekeying locks or installing hardware, Lead My Company checks your calendar, offers open slots, and books the appointment before the caller hangs up.",
   },
   {
     question: "What intake questions can it ask locksmith callers?",
@@ -253,17 +253,17 @@ export const locksmithFaqs: FaqItem[] = [
   {
     question: "Does it work with my existing business number?",
     answer:
-      "Yes. Forward calls from the number your customers already know, or use a dedicated LobbyStack line for overflow and after-hours coverage.",
+      "Yes. Forward calls from the number your customers already know, or use a dedicated Lead My Company line for overflow and after-hours coverage.",
   },
   {
     question: "Will I see what was discussed on every call?",
     answer:
-      "Yes. After every call, LobbyStack sends a summary with the caller details, lockout description, appointment time, transcript, and recording. You review it from the dashboard or via email and SMS alerts.",
+      "Yes. After every call, Lead My Company sends a summary with the caller details, lockout description, appointment time, transcript, and recording. You review it from the dashboard or via email and SMS alerts.",
   },
   {
     question: "How much does it cost for a locksmith business?",
     answer:
-      "LobbyStack has a free plan with included voice minutes and paid plans for higher call volume. Most locksmith shops start on the free plan and upgrade as call volume grows. See the pricing page for current rates.",
+      "Lead My Company has a free plan with included voice minutes and paid plans for higher call volume. Most locksmith shops start on the free plan and upgrade as call volume grows. See the pricing page for current rates.",
   },
 ]
 
@@ -271,27 +271,27 @@ export const propertyManagementFaqs: FaqItem[] = [
   {
     question: "Can it tell a maintenance emergency from a routine request?",
     answer:
-      "Yes. You give LobbyStack your emergency list in plain language, such as flooding, no heat below a set temperature, a gas smell, or a lockout. It asks follow-up questions, transfers matching calls to your on-call tech, and sends the rest to your morning queue.",
+      "Yes. You give Lead My Company your emergency list in plain language, such as flooding, no heat below a set temperature, a gas smell, or a lockout. It asks follow-up questions, transfers matching calls to your on-call tech, and sends the rest to your morning queue.",
   },
   {
     question: "Can it answer questions about my properties?",
     answer:
-      "Yes. Add details like rent, deposits, pet policy, parking, and open units to LobbyStack's knowledge base. It answers from those details and flags anything it can't answer for your office.",
+      "Yes. Add details like rent, deposits, pet policy, parking, and open units to Lead My Company's knowledge base. It answers from those details and flags anything it can't answer for your office.",
   },
   {
     question: "Can it book showings?",
     answer:
-      "Yes. LobbyStack checks your leasing agent's calendar, offers open times, books the showing, and sends a confirmation text.",
+      "Yes. Lead My Company checks your leasing agent's calendar, offers open times, books the showing, and sends a confirmation text.",
   },
   {
     question: "Does it work with my existing office number?",
     answer:
-      "Yes. Forward your office line to LobbyStack after hours or all day, and tenants keep calling the number they know.",
+      "Yes. Forward your office line to Lead My Company after hours or all day, and tenants keep calling the number they know.",
   },
   {
     question: "How much does a property management answering service cost?",
     answer:
-      "LobbyStack's Free plan includes 30 voice minutes. Starter is $30 a month for 150 minutes, and Pro is $100 a month for 500 minutes. Spam calls and calls under 10 seconds don't count toward usage.",
+      "Lead My Company's Free plan includes 30 voice minutes. Starter is $30 a month for 150 minutes, and Pro is $100 a month for 500 minutes. Spam calls and calls under 10 seconds don't count toward usage.",
   },
 ]
 
@@ -299,7 +299,7 @@ export const roofingFaqs: FaqItem[] = [
   {
     question: "Can it handle a surge of calls after a storm?",
     answer:
-      "Yes. LobbyStack answers simultaneous calls, so homeowners don't hit a busy signal or voicemail. It books inspections into your open slots and queues the rest for your office.",
+      "Yes. Lead My Company answers simultaneous calls, so homeowners don't hit a busy signal or voicemail. It books inspections into your open slots and queues the rest for your office.",
   },
   {
     question: "What does it do with an active leak?",
@@ -309,7 +309,7 @@ export const roofingFaqs: FaqItem[] = [
   {
     question: "Can it answer insurance claim questions?",
     answer:
-      "Yes, from the answers you write, such as whether you meet adjusters and which insurers you work with. LobbyStack flags anything outside your script for a callback.",
+      "Yes, from the answers you write, such as whether you meet adjusters and which insurers you work with. Lead My Company flags anything outside your script for a callback.",
   },
   {
     question: "Will it quote roof repairs or replacements?",
@@ -319,11 +319,11 @@ export const roofingFaqs: FaqItem[] = [
   {
     question: "Does it work with my existing business number?",
     answer:
-      "Yes. Forward your current number to LobbyStack, or send only overflow and after-hours calls to it.",
+      "Yes. Forward your current number to Lead My Company, or send only overflow and after-hours calls to it.",
   },
   {
     question: "How much does a roofing answering service cost?",
     answer:
-      "LobbyStack's Free plan includes 30 voice minutes. Starter is $30 a month for 150 minutes, and Pro is $100 a month for 500 minutes, with extra minutes at $0.20 and $0.18. Spam calls and calls under 10 seconds don't count toward usage.",
+      "Lead My Company's Free plan includes 30 voice minutes. Starter is $30 a month for 150 minutes, and Pro is $100 a month for 500 minutes, with extra minutes at $0.20 and $0.18. Spam calls and calls under 10 seconds don't count toward usage.",
   },
 ]

@@ -1,0 +1,2 @@
+import { ManagedClientForm } from "@/components/managed-client-form";
+export default function NewManagedClientPage() { return <div className="space-y-7"><div><p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">Managed onboarding</p><h1 className="mt-1 text-3xl font-semibold tracking-tight">Create client draft</h1><p className="mt-2 max-w-2xl text-sm text-muted-foreground">Configure the business before inviting its owner. Calendar authorization remains with the client and is intentionally deferred until activation.</p></div><ManagedClientForm /></div>; }

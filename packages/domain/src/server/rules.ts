@@ -70,6 +70,12 @@ export async function reorderAgentRules(context: DomainContext, input: { userId:
 
 async function publishRulesChanged(tx: DatabaseTransaction, businessId: string, entityId: string | undefined, dedupeKey: string): Promise<void> {
   await enqueueOutbox(tx, {
+    topic: "snapshot.refresh", businessId, aggregateType: "agent_rule",
+    ...(entityId ? { aggregateId: entityId } : {}),
+    dedupeKey: `${dedupeKey}:snapshot`,
+    payload: { businessId, reason: "agent_rules_changed" },
+  });
+  await enqueueOutbox(tx, {
     topic: "realtime.publish",
     businessId,
     aggregateType: "agent_rule",

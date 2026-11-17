@@ -320,8 +320,8 @@ export function LandingNavbar({ locale = "en" }: LandingNavbarProps) {
           className="flex items-center focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
         >
           <img
-            src={versionedAssetUrl("/lobbystack-logo.svg")}
-            alt="Kyra"
+            src={versionedAssetUrl("/brand/lmc-logo.svg")}
+            alt="Lead My Company"
             width={155}
             height={43}
             decoding="async"

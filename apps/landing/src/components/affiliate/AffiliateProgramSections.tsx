@@ -25,10 +25,10 @@ const copy = {
   en: {
     hero: {
       headingPrefix: "Become a",
-      headingAccent: "LobbyStack",
+      headingAccent: "Lead My Company",
       headingSuffix: "affiliate",
       subhead:
-        "Refer businesses to LobbyStack hosted plans and earn 20% of their payments for 12 months. Referrals save 5% when they sign up through your link.",
+        "Refer businesses to Lead My Company hosted plans and earn 20% of their payments for 12 months. Referrals save 5% when they sign up through your link.",
       cta: "Join the program",
     },
     benefits: {
@@ -43,7 +43,7 @@ const copy = {
         {
           title: "5% off for referrals",
           description:
-            "Referrals get 5% off hosted LobbyStack plans at signup.",
+            "Referrals get 5% off hosted Lead My Company plans at signup.",
           icon: Gift,
         },
         {
@@ -98,7 +98,7 @@ const copy = {
         {
           title: "Keep it honest",
           description:
-            "Describe LobbyStack accurately. Recommend it for missed calls, after-hours coverage, booking, and routing problems you have actually seen.",
+            "Describe Lead My Company accurately. Recommend it for missed calls, after-hours coverage, booking, and routing problems you have actually seen.",
         },
         {
           title: "Disclose compensation",
@@ -108,18 +108,18 @@ const copy = {
         {
           title: "No paid search on our trademarks",
           description:
-            "Do not bid on LobbyStack trademarks or confusingly similar terms in paid search ads.",
+            "Do not bid on Lead My Company trademarks or confusingly similar terms in paid search ads.",
         },
         {
           title: "No spam or abuse",
           description:
-            "No fake reviews, misleading claims, self-referrals, coupon abuse, fake traffic, or pretending to be LobbyStack.",
+            "No fake reviews, misleading claims, self-referrals, coupon abuse, fake traffic, or pretending to be Lead My Company.",
         },
         {
           title: "Termination rights",
           descriptionPrefix: "Attribution, holds, refunds, and payout rules are in our",
           termsLabel: "Terms of Service",
-          descriptionSuffix: "LobbyStack can change or pause the program at any time.",
+          descriptionSuffix: "Lead My Company can change or pause the program at any time.",
         },
       ],
       footerPrefix: "Questions? Email",
@@ -130,10 +130,10 @@ const copy = {
   fr: {
     hero: {
       headingPrefix: "Devenez affilié",
-      headingAccent: "LobbyStack",
+      headingAccent: "Lead My Company",
       headingSuffix: "",
       subhead:
-        "Parrainez des entreprises vers les forfaits hébergés LobbyStack et touchez 20 % de leurs paiements pendant 12 mois. Les parrainages obtiennent 5 % de rabais lorsqu'ils s'inscrivent via votre lien.",
+        "Parrainez des entreprises vers les forfaits hébergés Lead My Company et touchez 20 % de leurs paiements pendant 12 mois. Les parrainages obtiennent 5 % de rabais lorsqu'ils s'inscrivent via votre lien.",
       cta: "Rejoindre le programme",
     },
     benefits: {
@@ -148,7 +148,7 @@ const copy = {
         {
           title: "5 % de rabais pour les parrainages",
           description:
-            "Les parrainages obtiennent 5 % de rabais sur les forfaits hébergés LobbyStack à l'inscription.",
+            "Les parrainages obtiennent 5 % de rabais sur les forfaits hébergés Lead My Company à l'inscription.",
           icon: Gift,
         },
         {
@@ -204,7 +204,7 @@ const copy = {
         {
           title: "Restez honnête",
           description:
-            "Décrivez LobbyStack avec précision. Recommandez-le pour les appels manqués, la couverture hors horaires, la réservation et le routage que vous avez vus sur le terrain.",
+            "Décrivez Lead My Company avec précision. Recommandez-le pour les appels manqués, la couverture hors horaires, la réservation et le routage que vous avez vus sur le terrain.",
         },
         {
           title: "Divulguez votre rémunération",
@@ -214,18 +214,18 @@ const copy = {
         {
           title: "Pas de recherche payante sur nos marques",
           description:
-            "N'enchérissez pas sur les marques LobbyStack ou des termes similaires pouvant prêter à confusion dans les annonces de recherche payante.",
+            "N'enchérissez pas sur les marques Lead My Company ou des termes similaires pouvant prêter à confusion dans les annonces de recherche payante.",
         },
         {
           title: "Pas de spam ni d'abus",
           description:
-            "Pas de faux avis, d'allégations trompeuses, d'auto-parrainage, d'abus de coupons, de trafic artificiel ni d'usurpation de LobbyStack.",
+            "Pas de faux avis, d'allégations trompeuses, d'auto-parrainage, d'abus de coupons, de trafic artificiel ni d'usurpation de Lead My Company.",
         },
         {
           title: "Droit de résiliation",
           descriptionPrefix: "L'attribution, les retenues, les remboursements et les règles de paiement sont dans nos",
           termsLabel: "Conditions d'utilisation",
-          descriptionSuffix: "LobbyStack peut modifier ou suspendre le programme à tout moment.",
+          descriptionSuffix: "Lead My Company peut modifier ou suspendre le programme à tout moment.",
         },
       ],
       footerPrefix: "Des questions ? Écrivez à",

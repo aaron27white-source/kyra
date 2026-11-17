@@ -17,7 +17,11 @@ export async function GET(request: Request) {
         status: appointments.status,
         sourceChannel: appointments.sourceChannel,
         calendarSyncState: appointments.calendarSyncState,
+        serviceLocation: appointments.serviceLocation,
+        intakeAnswers: appointments.intakeAnswers,
+        intakeCompletionStatus: appointments.intakeCompletionStatus,
         contactName: contacts.name,
+        contactPhone: contacts.phone,
         serviceName: services.name,
         staffName: staff.name,
       })
@@ -29,7 +33,7 @@ export async function GET(request: Request) {
         .orderBy(asc(appointments.startsAt))
         .limit(100);
       return { appointments: rows };
-    }));
+    }, { pilotCapability: "voice" }));
   } catch (error) {
     return asApiResponse(error);
   }

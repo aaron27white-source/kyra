@@ -1,16 +1,14 @@
 import { NextResponse } from "next/server";
 
 import { cancelKnowledgeDocument, deleteKnowledgeDocument, expandWebsiteCrawl, getKnowledgeDocumentContent, retryKnowledgeDocument, setKnowledgeDocumentActive } from "@lobbystack/domain";
-import { asApiResponse, businessIdFromRequest, readJson, requireApiSession } from "@/lib/api-helpers";
+import { asApiResponse, readJson, requireOperatorBusiness } from "@/lib/api-helpers";
 import { createDomainContext } from "@/lib/domain-context";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request, { params }: { params: Promise<{ documentId: string }> }) {
   try {
-    const session = await requireApiSession(request);
-    const businessId = businessIdFromRequest(request);
-    if (!businessId) return NextResponse.json({ error: "A businessId is required." }, { status: 400 });
+    const { session, businessId } = await requireOperatorBusiness(request, { pilotCapability: "knowledge" });
     const { documentId } = await params;
     const result = await getKnowledgeDocumentContent(createDomainContext(), { userId: session.user.id, businessId, documentId });
     if (!result) return NextResponse.json({ error: "Knowledge document not found." }, { status: 404 });
@@ -20,9 +18,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ docu
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ documentId: string }> }) {
   try {
-    const session = await requireApiSession(request);
-    const businessId = businessIdFromRequest(request);
-    if (!businessId) return NextResponse.json({ error: "A businessId is required." }, { status: 400 });
+    const { session, businessId } = await requireOperatorBusiness(request, { pilotCapability: "knowledge" });
     const body = await readJson(request) as { action?: string; active?: unknown };
     const { documentId } = await params;
     if (typeof body?.active === "boolean") await setKnowledgeDocumentActive(createDomainContext(), { userId: session.user.id, businessId, documentId, active: body.active });
@@ -36,9 +32,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ do
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ documentId: string }> }) {
   try {
-    const session = await requireApiSession(request);
-    const businessId = businessIdFromRequest(request);
-    if (!businessId) return NextResponse.json({ error: "A businessId is required." }, { status: 400 });
+    const { session, businessId } = await requireOperatorBusiness(request, { pilotCapability: "knowledge" });
     const { documentId } = await params;
     await deleteKnowledgeDocument(createDomainContext(), { userId: session.user.id, businessId, documentId });
     return NextResponse.json({ ok: true });

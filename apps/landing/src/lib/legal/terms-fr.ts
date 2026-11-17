@@ -5,17 +5,17 @@ const support = `<a href="mailto:support@lobbystack.com">support@lobbystack.com<
 export const termsFr: LegalDocument = {
   updated: "Dernière mise à jour : 26 septembre 2026",
   h1: "Conditions d’utilisation",
-  intro: `Les présentes conditions d’utilisation (les « Conditions ») régissent votre utilisation du service hébergé, des sites Web et du support de LobbyStack. Lisez-les avant d’utiliser LobbyStack. Elles limitent notre responsabilité, vous rendent responsable du consentement à l’enregistrement des appels et de la conformité des SMS, et précisent comment nous réglons les litiges.`,
+  intro: `Les présentes conditions d’utilisation (les « Conditions ») régissent votre utilisation du service hébergé, des sites Web et du support de Lead My Company. Lisez-les avant d’utiliser Lead My Company. Elles limitent notre responsabilité, vous rendent responsable du consentement à l’enregistrement des appels et de la conformité des SMS, et précisent comment nous réglons les litiges.`,
   sections: [
     {
       id: "agreement",
       nav: "Acceptation",
       title: "1. Acceptation et admissibilité",
       blocks: [
-        `1.1 Les présentes Conditions forment un contrat entre vous et Lobbystack Inc. (« LobbyStack », « nous », « notre » ou « nos »). Vous les acceptez lorsque vous créez un compte, cochez une case ou cliquez sur un bouton qui y renvoie, achetez un forfait ou utilisez le Service. Si vous ne les acceptez pas, n’utilisez pas le Service.`,
-        `1.2 LobbyStack s’adresse uniquement aux entreprises. Vous confirmez utiliser le Service dans le cadre d’une entreprise, d’un métier ou d’une profession, et non à des fins personnelles, familiales ou domestiques. Lorsque vous utilisez le Service, vous n’êtes pas un consommateur au sens de la Loi sur la protection du consommateur du Québec ni d’une loi semblable.`,
+        `1.1 Les présentes Conditions forment un contrat entre vous et Lobbystack Inc. (« Lead My Company », « nous », « notre » ou « nos »). Vous les acceptez lorsque vous créez un compte, cochez une case ou cliquez sur un bouton qui y renvoie, achetez un forfait ou utilisez le Service. Si vous ne les acceptez pas, n’utilisez pas le Service.`,
+        `1.2 Lead My Company s’adresse uniquement aux entreprises. Vous confirmez utiliser le Service dans le cadre d’une entreprise, d’un métier ou d’une profession, et non à des fins personnelles, familiales ou domestiques. Lorsque vous utilisez le Service, vous n’êtes pas un consommateur au sens de la Loi sur la protection du consommateur du Québec ni d’une loi semblable.`,
         `1.3 Si vous acceptez les présentes Conditions pour une entreprise ou une autre organisation, vous confirmez avoir le pouvoir de la lier. « Vous » et « Client » désignent alors cette organisation. Vous devez avoir au moins 18 ans et avoir atteint l’âge de la majorité là où vous résidez.`,
-        `1.4 Si vous et LobbyStack signez un bon de commande ou une autre entente écrite visant le Service (une « Commande »), la Commande prévaut sur les présentes Conditions en cas de conflit, mais seulement pour l’objet qu’elle vise.`,
+        `1.4 Si vous et Lead My Company signez un bon de commande ou une autre entente écrite visant le Service (une « Commande »), la Commande prévaut sur les présentes Conditions en cas de conflit, mais seulement pour l’objet qu’elle vise.`,
       ],
     },
     {
@@ -25,7 +25,7 @@ export const termsFr: LegalDocument = {
       blocks: [
         {
           ul: [
-            `<strong>Service</strong> désigne le réceptionniste IA hébergé de LobbyStack, le tableau de bord, le widget de clavardage et d’appel pour sites Web, nos sites Web, nos API et le support connexe que nous vous offrons.`,
+            `<strong>Service</strong> désigne le réceptionniste IA hébergé de Lead My Company, le tableau de bord, le widget de clavardage et d’appel pour sites Web, nos sites Web, nos API et le support connexe que nous vous offrons.`,
             `<strong>Utilisateurs autorisés</strong> désigne vos employés et sous-traitants à qui vous permettez d’utiliser votre compte.`,
             `<strong>Appelants</strong> désigne les personnes qui interagissent avec votre réceptionniste IA par appel téléphonique, appel depuis le navigateur ou clavardage sur un site Web, ainsi que les personnes qui reçoivent des SMS envoyés au moyen du Service.`,
             `<strong>Données du client</strong> désigne les données que vous ou vos Appelants soumettez au Service, notamment les renseignements sur l’entreprise, le contenu de connaissances, l’audio des appels, les enregistrements, les transcriptions, les messages, les conversations de clavardage, les coordonnées et les rendez-vous.`,
@@ -40,7 +40,7 @@ export const termsFr: LegalDocument = {
       nav: "Service",
       title: "3. Le Service",
       blocks: [
-        `3.1 LobbyStack est un réceptionniste IA pour les petites entreprises. Selon votre forfait et vos paramètres, le Service peut répondre aux appels téléphoniques entrants et aux appels depuis le navigateur avec un agent vocal IA, répondre aux questions dans le clavardage de votre site Web, prendre, annuler et déplacer des rendez-vous après avoir vérifié l’Appelant, prendre des messages, transférer des appels à votre personnel, enregistrer et transcrire les appels, envoyer des alertes par SMS à votre équipe et envoyer un SMS de rappel de rendez-vous facultatif aux Appelants qui acceptent de le recevoir.`,
+        `3.1 Lead My Company est un réceptionniste IA pour les petites entreprises. Selon votre forfait et vos paramètres, le Service peut répondre aux appels téléphoniques entrants et aux appels depuis le navigateur avec un agent vocal IA, répondre aux questions dans le clavardage de votre site Web, prendre, annuler et déplacer des rendez-vous après avoir vérifié l’Appelant, prendre des messages, transférer des appels à votre personnel, enregistrer et transcrire les appels, envoyer des alertes par SMS à votre équipe et envoyer un SMS de rappel de rendez-vous facultatif aux Appelants qui acceptent de le recevoir.`,
         `3.2 Les fonctionnalités, les limites et l’utilisation incluse varient selon le forfait. La <a href="/fr/pricing/">page des tarifs</a> ou votre Commande les décrit. Nous pouvons ajouter, modifier ou retirer des fonctionnalités. Si nous retirons une fonctionnalité importante d’un forfait payant que vous utilisez, nous vous donnerons un préavis raisonnable. Nous ne promettons aucune fonctionnalité future, et vous ne devriez pas acheter un forfait en comptant sur l’une d’elles.`,
         `3.3 Nous vous accordons un droit limité, non exclusif, non transférable et ne pouvant faire l’objet d’une sous-licence d’utiliser le Service pour les besoins internes de votre entreprise pendant votre abonnement, sous réserve des présentes Conditions. Ce droit comprend celui d’installer notre widget sur les sites Web que vous contrôlez.`,
       ],
@@ -52,7 +52,7 @@ export const termsFr: LegalDocument = {
       blocks: [
         `4.1 Vous devez nous fournir des renseignements exacts sur votre compte, votre entreprise et votre facturation, et les tenir à jour.`,
         `4.2 Vous êtes responsable de vos Utilisateurs autorisés et de tout ce qui se passe dans votre compte. Protégez vos mots de passe et vos accès. Écrivez-nous sans délai à ${support} si vous soupçonnez un accès non autorisé.`,
-        `4.3 Nous pouvons refuser, suspendre ou fermer un compte qui utilise de faux renseignements, qui semble être un doublon créé pour obtenir plus d’utilisation gratuite ou qui crée un risque pour LobbyStack, nos fournisseurs ou d’autres personnes.`,
+        `4.3 Nous pouvons refuser, suspendre ou fermer un compte qui utilise de faux renseignements, qui semble être un doublon créé pour obtenir plus d’utilisation gratuite ou qui crée un risque pour Lead My Company, nos fournisseurs ou d’autres personnes.`,
       ],
     },
     {
@@ -62,7 +62,7 @@ export const termsFr: LegalDocument = {
       blocks: [
         `5.1 Le Service utilise l’intelligence artificielle, notamment des modèles d’OpenAI. Un Résultat IA peut être faux, incomplet, incohérent ou inapproprié. Le réceptionniste IA peut mal comprendre un Appelant, donner une réponse que votre entreprise ne donnerait pas, citer un prix ou une politique erronés, réserver la mauvaise plage horaire, ne pas transférer un appel ou manquer un message.`,
         `5.2 Vous contrôlez ce que le réceptionniste IA sait et fait. Vous êtes responsable des renseignements sur votre entreprise, du contenu de connaissances, des instructions, des messages d’accueil, des prix, des heures d’ouverture, des services, des règles de réservation, des numéros de transfert et des paramètres d’alerte. Vous devez tester le Service avant de vous y fier et le surveiller pendant que vous l’utilisez.`,
-        `5.3 Vous êtes responsable de toute déclaration, soumission, promesse ou réservation que le réceptionniste IA fait au nom de votre entreprise, ainsi que de son respect ou de sa correction auprès de vos Appelants. LobbyStack n’est pas partie à vos relations avec vos Appelants.`,
+        `5.3 Vous êtes responsable de toute déclaration, soumission, promesse ou réservation que le réceptionniste IA fait au nom de votre entreprise, ainsi que de son respect ou de sa correction auprès de vos Appelants. Lead My Company n’est pas partie à vos relations avec vos Appelants.`,
         `5.4 Le Service ne donne aucun conseil médical, juridique, financier, fiscal, de sécurité ou autre conseil professionnel. Ne le configurez pas pour donner de tels conseils ni pour prendre des décisions qui exigent un professionnel qualifié ou une révision humaine.`,
         `5.5 Certaines lois vous obligent à informer les gens qu’ils parlent avec un système d’IA. Vous devez faire ces divulgations. Le réceptionniste IA ne doit pas prétendre être un humain lorsqu’un Appelant le lui demande sincèrement.`,
       ],
@@ -72,7 +72,7 @@ export const termsFr: LegalDocument = {
       nav: "Aucune urgence",
       title: "6. Aucun service d’urgence",
       blocks: [
-        `<strong>6.1 LobbyStack n’est pas un service d’urgence et ne prend pas en charge les appels au 911, au 999, au 112 ni à aucun autre numéro d’urgence.</strong> Le Service ne peut pas envoyer de secours, localiser un Appelant ni traiter un appel comme urgent.`,
+        `<strong>6.1 Lead My Company n’est pas un service d’urgence et ne prend pas en charge les appels au 911, au 999, au 112 ni à aucun autre numéro d’urgence.</strong> Le Service ne peut pas envoyer de secours, localiser un Appelant ni traiter un appel comme urgent.`,
         `6.2 N’utilisez pas le Service, et ne laissez pas les Appelants s’y fier, pour des urgences, des lignes de crise ou des situations où la vie ou la sécurité sont en jeu. Si votre entreprise peut recevoir des appels urgents, votre message d’accueil ou vos instructions devraient dire aux Appelants de raccrocher et de composer le numéro d’urgence local, et vous devez conserver un processus humain pour ces appels.`,
       ],
     },
@@ -84,8 +84,8 @@ export const termsFr: LegalDocument = {
         `7.1 Le Service enregistre et transcrit les appels, conserve les conversations de clavardage et utilise l’IA pour traiter ce que disent les Appelants. Vous décidez d’utiliser ces fonctionnalités, et c’est vous qui les déployez auprès de vos Appelants.`,
         `7.2 <strong>Vous êtes seul responsable de donner tous les avis et d’obtenir tous les consentements exigés par la loi</strong> avant qu’un appel ou une conversation soit enregistré, transcrit ou traité par l’IA. Cela comprend les lois qui exigent le consentement de toutes les parties à un appel, comme celles de la Californie, de la Floride, de l’Illinois, du Maryland, du Massachusetts, de la Pennsylvanie et de l’État de Washington, ainsi que les lois canadiennes et québécoises sur la protection des renseignements personnels. Cela comprend aussi les lois sur l’écoute électronique, l’interception et la divulgation de l’IA de chaque endroit où vous ou vos Appelants vous trouvez.`,
         `7.3 Le Service n’utilise pas la voix des Appelants pour les identifier. Si votre utilisation du Service est assujettie à des lois sur la protection des données biométriques, comme la Biometric Information Privacy Act de l’Illinois ou des lois semblables au Texas et dans l’État de Washington, vous êtes responsable de vous y conformer, y compris pour les avis, le consentement écrit et la politique de conservation qu’elles exigent.`,
-        `7.4 Vous devez configurer votre message d’accueil ou les avis de votre site Web pour que les Appelants apprennent, avant le début de la conversation, que l’appel ou le clavardage peut être enregistré et traité par un système d’IA. Un message d’accueil par défaut ou un modèle fourni par LobbyStack ne nous transfère pas cette responsabilité. Si vous installez notre widget sur votre site Web, vous êtes aussi responsable des avis et consentements relatifs aux cookies ou au stockage du navigateur que votre site exige, car le widget enregistre un identifiant de visiteur aléatoire dans le navigateur du visiteur.`,
-        `7.5 Vous ne devez pas utiliser le Service pour recueillir des numéros de carte de paiement, des numéros d’identification gouvernementaux, des renseignements de santé ou d’autres renseignements sensibles, sauf si la loi le permet et que vous avez toutes les mesures de protection et tous les consentements requis. LobbyStack n’est pas conçu pour traiter des renseignements de santé protégés au sens de la HIPAA. Nous ne signons pas d’entente d’associé commercial (business associate agreement), sauf si nous en convenons dans un écrit signé.`,
+        `7.4 Vous devez configurer votre message d’accueil ou les avis de votre site Web pour que les Appelants apprennent, avant le début de la conversation, que l’appel ou le clavardage peut être enregistré et traité par un système d’IA. Un message d’accueil par défaut ou un modèle fourni par Lead My Company ne nous transfère pas cette responsabilité. Si vous installez notre widget sur votre site Web, vous êtes aussi responsable des avis et consentements relatifs aux cookies ou au stockage du navigateur que votre site exige, car le widget enregistre un identifiant de visiteur aléatoire dans le navigateur du visiteur.`,
+        `7.5 Vous ne devez pas utiliser le Service pour recueillir des numéros de carte de paiement, des numéros d’identification gouvernementaux, des renseignements de santé ou d’autres renseignements sensibles, sauf si la loi le permet et que vous avez toutes les mesures de protection et tous les consentements requis. Lead My Company n’est pas conçu pour traiter des renseignements de santé protégés au sens de la HIPAA. Nous ne signons pas d’entente d’associé commercial (business associate agreement), sauf si nous en convenons dans un écrit signé.`,
       ],
     },
     {
@@ -105,8 +105,8 @@ export const termsFr: LegalDocument = {
       nav: "SMS",
       title: "9. Messages texte (SMS)",
       blocks: [
-        { h3: "Programme SMS de LobbyStack" },
-        `9.1 Nom du programme : LobbyStack. LobbyStack envoie des SMS transactionnels, non marketing, pour les entreprises qui utilisent le Service. Il s’agit d’alertes au personnel d’une entreprise au sujet d’appels, de messages et de réservations; d’un rappel de rendez-vous envoyé environ 24 heures avant le rendez-vous, seulement aux Appelants qui ont accepté de le recevoir au moment de réserver; et de codes à usage unique qui vérifient le numéro de téléphone d’une personne ou l’identité d’un Appelant avant la modification d’un rendez-vous. LobbyStack n’envoie pas de SMS marketing et ne répond pas aux SMS avec l’IA.`,
+        { h3: "Programme SMS de Lead My Company" },
+        `9.1 Nom du programme : Lead My Company. Lead My Company envoie des SMS transactionnels, non marketing, pour les entreprises qui utilisent le Service. Il s’agit d’alertes au personnel d’une entreprise au sujet d’appels, de messages et de réservations; d’un rappel de rendez-vous envoyé environ 24 heures avant le rendez-vous, seulement aux Appelants qui ont accepté de le recevoir au moment de réserver; et de codes à usage unique qui vérifient le numéro de téléphone d’une personne ou l’identité d’un Appelant avant la modification d’un rendez-vous. Lead My Company n’envoie pas de SMS marketing et ne répond pas aux SMS avec l’IA.`,
         `9.2 La fréquence des messages varie selon votre activité. Des frais de messagerie et de données peuvent s’appliquer. Répondez <strong>STOP</strong> pour ne plus recevoir de SMS et <strong>HELP</strong> pour obtenir de l’aide, ou écrivez à ${support}. Après avoir répondu STOP, vous pourriez recevoir un SMS de confirmation, puis nous n’enverrons plus de SMS à ce numéro, sauf si vous vous réinscrivez. Les opérateurs ne sont pas responsables des messages retardés ou non livrés.`,
         { h3: "Vos responsabilités" },
         `9.3 Vous devez seulement ajouter comme destinataires d’alertes des membres de votre personnel ou des sous-traitants qui ont accepté de recevoir des alertes par SMS. Vous êtes responsable de tout SMS envoyé à un numéro que vous saisissez dans le Service.`,
@@ -173,11 +173,11 @@ export const termsFr: LegalDocument = {
       nav: "Affiliation",
       title: "13. Programme d’affiliation",
       blocks: [
-        `13.1 LobbyStack peut offrir un programme d’affiliation qui verse des commissions pour la recommandation de nouveaux clients. Si vous y participez, la présente section s’applique en plus du reste des présentes Conditions.`,
+        `13.1 Lead My Company peut offrir un programme d’affiliation qui verse des commissions pour la recommandation de nouveaux clients. Si vous y participez, la présente section s’applique en plus du reste des présentes Conditions.`,
         `13.2 Sauf indication contraire dans le Service, les affiliés admissibles gagnent une commission de 20 % sur les paiements admissibles effectués par un client recommandé pendant les 12 premiers mois suivant l’attribution. Nous suivons les recommandations au moyen des liens ou des codes que nous fournissons. Nos registres déterminent l’attribution, l’admissibilité et le montant des commissions.`,
         `13.3 Les commissions sont soumises à une période de retenue de 30 jours. Une commission devient payable seulement lorsque le paiement du client recommandé a franchi cette période sans remboursement, rétrofacturation, contestation, annulation de l’opération, crédit ou résiliation. Nous pouvons annuler, réduire, retenir ou reprendre les commissions impayées liées à des paiements ou à des recommandations non admissibles.`,
         `13.4 Nous payons les affiliés par PayPal, à l’adresse courriel PayPal enregistrée dans le tableau de bord affilié. Le paiement minimum est de 100 $ US en commissions admissibles impayées. Le délai de paiement peut varier selon les vérifications, les contrôles antifraude, la disponibilité du processeur de paiement et l’exactitude des renseignements de paiement. Vous êtes responsable de vos taxes et impôts, de vos déclarations, des frais, de la conversion de devises et de votre compte de paiement.`,
-        `13.5 Vous ne devez pas vous recommander vous-même, créer de faux comptes, faire des déclarations trompeuses, envoyer des pourriels, usurper l’identité de LobbyStack, enchérir sur les marques de commerce de LobbyStack ou des termes semblables dans la recherche payante, publier de faux avis, abuser des rabais, générer du trafic artificiel ou promouvoir LobbyStack d’une manière contraire à la loi, aux règles des plateformes ou aux présentes Conditions. Vous devez indiquer clairement que vous pouvez être rémunéré lorsque vous recommandez LobbyStack.`,
+        `13.5 Vous ne devez pas vous recommander vous-même, créer de faux comptes, faire des déclarations trompeuses, envoyer des pourriels, usurper l’identité de Lead My Company, enchérir sur les marques de commerce de Lead My Company ou des termes semblables dans la recherche payante, publier de faux avis, abuser des rabais, générer du trafic artificiel ou promouvoir Lead My Company d’une manière contraire à la loi, aux règles des plateformes ou aux présentes Conditions. Vous devez indiquer clairement que vous pouvez être rémunéré lorsque vous recommandez Lead My Company.`,
         `13.6 Nous pouvons refuser, suspendre ou mettre fin à votre participation et retenir les commissions impayées en cas de fraude, d’abus, de non-conformité ou de risque. Nous pouvons modifier, suspendre ou terminer le programme, ses taux, ses règles d’attribution, ses périodes de retenue, ses seuils de paiement ou ses modes de paiement à tout moment, sous réserve de la loi applicable.`,
       ],
     },
@@ -186,7 +186,7 @@ export const termsFr: LegalDocument = {
       nav: "Données du client",
       title: "14. Données du client",
       blocks: [
-        `14.1 <strong>Propriété.</strong> Entre vous et LobbyStack, vous êtes propriétaire des Données du client.`,
+        `14.1 <strong>Propriété.</strong> Entre vous et Lead My Company, vous êtes propriétaire des Données du client.`,
         `14.2 <strong>Notre licence.</strong> Vous nous accordez une licence mondiale, non exclusive et libre de redevances pour héberger, copier, traiter, transmettre, afficher et adapter les Données du client dans la mesure nécessaire pour fournir, sécuriser, soutenir, dépanner et améliorer le Service, prévenir les abus, respecter la loi et faire respecter les présentes Conditions. Nos fournisseurs peuvent exercer cette licence en notre nom, seulement pour nous aider à faire ces choses.`,
         `14.3 <strong>Vos engagements.</strong> Vous confirmez détenir tous les droits, avoir donné tous les avis et obtenu tous les consentements nécessaires pour que nous traitions les Données du client selon les présentes Conditions et la <a href="/fr/privacy/">Politique de confidentialité</a>, et que les Données du client ne portent atteinte aux droits de personne et n’enfreignent aucune loi.`,
         `14.4 <strong>Notre rôle.</strong> Pour les renseignements personnels de vos Appelants, nous agissons comme votre fournisseur de services ou sous-traitant. Nous les traitons pour votre compte et selon vos instructions, comme le décrit la Politique de confidentialité. Vous êtes responsable de vos propres avis de confidentialité aux Appelants et de répondre à leurs demandes.`,
@@ -201,7 +201,7 @@ export const termsFr: LegalDocument = {
       title: "15. Conservation, exportation et suppression des données",
       blocks: [
         `15.1 Le Service supprime automatiquement les enregistrements, les transcriptions, les messages et les contenus semblables à la fin de la période de conservation de votre forfait. La <a href="/fr/privacy/#retention">Politique de confidentialité</a> indique les périodes en vigueur. Un contenu supprimé ne peut pas être récupéré.`,
-        `15.2 LobbyStack n’est pas un service de sauvegarde ou d’archivage. Vous êtes responsable d’exporter et de conserver les dossiers dont vous avez besoin, y compris ceux que la loi vous oblige à conserver.`,
+        `15.2 Lead My Company n’est pas un service de sauvegarde ou d’archivage. Vous êtes responsable d’exporter et de conserver les dossiers dont vous avez besoin, y compris ceux que la loi vous oblige à conserver.`,
         `15.3 Après la fermeture de votre compte, nous pouvons supprimer les Données du client sans autre préavis. Des copies peuvent demeurer dans les sauvegardes jusqu’à leur expiration selon leur cycle normal, et nous pouvons conserver les dossiers dont nous avons besoin à des fins juridiques, fiscales, de facturation, de sécurité ou de règlement des litiges.`,
       ],
     },
@@ -218,9 +218,9 @@ export const termsFr: LegalDocument = {
       nav: "Code source ouvert",
       title: "17. Code source ouvert et marques de commerce",
       blocks: [
-        `17.1 Le code source de LobbyStack publié dans notre dépôt public est offert sous la licence MIT. Cette licence régit votre utilisation, votre copie, votre modification et votre distribution de ce code. Les présentes Conditions ne limitent pas vos droits en vertu de cette licence.`,
+        `17.1 Le code source de Lead My Company publié dans notre dépôt public est offert sous la licence MIT. Cette licence régit votre utilisation, votre copie, votre modification et votre distribution de ce code. Les présentes Conditions ne limitent pas vos droits en vertu de cette licence.`,
         `17.2 La licence MIT vise seulement le code. Elle ne vous donne aucun droit sur le Service hébergé, nos serveurs, nos comptes, nos numéros de téléphone, nos ententes avec nos fournisseurs ou nos données, ni aucun droit au support.`,
-        `17.3 Le nom, les logos et l’image de marque LobbyStack sont nos marques de commerce. La licence MIT ne les couvre pas. Vous ne pouvez pas les utiliser d’une manière qui laisse croire que nous avons créé, approuvé ou soutenons votre produit ou service, y compris une copie modifiée ou hébergée de LobbyStack, sans notre permission écrite. Vous pouvez faire des mentions exactes et factuelles de LobbyStack.`,
+        `17.3 Le nom, les logos et l’image de marque Lead My Company sont nos marques de commerce. La licence MIT ne les couvre pas. Vous ne pouvez pas les utiliser d’une manière qui laisse croire que nous avons créé, approuvé ou soutenons votre produit ou service, y compris une copie modifiée ou hébergée de Lead My Company, sans notre permission écrite. Vous pouvez faire des mentions exactes et factuelles de Lead My Company.`,
       ],
     },
     {
@@ -228,7 +228,7 @@ export const termsFr: LegalDocument = {
       nav: "Auto-hébergement",
       title: "18. Déploiements auto-hébergés",
       blocks: [
-        `18.1 Si vous exécutez LobbyStack sur votre propre infrastructure, vous le faites en vertu de la licence MIT, et non des présentes Conditions. Nous n’avons pas accès à votre déploiement ni à ses données, nous ne traitons pas ces données, et nous n’en sommes pas responsables.`,
+        `18.1 Si vous exécutez Lead My Company sur votre propre infrastructure, vous le faites en vertu de la licence MIT, et non des présentes Conditions. Nous n’avons pas accès à votre déploiement ni à ses données, nous ne traitons pas ces données, et nous n’en sommes pas responsables.`,
         `18.2 Vous êtes responsable de vos serveurs, de la sécurité, des sauvegardes, des mises à jour, des comptes auprès des fournisseurs, des numéros de téléphone, des inscriptions auprès des opérateurs, des avis, des consentements et de la conformité légale. Votre utilisation d’OpenAI, de Twilio et des autres fournisseurs relève de vous et de ces fournisseurs.`,
         `18.3 Nous n’offrons aucun support, aucune garantie ni aucun engagement de service pour les déploiements auto-hébergés, sauf si nous en convenons dans un écrit signé.`,
       ],
@@ -238,7 +238,7 @@ export const termsFr: LegalDocument = {
       nav: "Propriété intellectuelle",
       title: "19. Propriété intellectuelle",
       blocks: [
-        `19.1 Sauf pour les Données du client et le code source ouvert décrit à la section 17, LobbyStack et ses concédants de licence détiennent tous les droits sur le Service, nos sites Web, la documentation, les designs, les instructions de modèle (prompts), les modèles et la marque. Les présentes Conditions vous donnent seulement les droits qu’elles énoncent.`,
+        `19.1 Sauf pour les Données du client et le code source ouvert décrit à la section 17, Lead My Company et ses concédants de licence détiennent tous les droits sur le Service, nos sites Web, la documentation, les designs, les instructions de modèle (prompts), les modèles et la marque. Les présentes Conditions vous donnent seulement les droits qu’elles énoncent.`,
         `19.2 Vous ne pouvez pas copier ou modifier le Service hébergé, en créer des œuvres dérivées, ni en faire l’ingénierie inverse ou le décompiler, sauf dans la mesure où la licence MIT le permet pour notre code publié ou où la loi le permet malgré cette restriction.`,
       ],
     },
@@ -286,7 +286,7 @@ export const termsFr: LegalDocument = {
       nav: "Exclusions de garantie",
       title: "24. Exclusions de garantie",
       blocks: [
-        `<strong>24.1 Dans toute la mesure permise par la loi, le Service est fourni « tel quel » et « selon sa disponibilité ». LobbyStack exclut toute garantie et condition, expresse, implicite ou légale, notamment les garanties de qualité marchande, d’adaptation à un usage particulier, de titre, d’absence de contrefaçon et de qualité.</strong>`,
+        `<strong>24.1 Dans toute la mesure permise par la loi, le Service est fourni « tel quel » et « selon sa disponibilité ». Lead My Company exclut toute garantie et condition, expresse, implicite ou légale, notamment les garanties de qualité marchande, d’adaptation à un usage particulier, de titre, d’absence de contrefaçon et de qualité.</strong>`,
         `24.2 Sans limiter la section 24.1, nous ne garantissons pas que les Résultats IA seront exacts ou appropriés, que chaque appel sera répondu, traité, enregistré ou transféré correctement, que les SMS seront livrés, que les réservations correspondront à votre agenda, ni que le Service produira un résultat commercial quelconque.`,
       ],
     },
@@ -295,8 +295,8 @@ export const termsFr: LegalDocument = {
       nav: "Responsabilité",
       title: "25. Limitation de responsabilité",
       blocks: [
-        `<strong>25.1 Dans toute la mesure permise par la loi, ni LobbyStack ni ses sociétés affiliées, dirigeants, administrateurs, employés, sous-traitants ou fournisseurs ne seront responsables des dommages indirects, accessoires, spéciaux, consécutifs, exemplaires ou punitifs, ni de toute perte de profits, de revenus, d’affaires, de clients, d’achalandage ou de données, ni du coût de services de remplacement. Cela comprend les pertes découlant d’appels manqués, interrompus, mal acheminés ou mal traités, de réponses erronées, de réservations erronées ou manquées et de SMS non livrés.</strong>`,
-        `<strong>25.2 Dans toute la mesure permise par la loi, la responsabilité totale de LobbyStack pour toutes les réclamations liées aux présentes Conditions ou au Service est limitée au plus élevé des montants suivants : a) les sommes que vous avez payées à LobbyStack pour le Service au cours des 12 mois précédant l’événement à l’origine de la réclamation; b) 100 $ CA.</strong>`,
+        `<strong>25.1 Dans toute la mesure permise par la loi, ni Lead My Company ni ses sociétés affiliées, dirigeants, administrateurs, employés, sous-traitants ou fournisseurs ne seront responsables des dommages indirects, accessoires, spéciaux, consécutifs, exemplaires ou punitifs, ni de toute perte de profits, de revenus, d’affaires, de clients, d’achalandage ou de données, ni du coût de services de remplacement. Cela comprend les pertes découlant d’appels manqués, interrompus, mal acheminés ou mal traités, de réponses erronées, de réservations erronées ou manquées et de SMS non livrés.</strong>`,
+        `<strong>25.2 Dans toute la mesure permise par la loi, la responsabilité totale de Lead My Company pour toutes les réclamations liées aux présentes Conditions ou au Service est limitée au plus élevé des montants suivants : a) les sommes que vous avez payées à Lead My Company pour le Service au cours des 12 mois précédant l’événement à l’origine de la réclamation; b) 100 $ CA.</strong>`,
         `25.3 Ces limites s’appliquent à tout type de réclamation, qu’elle soit fondée sur la responsabilité contractuelle ou extracontractuelle, la négligence ou tout autre fondement, même si nous avons été avisés que la perte était possible et même si un recours n’atteint pas son but essentiel.`,
         `25.4 Rien dans les présentes Conditions ne limite une responsabilité que la loi ne permet pas de limiter, comme la responsabilité pour une faute intentionnelle ou lourde, ou pour un préjudice corporel ou moral causé à une personne.`,
       ],
@@ -306,7 +306,7 @@ export const termsFr: LegalDocument = {
       nav: "Indemnisation",
       title: "26. Indemnisation",
       blocks: [
-        `26.1 Vous défendrez LobbyStack et ses sociétés affiliées, dirigeants, administrateurs, employés et sous-traitants contre toute réclamation, enquête ou procédure d’un tiers, et paierez les dommages-intérêts, amendes, pénalités, règlements et frais juridiques raisonnables qui en découlent, dans la mesure où ils découlent :`,
+        `26.1 Vous défendrez Lead My Company et ses sociétés affiliées, dirigeants, administrateurs, employés et sous-traitants contre toute réclamation, enquête ou procédure d’un tiers, et paierez les dommages-intérêts, amendes, pénalités, règlements et frais juridiques raisonnables qui en découlent, dans la mesure où ils découlent :`,
         {
           ul: [
             `des Données du client, ou des renseignements, instructions et paramètres de votre entreprise;`,
@@ -361,7 +361,7 @@ export const termsFr: LegalDocument = {
       nav: "Dispositions générales",
       title: "31. Dispositions générales",
       blocks: [
-        `31.1 <strong>Intégralité de l’entente.</strong> Les présentes Conditions, la Politique de confidentialité, toute Commande et les documents auxquels ils renvoient forment l’entente complète entre vous et LobbyStack au sujet du Service. Ils remplacent toute entente antérieure sur ce sujet. Les conditions de vos bons de commande ou autres documents ne s’appliquent pas.`,
+        `31.1 <strong>Intégralité de l’entente.</strong> Les présentes Conditions, la Politique de confidentialité, toute Commande et les documents auxquels ils renvoient forment l’entente complète entre vous et Lead My Company au sujet du Service. Ils remplacent toute entente antérieure sur ce sujet. Les conditions de vos bons de commande ou autres documents ne s’appliquent pas.`,
         `31.2 <strong>Cession.</strong> Vous ne pouvez pas céder ou transférer les présentes Conditions sans notre consentement écrit. Nous pouvons les céder à une société affiliée ou à un successeur dans le cadre d’une fusion, d’une acquisition, d’une réorganisation ou d’une vente d’actifs.`,
         `31.3 <strong>Divisibilité et renonciation.</strong> Si un tribunal juge une partie des présentes Conditions inapplicable, cette partie sera appliquée dans la mesure du possible et le reste demeurera en vigueur. Ne pas exercer un droit ne constitue pas une renonciation à ce droit.`,
         `31.4 <strong>Relation.</strong> Les parties sont des entrepreneurs indépendants. Les présentes Conditions ne créent aucune société de personnes, coentreprise, relation d’emploi ou de mandat, ni aucun tiers bénéficiaire.`,

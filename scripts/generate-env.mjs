@@ -12,7 +12,7 @@ const PLACEHOLDER_PREFIX = "replace-with-";
 export function generateEnv(example, random = () => randomBytes(32).toString("hex")) {
   const generated = [];
   const output = example
-    .split("\n")
+    .split(/\r?\n/)
     .map((line) => {
       const match = /^([A-Z0-9_]+)=(.*)$/.exec(line);
       if (!match || !match[2].startsWith(PLACEHOLDER_PREFIX)) return line;

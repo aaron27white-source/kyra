@@ -1,9 +1,10 @@
+import type * as DbModule from "@lobbystack/db";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({ withBusinessTransaction: vi.fn() }));
 
 vi.mock("@lobbystack/db", async (original) => ({
-  ...(await original<typeof import("@lobbystack/db")>()),
+  ...(await original<typeof DbModule>()),
   withBusinessTransaction: mocks.withBusinessTransaction,
 }));
 

@@ -1,7 +1,8 @@
 import { and, asc, count, eq, ilike, inArray } from "drizzle-orm";
+import { defaultAppointmentChangePolicy, serviceIntakePolicySchema, type ServiceIntakePolicy } from "@lobbystack/shared";
 
 import { enqueueOutbox, withBusinessTransaction, type DatabaseTransaction } from "@lobbystack/db";
-import { agentRules, businessHours, closures, phoneNumbers, receptionistProfiles, services, staff, staffServiceAssignments } from "@lobbystack/db";
+import { agentRules, businesses, businessHours, closures, phoneNumbers, receptionistProfiles, services, staff, staffServiceAssignments } from "@lobbystack/db";
 
 import { requireBusinessAdmin, requireBusinessMembership } from "../authz";
 import type { DomainContext } from "./context";
@@ -31,9 +32,25 @@ export async function listCatalog(
   });
 }
 
+export async function updateBusinessIntakePolicy(context: DomainContext, input: { userId: string; businessId: string; intakePolicy: ServiceIntakePolicy }): Promise<void> {
+  await withBusinessTransaction(context.db, { ...input, actorType: "operator" }, async (tx) => {
+    await requireBusinessAdmin(tx, input);
+    const [existing] = await tx.select({ id: receptionistProfiles.id }).from(receptionistProfiles).where(eq(receptionistProfiles.businessId, input.businessId)).limit(1);
+    const policy = serviceIntakePolicySchema.parse(input.intakePolicy);
+    if (existing) {
+      await tx.update(receptionistProfiles).set({ intakePolicy: policy, updatedAt: new Date() }).where(eq(receptionistProfiles.businessId, input.businessId));
+    } else {
+      const [business] = await tx.select({ name: businesses.name }).from(businesses).where(eq(businesses.id, input.businessId)).limit(1);
+      if (!business) throw new Error("Business not found.");
+      await tx.insert(receptionistProfiles).values({ businessId: input.businessId, greeting: `Thank you for calling ${business.name}.`, tone: "professional", summary: business.name, bookingPolicy: "Confirm availability before booking.", transferMode: "on_request", appointmentChangePolicy: defaultAppointmentChangePolicy, intakePolicy: policy });
+    }
+    await enqueueOutbox(tx, { topic: "snapshot.refresh", businessId: input.businessId, aggregateType: "receptionist_profile", dedupeKey: `snapshot:${input.businessId}:intake:${Date.now()}`, payload: { businessId: input.businessId } });
+  });
+}
+
 export async function createService(
   context: DomainContext,
-  input: { userId: string; businessId: string; name: string; slug: string; durationMinutes: number; description?: string; active?: boolean },
+  input: { userId: string; businessId: string; name: string; slug: string; durationMinutes: number; description?: string; active?: boolean; intakePolicy?: ServiceIntakePolicy },
 ): Promise<string> {
   return await withBusinessTransaction(context.db, { ...input, actorType: "operator" }, async (tx) => {
     await requireBusinessAdmin(tx, input);
@@ -43,6 +60,7 @@ export async function createService(
       slug: input.slug.trim().toLowerCase(),
       durationMinutes: input.durationMinutes,
       description: input.description,
+      ...(input.intakePolicy ? { intakePolicy: serviceIntakePolicySchema.parse(input.intakePolicy) } : {}),
       active: input.active ?? true,
     }).returning({ id: services.id });
     if (!service) {
@@ -62,7 +80,7 @@ export async function createService(
 
 export async function updateService(
   context: DomainContext,
-  input: { userId: string; businessId: string; serviceId: string; name?: string; slug?: string; durationMinutes?: number; description?: string | null; active?: boolean },
+  input: { userId: string; businessId: string; serviceId: string; name?: string; slug?: string; durationMinutes?: number; description?: string | null; active?: boolean; intakePolicy?: ServiceIntakePolicy | null },
 ): Promise<void> {
   await withBusinessTransaction(context.db, { ...input, actorType: "operator" }, async (tx) => {
     await requireBusinessAdmin(tx, input);
@@ -71,10 +89,11 @@ export async function updateService(
       ...(input.slug !== undefined ? { slug: input.slug.trim().toLowerCase() } : {}),
       ...(input.durationMinutes !== undefined ? { durationMinutes: input.durationMinutes } : {}),
       ...(input.description !== undefined ? { description: input.description } : {}),
+      ...(input.intakePolicy !== undefined ? { intakePolicy: input.intakePolicy === null ? null : serviceIntakePolicySchema.parse(input.intakePolicy) } : {}),
       ...(input.active !== undefined ? { active: input.active } : {}),
       updatedAt: new Date(),
     }).where(and(eq(services.id, input.serviceId), eq(services.businessId, input.businessId))).returning({ id: services.id });
-    if (!service) throw new Error("Service not found.");
+    if (!service) throw Object.assign(new Error("Service not found."), { status: 404 });
     await enqueueOutbox(tx, { topic: "snapshot.refresh", businessId: input.businessId, aggregateType: "service", aggregateId: service.id, dedupeKey: `service:${service.id}:snapshot:${Date.now()}`, payload: { businessId: input.businessId, reason: "service_updated" } });
   });
 }
@@ -86,7 +105,7 @@ export async function deleteService(
   await withBusinessTransaction(context.db, { ...input, actorType: "operator" }, async (tx) => {
     await requireBusinessAdmin(tx, input);
     const [service] = await tx.update(services).set({ active: false, updatedAt: new Date() }).where(and(eq(services.id, input.serviceId), eq(services.businessId, input.businessId))).returning({ id: services.id });
-    if (!service) throw new Error("Service not found.");
+    if (!service) throw Object.assign(new Error("Service not found."), { status: 404 });
     await enqueueOutbox(tx, { topic: "snapshot.refresh", businessId: input.businessId, aggregateType: "service", aggregateId: service.id, dedupeKey: `service:${service.id}:snapshot:${Date.now()}`, payload: { businessId: input.businessId, reason: "service_disabled" } });
   });
 }

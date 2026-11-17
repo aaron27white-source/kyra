@@ -1,6 +1,8 @@
+import { brand } from "@lobbystack/shared/brand";
+
 const LANDING_SITE_URL =
   process.env.NEXT_PUBLIC_LANDING_SITE_URL?.replace(/\/$/, "") ??
-  "https://lobbystack.com";
+  brand.url;
 
 const DEFAULT_LOCALE = "en";
 

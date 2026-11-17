@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { emailOTP } from "better-auth/plugins/email-otp";
+import { twoFactor } from "better-auth/plugins/two-factor";
 import { APIError, createAuthMiddleware } from "better-auth/api";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { runWithAdapter } from "@better-auth/core/context";
@@ -9,7 +10,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { and, eq, isNotNull, sql } from "drizzle-orm";
 
 import { assertDatabaseRole, enqueueOutbox, withBusinessTransaction } from "@lobbystack/db";
-import { accounts, sessions, users, verifications } from "@lobbystack/db";
+import { accounts, sessions, twoFactors, users, verifications } from "@lobbystack/db";
 
 import { getDatabase } from "./databases";
 import { ensureMcpResource, isDisabledOAuthEndpoint, mcpOAuthPlugins, needsMcpResource, oauthProviderSchema, registrationWithApplicationType } from "./oauth-provider";
@@ -134,10 +135,10 @@ async function enqueueAuthEmail(input: {
 }): Promise<void> {
   const urlHash = createHash("sha256").update(input.url).digest("hex");
   const subject = input.purpose === "verification"
-    ? "Verify your Kyra email"
+    ? "Verify your Lead My Company email"
     : input.purpose === "password_reset"
-      ? "Reset your Kyra password"
-      : "Confirm your Kyra email change";
+      ? "Reset your Lead My Company password"
+      : "Confirm your Lead My Company email change";
   await withBusinessTransaction(getEmailDatabase().db, { actorType: "system" }, async (tx) => {
     await enqueueOutbox(tx, {
       topic: "email.send",
@@ -164,7 +165,7 @@ async function enqueueEmailVerificationCode(input: { userId: string; email: stri
       payload: {
         template: "verify_email",
         to: input.email,
-        subject: "Your Kyra verification code",
+        subject: "Your Lead My Company verification code",
         variables: { code: input.otp },
       },
     });
@@ -241,7 +242,7 @@ function createAuth(adapterDatabase?: Parameters<typeof drizzleAdapter>[0]) {
   return betterAuth({
     database: drizzleAdapter(adapterDatabase ?? database.db, {
       provider: "pg",
-      schema: { user: users, session: sessions, account: accounts, verification: verifications, ...oauthProviderSchema },
+      schema: { user: users, session: sessions, account: accounts, verification: verifications, twoFactor: twoFactors, ...oauthProviderSchema },
     }),
     baseURL: process.env.APP_BASE_URL ?? "http://localhost:3000",
     trustedOrigins: (process.env.AUTH_TRUSTED_ORIGINS ?? process.env.APP_BASE_URL ?? "http://localhost:3000").split(",").map((value) => value.trim()).filter(Boolean),
@@ -256,7 +257,13 @@ function createAuth(adapterDatabase?: Parameters<typeof drizzleAdapter>[0]) {
       // the shared per-path bucket rather than trusting a spoofable value.
       ...(trustedIpHeader ? { ipAddress: { ipAddressHeaders: [trustedIpHeader] } } : {}),
     },
-    plugins: [...mcpOAuthPlugins(), emailOTP({
+    plugins: [...mcpOAuthPlugins(), twoFactor({
+      issuer: "Lead My Company",
+      twoFactorTable: "twoFactor",
+      twoFactorCookieMaxAge: 600,
+      trustDeviceMaxAge: 0,
+      skipVerificationOnEnable: false,
+    }), emailOTP({
       disableSignUp: true,
       storeOTP: "hashed",
       expiresIn: 600,
@@ -271,7 +278,7 @@ function createAuth(adapterDatabase?: Parameters<typeof drizzleAdapter>[0]) {
             aggregateType: "auth_email",
             aggregateId: user.id,
             dedupeKey: `auth-reset-code:${user.id}:${randomUUID()}`,
-            payload: { template: "password_reset", to: email, subject: "Reset your Kyra password", variables: { code: otp } },
+            payload: { template: "password_reset", to: email, subject: "Reset your Lead My Company password", variables: { code: otp } },
           });
         });
       },
@@ -297,7 +304,7 @@ function createAuth(adapterDatabase?: Parameters<typeof drizzleAdapter>[0]) {
               topic: "email.send", aggregateType: "auth_email", aggregateId: user.id,
               dedupeKey: `auth-existing-account:${user.id}:${randomUUID()}`,
               payload: { template: "existing_account", to: user.email,
-                subject: locale === "fr" ? "Votre compte Kyra existe déjà" : "You already have a Kyra account",
+                subject: locale === "fr" ? "Votre compte Lead My Company existe déjà" : "You already have a Lead My Company account",
                 variables: { locale, signInUrl: new URL(`/${locale}/login`, base).href, resetUrl: new URL(`/${locale}/forgot-password`, base).href } },
             });
           });

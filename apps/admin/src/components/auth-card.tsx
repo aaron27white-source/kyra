@@ -110,7 +110,12 @@ export function AuthCard({ mode }: { mode: "login" | "signup" }) {
         const accountExists = ["USER_ALREADY_EXISTS", "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL"].includes(failure?.code ?? "");
         throw new Error(login ? t("errors.incorrectCredentials") : t(accountExists ? "errors.accountExists" : "errors.signupFailed"));
       }
-      const result = await response.json() as { token?: string | null };
+      const result = await response.json() as { token?: string | null; twoFactorRedirect?: boolean };
+      if (result.twoFactorRedirect) {
+        const returnTo = getSafeReturnTo(new URLSearchParams(window.location.search).get("returnTo")) ?? "/";
+        router.push(`/internal/mfa?returnTo=${encodeURIComponent(returnTo)}`);
+        return;
+      }
       if (mode === "signup" && result.token === null) {
         setVerificationPending(true);
         return;
@@ -177,6 +182,12 @@ export function AuthCard({ mode }: { mode: "login" | "signup" }) {
         body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
       });
       if (!signInResponse.ok) throw new Error(t("errors.verificationSignInFailed"));
+      const signInResult = await signInResponse.json() as { twoFactorRedirect?: boolean };
+      if (signInResult.twoFactorRedirect) {
+        const returnTo = getSafeReturnTo(new URLSearchParams(window.location.search).get("returnTo")) ?? "/";
+        router.push(`/internal/mfa?returnTo=${encodeURIComponent(returnTo)}`);
+        return;
+      }
       finishAuthentication();
     } catch (cause) {
       if (verified) {

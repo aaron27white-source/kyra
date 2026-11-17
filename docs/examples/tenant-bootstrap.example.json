@@ -1,0 +1,8 @@
+{
+  "operation": "bootstrap",
+  "userId": "[FILL: verified account UUID]",
+  "name": "[FILL: business name]",
+  "slug": "[FILL: unique lowercase business slug]",
+  "timezone": "America/New_York",
+  "businessType": "service_company"
+}

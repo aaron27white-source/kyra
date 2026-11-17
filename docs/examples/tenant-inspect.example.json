@@ -1,0 +1,5 @@
+{
+  "operation": "inspect",
+  "tenantId": "[FILL: business UUID from bootstrap]",
+  "userId": "[FILL: verified business administrator UUID]"
+}

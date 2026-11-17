@@ -1,3 +1,5 @@
+import type * as DbModule from "@lobbystack/db";
+import type * as WidgetKeysModule from "./widget-keys";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
@@ -12,12 +14,12 @@ vi.mock("./api-helpers", () => ({
   getWorkerDatabase: () => ({ db: {} }),
 }));
 vi.mock("@lobbystack/db", async (original) => ({
-  ...(await original<typeof import("@lobbystack/db")>()),
+  ...(await original<typeof DbModule>()),
   withBusinessTransaction: vi.fn(async () => mocks.widgetKey),
 }));
 vi.mock("./prospect-demo", () => ({ resolveWebVoiceAccess: mocks.resolveWebVoiceAccess }));
 vi.mock("./widget-keys", async (original) => ({
-  ...(await original<typeof import("./widget-keys")>()),
+  ...(await original<typeof WidgetKeysModule>()),
   verifyWidgetSessionToken: mocks.verifyWidgetSessionToken,
 }));
 

@@ -1,3 +1,5 @@
+import type * as DbModule from "@lobbystack/db";
+import type * as AuthzModule from "../authz";
 import { describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
@@ -7,13 +9,13 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("@lobbystack/db", async (original) => ({
-  ...(await original<typeof import("@lobbystack/db")>()),
+  ...(await original<typeof DbModule>()),
   withBusinessTransaction: mocks.withBusinessTransaction,
   enqueueOutbox: mocks.enqueueOutbox,
 }));
 
 vi.mock("../authz", async (original) => ({
-  ...(await original<typeof import("../authz")>()),
+  ...(await original<typeof AuthzModule>()),
   requireBusinessAdmin: mocks.requireBusinessAdmin,
 }));
 

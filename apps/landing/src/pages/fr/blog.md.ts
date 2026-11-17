@@ -6,7 +6,7 @@ import { absoluteUrl } from "@/lib/seo"
 export const GET: APIRoute = async () => {
   const posts = await getBlogPosts("fr")
 
-  const markdown = `# Blog et mises à jour produit LobbyStack
+  const markdown = `# Blog et mises à jour produit Lead My Company
 
 Mises à jour produit et notes pratiques sur la réponse téléphonique IA, les appels manqués, la planification, les transferts et le suivi des prospects.
 
@@ -23,7 +23,7 @@ ${posts
   return markdownResponse({
     markdown,
     canonical: absoluteUrl("/fr/blog/"),
-    title: "Blog et mises à jour produit LobbyStack",
+    title: "Blog et mises à jour produit Lead My Company",
     description:
       "Mises à jour produit et guides pratiques sur les réceptionnistes IA, la réponse téléphonique, la prise de rendez‑vous et l’automatisation des appels.",
   })

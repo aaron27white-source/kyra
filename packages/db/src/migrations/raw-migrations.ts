@@ -76,6 +76,20 @@ export const SCHEMA_MIGRATIONS = [
   "0066_public_api.sql",
   "0069_mcp_oauth.sql",
   "0070_key20_assistant.sql",
+  "0071_lmc_email.sql",
+  "0072_system_identity.sql",
+  "0073_legacy_tenant_identity.sql",
+  "0074_superadmin_foundation.sql",
+  "0075_superadmin_managed_clients.sql",
+  "0076_superadmin_activation.sql",
+  "0077_lmc_message_sending_status.sql",
+  "0078_lmc_inbound_voice.sql",
+  "0079_voice_booking_idempotency.sql",
+  "0080_voice_intake.sql",
+  "0081_calendar_location_consent.sql",
+  "0082_appointment_lookup_name_search.sql",
+  "0083_contacts_name_search_index.sql",
+  "0084_contacts_phone_digits_index.sql",
 ] as const;
 
 const CONCURRENT_INDEX_DIRECTIVE = /^-- lobbystack:concurrent-index ([a-z][a-z0-9_]*)$/m;

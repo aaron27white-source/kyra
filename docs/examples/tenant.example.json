@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "tenantId": "[FILL: existing business UUID]",
+  "userId": "[FILL: verified business administrator UUID]",
+  "enabled": true,
+  "timezone": "America/New_York",
+  "hours": [
+    {
+      "dayOfWeek": 1,
+      "openMinutes": 540,
+      "closeMinutes": 1020
+    },
+    {
+      "dayOfWeek": 2,
+      "openMinutes": 540,
+      "closeMinutes": 1020
+    },
+    {
+      "dayOfWeek": 3,
+      "openMinutes": 540,
+      "closeMinutes": 1020
+    },
+    {
+      "dayOfWeek": 4,
+      "openMinutes": 540,
+      "closeMinutes": 1020
+    },
+    {
+      "dayOfWeek": 5,
+      "openMinutes": 540,
+      "closeMinutes": 1020
+    }
+  ],
+  "calendar": {
+    "connectionId": "[FILL: owned Google OAuth connection UUID]",
+    "staffId": "[FILL: active staff UUID]",
+    "calendarId": "[FILL: authorized calendar ID]"
+  },
+  "settings": {
+    "ownerEmail": "[FILL: owner email]",
+    "fromEmail": "[FILL: configured LMC_EMAIL_FROM]",
+    "physicalAddress": "[FILL: verified business mailing address]",
+    "serviceAreaZips": [
+      "[FILL: five-digit ZIP]"
+    ],
+    "serviceAreaCities": [],
+    "services": [
+      {
+        "slug": "estimate-visit",
+        "name": "Estimate visit",
+        "aliases": [
+          "estimate"
+        ],
+        "durationMinutes": 60
+      }
+    ],
+    "faqs": [
+      {
+        "question": "Do you provide estimates?",
+        "answer": "[FILL: approved business answer]"
+      }
+    ],
+    "escalation": {
+      "keywords": [
+        "insurance dispute"
+      ],
+      "replyText": "Your request needs a review by our team. We will follow up personally."
+    },
+    "bookingRules": {
+      "minimumNoticeMinutes": 120,
+      "horizonDays": 7,
+      "requireVerifiedRequester": true
+    },
+    "emergencyKeywords": [
+      "fire",
+      "gas leak"
+    ],
+    "emergencyText": "If there is immediate danger, contact local emergency services. Our team cannot provide emergency response.",
+    "priceInformation": "[FILL: approved pricing information]",
+    "tone": "professional",
+    "confidenceThreshold": 0.8,
+    "tools": [
+      "availability",
+      "book",
+      "reschedule",
+      "cancel",
+      "handoff"
+    ],
+    "followups": {
+      "enabled": false,
+      "maxTouches": 0,
+      "delaysHours": [],
+      "dailyCap": 0
+    }
+  }
+}

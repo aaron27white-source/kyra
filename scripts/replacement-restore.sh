@@ -20,7 +20,9 @@ if [[ ! -f "$ENV_FILE" ]]; then
   ENV_FILE="$ROOT_DIR/.env.example"
 fi
 BACKUP_DIR="$(cd "$1" && pwd)"
-COMPOSE=(docker compose --project-name "$REPLACEMENT_COMPOSE_PROJECT" --env-file "$ENV_FILE" -f "$ROOT_DIR/docker-compose.yml")
+COMPOSE_FILE="${REPLACEMENT_COMPOSE_FILE:-$ROOT_DIR/docker-compose.yml}"
+if [[ ! -f "$COMPOSE_FILE" ]]; then echo "Explicit Compose file does not exist." >&2; exit 1; fi
+COMPOSE=(docker compose --project-name "$REPLACEMENT_COMPOSE_PROJECT" --env-file "$ENV_FILE" -f "$COMPOSE_FILE")
 RUNNING_WRITERS=()
 
 for file in postgres.dump SHA256SUMS manifest.txt; do

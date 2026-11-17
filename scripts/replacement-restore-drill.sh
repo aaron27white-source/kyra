@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+umask 077
 
 if [[ "${CONFIRM_REPLACEMENT_RESTORE_DRILL:-}" != "1" ]]; then
   echo "Refusing destructive drill. Set CONFIRM_REPLACEMENT_RESTORE_DRILL=1." >&2
@@ -15,8 +16,10 @@ ENV_FILE="${REPLACEMENT_ENV_FILE:-$ROOT_DIR/.env}"
 if [[ ! -f "$ENV_FILE" ]]; then
   ENV_FILE="$ROOT_DIR/.env.example"
 fi
-BACKUP_DIR="$ROOT_DIR/.tmp/replacement-restore-drill-$(date -u +%Y%m%dT%H%M%SZ)"
-COMPOSE=(docker compose --project-name "$REPLACEMENT_COMPOSE_PROJECT" --env-file "$ENV_FILE" -f "$ROOT_DIR/docker-compose.yml")
+BACKUP_DIR="${REPLACEMENT_DRILL_BACKUP_DIR:-$ROOT_DIR/.tmp/replacement-restore-drill-$(date -u +%Y%m%dT%H%M%SZ)}"
+COMPOSE_FILE="${REPLACEMENT_COMPOSE_FILE:-$ROOT_DIR/docker-compose.yml}"
+if [[ ! -f "$COMPOSE_FILE" ]]; then echo "Explicit Compose file does not exist." >&2; exit 1; fi
+COMPOSE=(docker compose --project-name "$REPLACEMENT_COMPOSE_PROJECT" --env-file "$ENV_FILE" -f "$COMPOSE_FILE")
 MARKER="restore-drill-$(date -u +%s)"
 mkdir -p "$BACKUP_DIR"
 printf '%s' "$MARKER" > "$BACKUP_DIR/marker.txt"

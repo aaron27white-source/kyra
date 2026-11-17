@@ -1,0 +1,50 @@
+# Third-Party Notices
+
+## LobbyStack
+
+Kyra the Receptionist is built on LobbyStack. See NOTICE.
+
+- Source: https://github.com/lobbystack/lobbystack
+- License: MIT
+- Copyright: Copyright (c) 2026 LobbyStack contributors
+
+## shadcn-admin
+
+Portions of `apps/admin` are adapted from `satnaing/shadcn-admin`.
+
+- Source: https://github.com/satnaing/shadcn-admin
+- License: MIT
+- Copyright: Copyright (c) 2024 Sat Naing
+
+### MIT License
+
+MIT License
+
+Copyright (c) 2024 Sat Naing
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+## Geist font
+
+The pilot landing bundles the unmodified Geist Latin variable font from the installed `@fontsource-variable/geist` package (5.2.8).
+
+- Copyright: Copyright 2024 The Geist Project Authors (https://github.com/vercel/geist-font.git)
+- License: SIL Open Font License 1.1
+- The complete font license is retained in `apps/landing/pilot-public/attributions/GEIST-OFL.txt` and included in the static artifact.

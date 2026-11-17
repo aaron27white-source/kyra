@@ -84,7 +84,7 @@ export async function ensureMcpResource(db: Database): Promise<void> {
   resourceReady ??= (async () => {
     const now = new Date();
     await db.insert(oauthResources)
-      .values({ identifier: mcpResourceUrl(), name: "Kyra MCP server", allowedScopes: [...MCP_OAUTH_SCOPES], disabled: false, createdAt: now, updatedAt: now })
+      .values({ identifier: mcpResourceUrl(), name: "Lead My Company MCP server", allowedScopes: [...MCP_OAUTH_SCOPES], disabled: false, createdAt: now, updatedAt: now })
       .onConflictDoUpdate({ target: oauthResources.identifier, set: { allowedScopes: [...MCP_OAUTH_SCOPES], disabled: false, updatedAt: now } });
   })().catch((error: unknown) => {
     resourceReady = undefined;

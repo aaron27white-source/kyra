@@ -4,13 +4,13 @@ import { absoluteUrl } from "@/lib/seo"
 
 const markdown = `---
 title: Tarifs de réceptionniste IA pour petites entreprises
-description: Comparez les forfaits Free, Starter, Pro et Enterprise de LobbyStack, avec minutes vocales, facturation annuelle, SMS et dépassements transparents.
+description: Comparez les forfaits Free, Starter, Pro et Enterprise de Lead My Company, avec minutes vocales, facturation annuelle, SMS et dépassements transparents.
 url: ${absoluteUrl("/fr/pricing/")}
 ---
 
-# Tarifs LobbyStack
+# Tarifs Lead My Company
 
-LobbyStack propose Free, Starter, Pro et Enterprise. Les forfaits évoluent surtout selon le volume plutôt qu’en bloquant les fonctions de base.
+Lead My Company propose Free, Starter, Pro et Enterprise. Les forfaits évoluent surtout selon le volume plutôt qu’en bloquant les fonctions de base.
 
 ## Forfaits
 
@@ -35,5 +35,5 @@ export const GET: APIRoute = () =>
     canonical: absoluteUrl("/fr/pricing/"),
     title: "Tarifs de réceptionniste IA pour petites entreprises",
     description:
-      "Comparez les forfaits Free, Starter, Pro et Enterprise de LobbyStack, avec minutes vocales, facturation annuelle, SMS et dépassements transparents.",
+      "Comparez les forfaits Free, Starter, Pro et Enterprise de Lead My Company, avec minutes vocales, facturation annuelle, SMS et dépassements transparents.",
   })
