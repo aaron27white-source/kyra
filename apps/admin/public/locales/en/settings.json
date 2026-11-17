@@ -1253,5 +1253,29 @@
         "addLine": "Add line"
       }
     }
+  },
+  "navigation": {
+    "selectSection": "Choose a settings section",
+    "groups": {
+      "workspace": "Workspace",
+      "agent": "Agent",
+      "channels": "Customer channels",
+      "account": "Account"
+    },
+    "descriptions": {
+      "businessProfile": "Set the business identity and local hours your receptionist uses with customers.",
+      "business": "Invite teammates and control who can access this workspace.",
+      "phoneNumber": "Choose and manage the number customers call to reach your receptionist.",
+      "kyra": "Manage Lead My Company account and automation settings.",
+      "backOffice": "Set up internal workflows and operational preferences.",
+      "email": "Control how customer email leads are captured and delivered.",
+      "widget": "Customize the chat experience embedded on your website.",
+      "connectedApps": "Review apps and services connected to this workspace.",
+      "apiKeys": "Manage credentials used by external tools and services.",
+      "usage": "Track your plan usage and current limits.",
+      "billing": "Review your plan, invoices, and payment details.",
+      "appearance": "Choose the language and appearance used in the dashboard.",
+      "notifications": "Choose which updates the team receives and where they go."
+    }
   }
 }

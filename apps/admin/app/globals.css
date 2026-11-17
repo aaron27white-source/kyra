@@ -6,12 +6,6 @@
 .text-slate-900,
 .text-slate-800,
 .text-slate-700,
-.text-teal-800,
-.text-teal-700,
-.text-teal-600 {
-  color: var(--foreground) !important;
-}
-
 .text-slate-600,
 .text-slate-500,
 .text-slate-400 {
@@ -26,11 +20,6 @@
 
 .bg-slate-50,
 .bg-slate-100,
-.bg-teal-50,
-.bg-teal-100 {
-  background-color: var(--muted) !important;
-}
-
 .border-slate-50,
 .border-slate-100,
 .border-slate-200,

@@ -21,7 +21,7 @@ import { useQuery } from "@tanstack/react-query";
 import { BookTextIcon } from "@/components/ui/book-text";
 import { BlocksIcon } from "@/components/ui/blocks";
 import { ChartColumnIncreasingIcon } from "@/components/ui/chart-column-increasing";
-import { CalendarDaysIcon } from "lucide-react";
+import { AudioLines, CalendarDaysIcon } from "lucide-react";
 import { ClipboardCheckIcon } from "@/components/ui/clipboard-check";
 import { HomeIcon, type HomeIconHandle } from "@/components/ui/home";
 import { MessageSquareMoreIcon } from "@/components/ui/message-square-more";
@@ -161,8 +161,7 @@ function BillingBanner() {
 }
 
 function ReplacementSidebar({ user, pilotMode = false, pilotCapabilities = [] }: Pick<DashboardShellProps, "user" | "pilotMode" | "pilotCapabilities">) {
-  const pathname = usePathname();
-  const { t } = useTranslation(["nav", "settings", "agent"]);
+  const { t } = useTranslation(["nav", "settings", "agent", "common"]);
   const pilotHas = (capability: PilotDashboardCapability) => pilotCapabilities.includes(capability);
   const general: NavigationItem[] = pilotMode ? [
     ...(pilotHas("leads") ? [{ label: t("nav:items.leads"), href: "/leads", icon: UsersIcon }] : []),
@@ -174,7 +173,7 @@ function ReplacementSidebar({ user, pilotMode = false, pilotCapabilities = [] }:
     { label: t("nav:items.leads"), href: "/leads", icon: UsersIcon },
     { label: t("nav:items.calls"), href: "/calls", icon: PhoneAnimatedIcon },
     { label: t("nav:items.appointments"), href: "/appointments", icon: AppointmentsIcon },
-    ...(["/messages", "/settings/widget"].some(route => pathname === route || pathname.startsWith(`${route}/`)) ? [{ label: t("nav:items.messages"), href: "/messages", icon: MessageSquareMoreIcon }] : []),
+    { label: t("nav:items.messages"), href: "/messages", icon: MessageSquareMoreIcon },
     { label: t("nav:items.contacts"), href: "/contacts", icon: UsersIcon },
   ];
   const receptionist: NavigationItem[] = pilotMode ? [
@@ -195,14 +194,16 @@ function ReplacementSidebar({ user, pilotMode = false, pilotCapabilities = [] }:
   ] : [
     { label: t("nav:items.analytics"), href: "/analytics", icon: ChartColumnIncreasingIcon },
     { label: t("settings:sections.integrations"), href: "/integrations", icon: BlocksIcon },
-    { label: t("nav:items.emailSettings"), href: "/settings/email", icon: SettingsIcon },
     { label: t("nav:items.settings"), href: "/settings/usage", icon: SettingsIcon },
-    ...(["/messages", "/settings/widget"].some(route => pathname === route || pathname.startsWith(`${route}/`)) ? [{ label: t("settings:sections.widget"), href: "/settings/widget", icon: SettingsIcon }] : []),
   ];
 
   return (
     <Sidebar className="absolute inset-y-0 h-full" collapsible="icon" variant="sidebar">
       <SidebarHeader>
+        <div className="flex h-11 items-center gap-2.5 px-2">
+          <span aria-hidden="true" className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"><AudioLines className="size-[18px]" /></span>
+          <span className="truncate text-sm font-semibold tracking-tight text-sidebar-foreground group-data-[collapsible=icon]:hidden">{t("common:appName")}</span>
+        </div>
         <WorkspaceSwitcher allowCreate={!pilotMode} />
       </SidebarHeader>
       <SidebarContent>
